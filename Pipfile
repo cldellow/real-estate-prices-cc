@@ -1,0 +1,21 @@
+[[source]]
+
+verify_ssl = true
+name = "pypi"
+url = "https://pypi.python.org/simple"
+
+
+[dev-packages]
+
+
+
+[requires]
+
+python_version = "3.5"
+
+
+[packages]
+
+warcio = "*"
+warctools = "*"
+pylint = "*"
