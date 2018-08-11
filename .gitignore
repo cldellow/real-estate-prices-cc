@@ -1,0 +1,4 @@
+*.swp
+*.gz
+stripped/
+tmp

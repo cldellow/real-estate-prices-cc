@@ -1,2 +1,34 @@
 # real-estate-prices
+
 Source real estate prices from public sources.
+
+## Schema
+
+- `crawl_id` - The Common Crawl this comes from, e.g. `CC-MAIN-2017-22`
+- `warc_url` - The WARC path, e.g. `s3://commoncrawl/crawl-data/CC-MAIN-2018-30/segments/1531676588961.14/warc/CC-MAIN-20180715183800-20180715203800-00037.warc.gz`
+- `warc_record_id` - The WARC record id, e.g. `urn:uuid:a04218d3-a49e-4fde-8c2e-16379cfa28c6`
+- `url` - The URL, e.g. `http://563463.hudsonriverproperties.com/blog/Best+Deals+Of+The+Year`
+- `domain` - The domain, e.g. `563463.hudsonriverproperties.com`
+- `index` - The index of this record (eg if the page has multiple listings), starting at `0`
+- `external_id` - Optional, the external identifier
+- `country` - ISO-3166-2 code for the country, eg `US`
+- `address` - Street address, eg `704 SAND CREEK CIR`
+- `city` - City, eg `Weston`
+- `state` - State, eg `FL`
+- `postal_code` - Optional, Postal code, eg `33327`
+- `warc_date` - Date page was crawled
+- `listing_date` - Date listing was created, if known
+- `page_date` - Date page was authored, if known
+- `price` - Listing price, in $
+- `beds` - # of bedrooms
+- `baths` - # of baths
+- `half_baths` - # of half baths
+- `sqft` - Floor space in sqft
+- `lat` - Latitude
+- `lng` - Longitude
+- `year_built` - Year built (eg `1990`)
+
+## Use
+
+The system is designed to be run interactively in a browser while debugging. When you're ready to crawl at scale,
+the built-up rules are run in a server-side javascript environment.
