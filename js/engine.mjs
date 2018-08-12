@@ -1,10 +1,11 @@
 import * as rules from './rules.mjs';
+import { innerText } from './innertext.mjs';
 
 // Tag DOM with extra classes for targeting.
 export function rewrite(el) {
   if(el.nodeType == 1) { // Element
 
-    var txt = rules.innerText(el);
+    var txt = innerText(el);
     if(txt.length <= 40) {
       txt = txt.toLowerCase().replace(/[^0-9a-z]+/g, '-').replace(/^-+|-+$/g, '');
       if(txt) {

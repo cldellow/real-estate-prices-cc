@@ -8,6 +8,52 @@
     "lz4": "^0.5.3"
   },
   "scripts": {
-    "test": "node --experimental-modules e2e-tests.mjs"
+    "test": "jest",
+    "test-e2e": "node --experimental-modules e2e-tests.mjs"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.4.2",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-preset-es2015": "^6.24.1",
+    "jest": "^23.5.0"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.?(m)js?(x)",
+      "**/?(*.)(spec|test).?(m)js?(x)"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx",
+      "node",
+      "mjs"
+    ],
+    "transform": {
+      "^.+[.]m?js$": "babel-jest"
+    }
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "presets": [
+          [
+            "es2015",
+            {
+              "modules": false
+            }
+          ]
+        ],
+        "plugins": [
+          [
+            "transform-es2015-modules-commonjs",
+            {
+              "spec": true
+            }
+          ]
+        ]
+      }
+    }
   }
 }
