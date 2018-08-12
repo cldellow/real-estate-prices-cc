@@ -45,6 +45,10 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
   }
 }
 
+function validAddress(rv) {
+  return rv && rv['address'] && rv['address'][0] != '0' && !/\( *\)/.exec(rv['address']);
+}
+
 function parseStreetAddress(el) {
   const plainText = innerText(el);
   const commaForBR = innerText(el, {'BR': ', '}, 'br');
@@ -58,20 +62,20 @@ function parseStreetAddress(el) {
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
-    if(rv)
+    if(validAddress(rv))
       return rv;
   }
 
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBR);
-    if(rv)
+    if(validAddress(rv))
       return rv;
   }
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](plainText);
-    if(rv)
+    if(validAddress(rv))
       return rv;
   }
 }
@@ -253,49 +257,23 @@ function extractYear(field) {
 
 
 export const rules = [
-  ['.property', [
-    ['*', extractPrice('price')],
-    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['.address', parseStreetAddress],
-    ['*', parseBeds],
-    ['*', parseBaths],
-    ['*', parseMLS]]],
-  ['.idxitem', [
-    ['*', extractPrice('price')],
-    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['*', parseStreetAddress],
-    ['*', parseBeds],
-    ['*', parseBaths],
-    ['*', parseSqft],
-    ['*', parseMLS]]],
   ['*', [
+    ['*', extractPrice('price')],
     ['.list-price, .q-list-price + div', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseStreetAddress],
+    ['*', parseSqft],
+    ['*', parseBeds],
+    ['*', parseBaths],
+    ['*', parseMLS],
+    ['*', parseStreetAddress],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
-    ['.q-mls + span', extractMLS],
+    ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
     ['.q-year-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
-    ['.q-bedrooms + span', extractDigit('beds')],
-    ['.q-bathrooms + span', extractDigit('baths')]]],
-  ['.item-expanded', [
-    ['*', extractPrice('price')],
-    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['*', parseStreetAddress],
-    ['*', parseSqft],
-    ['.q-mls-num + dd', extractMLS],
-    ['.q-bedrooms + dd', extractDigit('beds')],
-    ['.q-bathrooms + dd', extractDigit('baths')]]],
-  ['*', [
-    ['*', extractPrice('price')],
-    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['*', parseStreetAddress],
-    ['*', parseSqft],
-    ['*', parseBeds],
-    ['*', parseBaths]
-
-  ]]
+    ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
+    ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')]]]
 ];
 
