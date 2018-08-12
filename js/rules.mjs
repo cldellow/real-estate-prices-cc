@@ -127,13 +127,13 @@ function parseStreetAddress(el) {
 function parseBeds(el) {
   const txt = innerText(el);
   const res = [
-    /^ *([0-9]) *beds? *$/i,
-    /^ *([0-9]) *bedbeds *$/i,
-    /\bbedrooms: *([0-9])\b/i,
-    /\bbeds: *([0-9])\b/i,
-    /^ *([0-9]) *beds? *. *[0-9] *baths? *$/i,
-    /^ *([0-9]) *bedrooms? *. *[0-9] *bathrooms? */i,
-    /^ *([0-9]) *bedrooms? *. *[0-9] *baths? */i,
+    /^ *([0-9]{1,2}) *bed\(?s?\)? *$/i,
+    /^ *([0-9]{1,2}) *bedbeds *$/i,
+    /\bbedrooms: *([0-9]{1,2})\b/i,
+    /\bbeds: *([0-9]{1,2})\b/i,
+    /^ *([0-9]{1,2}) *beds? *. *[0-9]{1,2} *baths? *$/i,
+    /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *bathrooms? */i,
+    /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *baths? */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -149,12 +149,13 @@ function parseBeds(el) {
 function parseBaths(el) {
   const txt = innerText(el);
   const res = [
-    /^ *([0-9]) *baths? *$/i,
-    /\bbathrooms: *([0-9])\b/i,
-    /\bbaths: *([0-9])\b/i,
-    /^ *[0-9] *beds? *. *([0-9]) *baths? *$/i,
-    /^ *[0-9] *bedrooms? *. *([0-9]) *bathrooms? */i,
-    /^ *[0-9] *bedrooms? *. *([0-9]) *baths? */i,
+    /^ *([0-9]{1,2}) *baths? *$/i,
+    /\bbathrooms: *([0-9]{1,2})\b/i,
+    /\bbaths: *([0-9]{1,2})\b/i,
+    /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *$/i,
+    /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *bathrooms? */i,
+    /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *baths? */i,
+    /^ *([0-9]{1,2}) total bath\(?s?\)? *$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
