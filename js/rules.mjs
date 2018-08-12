@@ -1,5 +1,8 @@
 import { innerText } from './innertext.mjs';
 
+export const STOP_IF_NO_PRICE = 'stop-if-no-price';
+
+const _parseStreetAddressUSFullRe = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = false;
@@ -7,7 +10,7 @@ function _parseStreetAddressUSFull(txt) {
   if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
     console.log('_parseStreetAddressUSFull: ' + txt);
   }
-  const rv = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/.exec(txt);
+  const rv = _parseStreetAddressUSFullRe.exec(txt);
 
   if(rv)
     return {
@@ -44,7 +47,7 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
 
 function parseStreetAddress(el) {
   const innerText1 = innerText(el);
-  const innerText2 = innerText(el, {'BR': ', '});
+  const innerText2 = innerText(el, {'BR': ', '}, 'br');
 
   const fs = [
     _parseStreetAddressUSFull,
@@ -241,21 +244,24 @@ function extractYear(field) {
 
 export const rules = [
   ['.property', [
-    ['.address', parseStreetAddress],
     ['*', extractPrice('price')],
+    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['.address', parseStreetAddress],
     ['*', parseBeds],
     ['*', parseBaths],
     ['*', parseMLS]]],
   ['.idxitem', [
-    ['*', parseStreetAddress],
     ['*', extractPrice('price')],
+    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['*', parseStreetAddress],
     ['*', parseBeds],
     ['*', parseBaths],
     ['*', parseSqft],
     ['*', parseMLS]]],
   ['body', [
-    ['*', parseStreetAddress],
     ['.list-price, .q-list-price + div', extractPrice('price')],
+    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['*', parseStreetAddress],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span', extractMLS],
@@ -265,15 +271,17 @@ export const rules = [
     ['.q-bedrooms + span', extractDigit('beds')],
     ['.q-bathrooms + span', extractDigit('baths')]]],
   ['.item-expanded', [
+    ['*', extractPrice('price')],
+    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseStreetAddress],
     ['*', parseSqft],
-    ['*', extractPrice('price')],
     ['.q-mls-num + dd', extractMLS],
     ['.q-bedrooms + dd', extractDigit('beds')],
     ['.q-bathrooms + dd', extractDigit('baths')]]],
   ['*', [
-    ['*', parseStreetAddress],
     ['*', extractPrice('price')],
+    [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['*', parseStreetAddress],
     ['*', parseBeds],
     ['*', parseBaths]
 

@@ -1,4 +1,4 @@
-import * as rules from './rules.mjs';
+import * as ruleExports from './rules.mjs';
 import { innerText } from './innertext.mjs';
 
 /*
@@ -137,9 +137,23 @@ function applyRule(el, selector, rules) {
     // Apply the rules to extract values from the page
     for(var j = 0; j < rules.length; j++) {
       const [ruleSelector, f] = rules[j];
-      const nodes = el.querySelectorAll(ruleSelector);
-      for(var k = 0; k < nodes.length; k++) {
-        listings.push(f(nodes[k]));
+
+      if(ruleSelector == ruleExports.STOP_IF_NO_PRICE) {
+        const prices = [];
+        for(var k = 0; k < listings.length; k++) {
+          if(listings[k] && listings[k]['price']) {
+            prices.push(listings[k]['price']);
+          }
+        }
+
+        prices.sort();
+        if(prices.length == 0 || prices[0] != prices[prices.length - 1])
+          break;
+      } else {
+        const nodes = el.querySelectorAll(ruleSelector);
+        for(var k = 0; k < nodes.length; k++) {
+          listings.push(f(nodes[k]));
+        }
       }
     }
 
@@ -159,8 +173,8 @@ function applyRule(el, selector, rules) {
 
 export function extract(el) {
   const rv = [];
-  for(var i = 0; i < rules.rules.length; i++) {
-    const tmp = applyRule(el, rules.rules[i][0], rules.rules[i][1]);
+  for(var i = 0; i < ruleExports.rules.length; i++) {
+    const tmp = applyRule(el, ruleExports.rules[i][0], ruleExports.rules[i][1]);
     for(var j = 0; j < tmp.length; j++)
       rv.push(tmp[j]);
   }
