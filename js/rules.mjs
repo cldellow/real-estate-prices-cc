@@ -2,7 +2,7 @@ import { innerText } from './innertext.mjs';
 
 export const STOP_IF_NO_PRICE = 'stop-if-no-price';
 
-const _parseStreetAddressUSFullRe = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/;
+const _parseStreetAddressUSFullRe = /([^,]+), +([^,]+), +([A-Z][A-Z]) +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = false;
@@ -12,14 +12,16 @@ function _parseStreetAddressUSFull(txt) {
   }
   const rv = _parseStreetAddressUSFullRe.exec(txt);
 
-  if(rv)
+  if(rv) {
+    //console.log(rv);
     return {
-      address: rv[1],
-      city: rv[2],
-      state: rv[3],
-      postal_code: rv[4],
+      address: rv[1].trim(),
+      city: rv[2].trim(),
+      state: rv[3].trim(),
+      postal_code: rv[4].trim(),
       country: 'US'
     }
+  }
 }
 
 function _parseStreetAddressUSNoCityNoState(txt) {
@@ -28,8 +30,8 @@ function _parseStreetAddressUSNoCityNoState(txt) {
   if(rv) {
     //console.log(rv);
     return {
-      address: rv[1],
-      postal_code: rv[2],
+      address: rv[1].trim(),
+      postal_code: rv[2].trim(),
       country: 'US'
     }
   }
@@ -40,15 +42,16 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
 
   if(rv) {
     return {
-      address: rv[1],
-      postal_code: rv[2],
+      address: rv[1].trim(),
+      postal_code: rv[2].trim(),
       country: 'CA'
     }
   }
 }
 
 function validAddress(rv) {
-  return rv && rv['address'] && rv['address'][0] != '0' && !/\( *\)/.exec(rv['address']);
+  return rv && rv['address'] && rv['address'][0] != '0' &&
+    !/\( *\)/.exec(rv['address']) && !/sq\.ft\./.exec(rv['address']);
 }
 
 function parseStreetAddress(el) {
@@ -105,6 +108,8 @@ function parseBeds(el) {
     /\bbedrooms: *([0-9])\b/i,
     /\bbeds: *([0-9])\b/i,
     /^ *([0-9]) *beds? *. *[0-9] *baths? *$/i,
+    /^ *([0-9]) *bedrooms? *. *[0-9] *bathrooms? */i,
+    /^ *([0-9]) *bedrooms? *. *[0-9] *baths? */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -124,6 +129,8 @@ function parseBaths(el) {
     /\bbathrooms: *([0-9])\b/i,
     /\bbaths: *([0-9])\b/i,
     /^ *[0-9] *beds? *. *([0-9]) *baths? *$/i,
+    /^ *[0-9] *bedrooms? *. *([0-9]) *bathrooms? */i,
+    /^ *[0-9] *bedrooms? *. *([0-9]) *baths? */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
