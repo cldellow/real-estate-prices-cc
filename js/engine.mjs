@@ -1,6 +1,19 @@
 import * as rules from './rules.mjs';
 import { innerText } from './innertext.mjs';
 
+/*
+ * Overview of process:
+ *
+ * 1. Rewrite the HTML to be more amenable to automated extraction
+ *    a. Wrap naked text in SPAN: <div>foo<span>bar</span></div> -> <div><span>foo</span><span>bar</span></div>
+ *    b. Tag elements with names based on contents: <span>foo</span> -> <span class="q-foo">foo</span>
+ * 2. Apply rules to generate candidate listings
+ * 3. Reject listings where the rules found conflicting values for attributes, e.g. a house with 2 listing prices
+ * 4. Reject listings that are subsets of other listings, e.g. {address=foo} is a subset of {address=foo, country=CA}
+ * 5. Reject listings that don't have enough information
+ * 6. Tada, these are hopefully the correct listings.
+ */
+
 // Tag DOM with extra classes for targeting.
 export function rewrite(el) {
   if(el.nodeType == 1) { // Element
@@ -71,15 +84,57 @@ function tryListing(candidate) {
     return rv;
 }
 
+export function isSubset(needle, haystack) {
+  if(needle == haystack)
+    return false;
+
+  const entries = Object.entries(needle);
+  for(var i = 0; i < entries.length; i++) {
+    const [k, v] = entries[i];
+
+    if(haystack[k] != v)
+      return false;
+  }
+
+  return true;
+}
+
+export function removeSubsets(xs) {
+  const rv = [];
+
+  const dead = {};
+  for(var i = 0; i < xs.length; i++) {
+    let ok = true;
+    for(var j = 0; j < xs.length; j++)  {
+      ok = ok && ((i == j || j in dead) || !isSubset(xs[i], xs[j]));
+    }
+
+    if(ok) {
+      rv.push(xs[i]);
+    } else {
+      dead[i] = true;
+    }
+  }
+
+  return rv;
+}
+
+export function removeIncomplete(xs) {
+  return xs.filter(item =>
+    item['price'] && item['address'] && item['country']
+  );
+}
+
 function applyRule(el, selector, rules) {
   const els = el.querySelectorAll(selector);
 
   const rv = [];
+  // Generate candidate listings
   for(var i = 0; i < els.length; i++) {
     const listings = [];
     const el = els[i];
 
-    // Apply the rules to extract values from the page, accumulating distinct values.
+    // Apply the rules to extract values from the page
     for(var j = 0; j < rules.length; j++) {
       const [ruleSelector, f] = rules[j];
       const nodes = el.querySelectorAll(ruleSelector);
@@ -88,7 +143,10 @@ function applyRule(el, selector, rules) {
       }
     }
 
+    // Merge the partial listings into a single listing
     const candidate = listings.reduce(mergeMapKeys, {})
+
+    // Reject listings with duplicate keys
     const listing = tryListing(candidate);
 
     if(listing) {
@@ -107,11 +165,11 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  return rv;
+  return removeIncomplete(removeSubsets(rv));
 }
 
 // Shim to export rewrite/extract to browser clients
-if(typeof window != 'undefined') {
+if(typeof window != 'undefined' && typeof _ready != 'undefined') {
   window['rewrite'] = rewrite;
   window['extract'] = extract;
   _ready();

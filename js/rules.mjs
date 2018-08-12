@@ -1,7 +1,12 @@
 import { innerText } from './innertext.mjs';
 
-function _parseStreetAddressUSFull(el) {
-  const txt = innerText(el);
+
+function _parseStreetAddressUSFull(txt) {
+  const debug = false;
+
+  if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
+    console.log('_parseStreetAddressUSFull: ' + txt);
+  }
   const rv = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/.exec(txt);
 
   if(rv)
@@ -14,8 +19,7 @@ function _parseStreetAddressUSFull(el) {
     }
 }
 
-function _parseStreetAddressUSNoCityNoState(el) {
-  const txt = innerText(el);
+function _parseStreetAddressUSNoCityNoState(txt) {
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
 
   if(rv)
@@ -26,8 +30,7 @@ function _parseStreetAddressUSNoCityNoState(el) {
     }
 }
 
-function _parseStreetAddressCanadaCityNoProvince(el) {
-  const txt = innerText(el);
+function _parseStreetAddressCanadaCityNoProvince(txt) {
   const rv = /^ *([0-9].+) +([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
 
   if(rv) {
@@ -39,19 +42,36 @@ function _parseStreetAddressCanadaCityNoProvince(el) {
   }
 }
 
-
-
 function parseStreetAddress(el) {
-  return _parseStreetAddressUSFull(el) ||
-    _parseStreetAddressUSNoCityNoState(el) ||
-    _parseStreetAddressCanadaCityNoProvince(el);
+  const innerText1 = innerText(el);
+  const innerText2 = innerText(el, {'BR': ', '});
+
+  const fs = [
+    _parseStreetAddressUSFull,
+    _parseStreetAddressUSNoCityNoState, 
+    _parseStreetAddressCanadaCityNoProvince
+  ];
+
+  for(var i = 0; i < fs.length; i++) {
+    const rv = fs[i](innerText2);
+    if(rv)
+      return rv;
+  }
+
+  for(var i = 0; i < fs.length; i++) {
+    const rv = fs[i](innerText1);
+    if(rv)
+      return rv;
+  }
 }
 
 function parseBeds(el) {
   const txt = innerText(el);
   const res = [
     /^ *([0-9]) *beds? *$/i,
-    /^ *([0-9]) *bedbeds *$/i
+    /^ *([0-9]) *bedbeds *$/i,
+    /\bbedrooms: *([0-9])\b/i,
+    /\bbeds: *([0-9])\b/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -66,11 +86,20 @@ function parseBeds(el) {
 
 function parseBaths(el) {
   const txt = innerText(el);
-  const rv = /^ *([0-9]) *baths? *$/i.exec(txt);
-  if(rv)
-    return {
-      baths: parseInt(rv[1], 10)
-    }
+  const res = [
+    /^ *([0-9]) *baths? *$/i,
+    /\bbathrooms: *([0-9])\b/i,
+    /\bbaths: *([0-9])\b/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const re = res[i];
+    const rv = re.exec(txt);
+    if(rv)
+      return {
+        baths: parseInt(rv[1], 10)
+      }
+  }
 }
 
 function parseMLS(el) {
@@ -241,7 +270,12 @@ export const rules = [
     ['*', extractPrice('price')],
     ['.q-mls-num + dd', extractMLS],
     ['.q-bedrooms + dd', extractDigit('beds')],
-    ['.q-bathrooms + dd', extractDigit('baths')]
+    ['.q-bathrooms + dd', extractDigit('baths')]]],
+  ['*', [
+    ['*', parseStreetAddress],
+    ['*', extractPrice('price')],
+    ['*', parseBeds],
+    ['*', parseBaths]
 
   ]]
 ];

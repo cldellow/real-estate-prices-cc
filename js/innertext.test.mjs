@@ -16,4 +16,12 @@ describe('innerText', () => {
     const body = dom.window.document.body;
     expect(innerText(body)).toBe('bar baz');
   });
+
+  it('should support overriding elements with custom text', () => {
+    const dom = new JSDOM('<body><h1>Some<br/>Content</h1></body>');
+
+    const body = dom.window.document.body;
+    expect(innerText(body, {'BR': ','})).toBe('Some , Content');
+  });
+
 });

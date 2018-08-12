@@ -37,7 +37,7 @@ function compare(expected, actual) {
     const needle = JSON.stringify(canonicalize(expected[i]));
 
     for (var j = 0; j < actual.length; j++) {
-      const candidate = JSON.stringify(canonicalize(expected[j]));
+      const candidate = JSON.stringify(canonicalize(actual[j]));
 
       if(needle == candidate) {
         both[needle] = true;
@@ -73,7 +73,7 @@ function runTests(dir) {
   var ok = 0;
 
   fs.readdirSync(dir).forEach(oracle => {
-    const onlyRun = null; //'0004';
+    const onlyRun = null; //'0005';
     if(!oracle.endsWith('.jsonl') || (onlyRun && oracle.indexOf(onlyRun) < 0))
       return;
 
