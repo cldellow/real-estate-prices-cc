@@ -1,9 +1,12 @@
-const parse = require('./bootstrap');
-const fs = require('fs');
-const path = require('path');
-const jsdom = require("jsdom");
+import LZ4 from 'lz4';
+
+import fs from 'fs';
+import path from 'path';
+import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
-const LZ4 = require('lz4');
+import * as engine from './engine';
+//import { LZ4 } from 'lz4';
+//const LZ4 = require('lz4');
 
 
 function parseOracle(file) {
@@ -86,9 +89,9 @@ function runTests(dir) {
 
     const dom = new JSDOM(bytes);
 
-    parse.rewrite(dom.window.document.body);
+    engine.rewrite(dom.window.document.body);
 
-    const actual = parse.extract(dom.window.document);
+    const actual = engine.extract(dom.window.document);
     const compared = compare(expected, actual);
     results[file] = compared;
     files++;
@@ -100,4 +103,6 @@ function runTests(dir) {
   console.log(ok + '/' + files + ' files OK.');
 }
 
-runTests(path.dirname(__filename) + '/../tests');
+// TODO: how to get __filename when in mjs?
+//runTests(path.dirname(__filename) + '/../tests');
+runTests('/home/cldellow/src/real-estate-prices-cc/tests');

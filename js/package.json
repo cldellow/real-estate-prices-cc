@@ -8,6 +8,6 @@
     "lz4": "^0.5.3"
   },
   "scripts": {
-    "test": "node e2e-tests.js"
+    "test": "node --experimental-modules e2e-tests.mjs"
   }
 }
