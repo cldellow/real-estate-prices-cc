@@ -120,9 +120,14 @@ export function removeSubsets(xs) {
 }
 
 export function removeIncomplete(xs) {
-  return xs.filter(item =>
-    item['price'] && item['address'] && item['country']
-  );
+  return xs.filter(item => {
+    const priceOk = item['price'];
+    const countryOk = item['country'];
+    const cityOk = !item['city'] || item['city'].length < 40;
+    const addressOk = item['address'] && item['address'].length < 60;
+
+    return priceOk && countryOk && addressOk && cityOk;
+  });
 }
 
 function applyRule(el, selector, rules) {
