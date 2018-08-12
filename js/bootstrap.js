@@ -10,20 +10,35 @@ function rewrite(el) {
       }
     }
 
-    for(var i = 0; i < el.children.length; i++) {
-      rewrite(el.children[i]);
+    for(var i = 0; i < el.childNodes.length; i++) {
+      // If this is a naked text node intermingled with other content, wrap it in a span to make
+      // targeting easier.
+      if(el.childNodes[i].nodeType == 3 && el.childNodes.length > 1) {
+        const wrapped = el.ownerDocument.createElement('span');
+        const textNode = el.ownerDocument.createTextNode(el.childNodes[i].textContent);
+        wrapped.appendChild(textNode);
+        el.insertBefore(wrapped, el.childNodes[i]);
+        el.childNodes[i + 1].remove();
+      }
+
+      rewrite(el.childNodes[i]);
     }
 
   }
 }
 
 function innerText(el) {
+  if(el.hasInnerText)
+    return el.hasInnerText;
+
   if(el.nodeType == 1) {
     const rv = [];
     for(var i = 0; i < el.childNodes.length; i++) {
       rv.push(innerText(el.childNodes[i]));
     }
-    return rv.join(' ').replace(/^ +| +$/g, '');
+    const ret = rv.join(' ').replace(/^ +| +$/g, '');
+    el.hasInnerText = ret;
+    return ret;
   } else if (el.nodeType == 3) {
     return el.textContent;
   }
@@ -49,6 +64,7 @@ function mergeMapKeys(acc, cur) {
 }
 
 function tryListing(candidate) {
+  //console.log(candidate);
   const rv = {};
 
   const entries = Object.entries(candidate);
@@ -107,9 +123,11 @@ function extract(el) {
   return rv;
 }
 
-function parseStreetAddress(el) {
+const _parseStreetAddressFullUSRe = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/;
+
+function _parseStreetAddressFullUS(el) {
   const txt = innerText(el);
-  const rv = /(.+), (.+), ([A-Z][A-Z]) +([0-9]{5})/.exec(txt);
+  const rv = _parseStreetAddressFullUSRe.exec(txt);
 
   if(rv)
     return {
@@ -119,6 +137,24 @@ function parseStreetAddress(el) {
       postal_code: rv[4],
       country: 'US'
     }
+}
+
+function _parseStreetAddressNoCityNoStateUS(el) {
+  const txt = innerText(el);
+  const rv = /^ *([0-9].+) +([0-9]{5}) *$/.exec(txt);
+
+  if(rv)
+    return {
+      address: rv[1],
+      postal_code: rv[2],
+      country: 'US'
+    }
+}
+
+
+function parseStreetAddress(el) {
+  return _parseStreetAddressFullUS(el) ||
+    _parseStreetAddressNoCityNoStateUS(el);
 }
 
 function parsePrice(el) {
@@ -205,7 +241,10 @@ const rules = [
     ['*', parseBeds],
     ['*', parseBaths],
     ['*', parseSqft],
-    ['*', parseMLS]]]
+    ['*', parseMLS]]],
+  ['body', [
+    ['*', parseStreetAddress]
+  ]]
 ];
 
 // If we're running in Chrome, load Selector Gadget and apply some rules.
@@ -217,11 +256,12 @@ const rules = [
     document.body.appendChild(s);
 
     const start = new Date();
-    console.log('start');
     rewrite(document.body)
-    console.log('done: ' + (new Date() - start));
+    console.log('rewrite: ' + (new Date() - start) + 'ms');
 
-    const listings = extract(document.body);
+    const extractStart = new Date();
+    const listings = extract(document);
+    console.log('extract: ' + (new Date() - extractStart) + 'ms');
 
     const rv = [];
     for(var i = 0; i < listings.length; i++) {
