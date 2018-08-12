@@ -50,8 +50,32 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
 }
 
 function validAddress(rv) {
-  return rv && rv['address'] && rv['address'][0] != '0' &&
-    !/\( *\)/.exec(rv['address']) && !/sq\.ft\./.exec(rv['address']);
+  if(!rv)
+    return;
+
+  const address = rv['address'];
+
+  if(!address)
+    return;
+
+  if(address[0] == '0')
+    return;
+
+  if(/\( *\)/.exec(address))
+    return;
+
+  if(/sq\.ft\./.exec(address))
+    return;
+
+  // If a series of 3 words repeats in the address, there's probably an issue.
+  const tokens = address.replace(/ +/g, ' ').split(' ');
+  for(var i = 0; i < tokens.length - 3; i++) {
+    for(var j = i + 3; j <= tokens.length - 3; j++) {
+      if(tokens[i] == tokens[j] && tokens[i + 1] == tokens[j + 1] && tokens[i + 2] == tokens[j + 2])
+        return null;
+    }
+  }
+  return rv;
 }
 
 function parseStreetAddress(el) {
