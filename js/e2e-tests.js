@@ -66,6 +66,8 @@ function compare(expected, actual) {
 
 function runTests(dir) {
   const results = {};
+  var files = 0;
+  var ok = 0;
 
   fs.readdirSync(dir).forEach(oracle => {
     if(!oracle.endsWith('.jsonl'))
@@ -86,10 +88,15 @@ function runTests(dir) {
     parse.rewrite(dom.window.document.body);
 
     const actual = parse.extract(dom.window.document.body);
-    results[file] = compare(expected, actual);
+    const compared = compare(expected, actual);
+    results[file] = compared;
+    files++;
+    if(compared['missing'].length == 0 && compared['extra'].length == 0)
+      ok++;
   })
 
   console.log(JSON.stringify(results, null, 2));
+  console.log(ok + '/' + files + ' files OK.');
 }
 
 runTests(path.dirname(__filename) + '/../tests');
