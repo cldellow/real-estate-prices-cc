@@ -25,12 +25,14 @@ function _parseStreetAddressUSFull(txt) {
 function _parseStreetAddressUSNoCityNoState(txt) {
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
 
-  if(rv)
+  if(rv) {
+    //console.log(rv);
     return {
       address: rv[1],
       postal_code: rv[2],
       country: 'US'
     }
+  }
 }
 
 function _parseStreetAddressCanadaCityNoProvince(txt) {
@@ -50,6 +52,12 @@ function validAddress(rv) {
 }
 
 function parseStreetAddress(el) {
+  if(!el.possibleZip && !el.possiblePostalCode)
+    return;
+
+  if(el.parsedStreetAddress !== undefined)
+    return el.parsedStreetAddress;
+
   const plainText = innerText(el);
   const commaForBR = innerText(el, {'BR': ', '}, 'br');
   const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers');
@@ -62,22 +70,31 @@ function parseStreetAddress(el) {
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
-    if(validAddress(rv))
+    if(validAddress(rv)) {
+      el.parsedStreetAddress = rv;
       return rv;
+    }
   }
 
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBR);
-    if(validAddress(rv))
+    if(validAddress(rv)) {
+      el.parsedStreetAddress = rv;
       return rv;
+    }
   }
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](plainText);
-    if(validAddress(rv))
+    if(validAddress(rv)) {
+      el.parsedStreetAddress = rv;
       return rv;
+    }
   }
+
+  el.parsedStreetAddress = null;
+  return null;
 }
 
 function parseBeds(el) {
@@ -287,10 +304,10 @@ function extractYear(field) {
 
 export const rules = [
   ['*', [
+    ['.list-price, .q-list-price + div', extractPrice('price'), true],
+    ['.close-price, .q-close-price + div', extractPrice('sold_price'), true],
     ['*', extractPrice('price')],
-    ['.list-price, .q-list-price + div', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['*', parseStreetAddress],
     ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths],

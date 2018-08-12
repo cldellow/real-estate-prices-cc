@@ -19,6 +19,22 @@ export function rewrite(el) {
   if(el.nodeType == 1) { // Element
 
     var txt = innerText(el);
+    if (/[0-9]{5}/.exec(txt)) {
+      var p = el;
+      while(p) {
+        p.possibleZip = true;
+        p = p.parentElement;
+      }
+    }
+
+    if (/[A-Z][0-9][A-Z] *[0-9][A-Z][0-9]/.exec(txt)) {
+      var p = el;
+      while(p) {
+        p.possiblePostalCode = true;
+        p = p.parentElement;
+      }
+    }
+
     if(txt.length <= 40) {
       txt = txt.toLowerCase().replace(/[^0-9a-z]+/g, '-').replace(/^-+|-+$/g, '');
       if(txt) {
@@ -63,11 +79,14 @@ function mergeMapKeys(acc, cur) {
   return acc;
 }
 
-function tryListing(candidate) {
-  //console.log(candidate);
+function tryListing(candidate, el) {
+  const entries = Object.entries(candidate);
+  if(entries.length == 0)
+    return;
+
+  //console.log(candidate, el);
   const rv = {};
 
-  const entries = Object.entries(candidate);
   var ok = false;
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
@@ -75,8 +94,13 @@ function tryListing(candidate) {
     if(v.length == 1) {
       rv[k] = v[0];
       ok = true;
-    }
-    else
+    } else if(k == 'price' && v.length == 2 && candidate['sold_price'] &&
+      candidate['sold_price'].length == 1 &&
+      v.filter(price => candidate['sold_price'].indexOf(price) == -1).length == 1) {
+      // special case: if we have 2 prices, but one is the sale price, the other is likely the listing price
+      rv[k] = v.filter(price => candidate['sold_price'].indexOf(price) == -1)[0];
+      ok = true;
+    } else
       return;
   }
 
@@ -119,6 +143,16 @@ export function removeSubsets(xs) {
   return rv;
 }
 
+export function peekholeFixes(xs) {
+  for(var i = 0; i < xs.length; i++) {
+    const x = xs[i];
+    if(x['city'] && x['address'] && x['address'].endsWith(x['city'])) {
+      x['address'] = x['address'].substring(0, x['address'].length - x['city'].length).trim();
+    }
+  }
+  return xs;
+}
+
 export function removeIncomplete(xs) {
   return xs.filter(item => {
     const el = item['_el'];
@@ -140,34 +174,65 @@ export function removeIncomplete(xs) {
   });
 }
 
+function dedupe(xs) {
+  const rv = [];
+  const m = {};
+  for(var i = 0; i < xs.length; i++) {
+    if(!(xs[i] in m)) {
+      m[xs[i]] = 1;
+      rv.push(xs[i]);
+    }
+  }
+  rv.sort();
+  return rv;
+}
+
+var counter = 0;
 function applyRule(el, selector, rules) {
   const els = el.querySelectorAll(selector);
 
   const rv = [];
   // Generate candidate listings
   for(var i = 0; i < els.length; i++) {
+    counter++;
     const listings = [];
     const el = els[i];
 
     // Apply the rules to extract values from the page
     for(var j = 0; j < rules.length; j++) {
-      const [ruleSelector, f] = rules[j];
+      const [ruleSelector, f, consume] = rules[j];
 
       if(ruleSelector == ruleExports.STOP_IF_NO_PRICE) {
-        const prices = [];
+        var prices = [];
+        var soldPrices = [];
         for(var k = 0; k < listings.length; k++) {
-          if(listings[k] && listings[k]['price']) {
-            prices.push(listings[k]['price']);
+          if(listings[k]) {
+            if(listings[k]['price'])
+              prices.push(listings[k]['price']);
+
+            if(listings[k]['sold_price'])
+              soldPrices.push(listings[k]['sold_price']);
           }
         }
 
-        prices.sort();
-        if(prices.length == 0 || prices[0] != prices[prices.length - 1])
+        prices = dedupe(prices);
+        soldPrices = dedupe(soldPrices);
+        if(prices.length == 1 ||
+          (soldPrices.length == 1 && prices.filter(price => soldPrices.indexOf(price) >= 0).length == 1)) {
+        } else {
           break;
+        }
+
       } else {
         const nodes = el.querySelectorAll(ruleSelector);
         for(var k = 0; k < nodes.length; k++) {
-          listings.push(f(nodes[k]));
+          if(nodes[k].consumed_run != counter) {
+            const nodeRv = f(nodes[k]);
+            if(nodeRv && consume) {
+              nodes[k].consumed_run = counter;
+            }
+            listings.push(nodeRv);
+          }
         }
       }
     }
@@ -176,7 +241,7 @@ function applyRule(el, selector, rules) {
     const candidate = listings.reduce(mergeMapKeys, {})
 
     // Reject listings with duplicate keys
-    const listing = tryListing(candidate);
+    const listing = tryListing(candidate, el);
 
     if(listing) {
       listing['_el'] = el;
@@ -195,7 +260,7 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  const newRv = removeIncomplete(removeSubsets(rv));
+  const newRv = removeIncomplete(peekholeFixes(removeSubsets(rv)));
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
     if(el['_el']) {

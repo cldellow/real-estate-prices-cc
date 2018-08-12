@@ -21,6 +21,7 @@ Source real estate prices from public sources.
 - `page_date` - Date page was authored, if known
 - `sold_date` - Date listing was sold, if known
 - `price` - Listing price, in $
+- `sold_price` - Sale price, in $, if known
 - `beds` - # of bedrooms
 - `baths` - # of baths
 - `half_baths` - # of half baths
