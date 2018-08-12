@@ -70,7 +70,8 @@ function runTests(dir) {
   var ok = 0;
 
   fs.readdirSync(dir).forEach(oracle => {
-    if(!oracle.endsWith('.jsonl'))
+    const onlyRun = null;
+    if(!oracle.endsWith('.jsonl') || (onlyRun && oracle.indexOf(onlyRun) < 0))
       return;
 
     const expected = parseOracle(dir + '/' + oracle);
@@ -87,7 +88,7 @@ function runTests(dir) {
 
     parse.rewrite(dom.window.document.body);
 
-    const actual = parse.extract(dom.window.document.body);
+    const actual = parse.extract(dom.window.document);
     const compared = compare(expected, actual);
     results[file] = compared;
     files++;
