@@ -99,7 +99,14 @@ function runTests(dir) {
       ok++;
   })
 
-  console.log(JSON.stringify(results, null, 2));
+  const rv = Object.entries(results);
+  for(var i = 0; i < rv.length; i++) {
+    const [k, v] = rv[i];
+    if(v.missing.length > 0 || v.extra.length > 0) {
+      console.log(k + ' has errors:');
+      console.log(JSON.stringify(v, null, 2));
+    }
+  }
   console.log(ok + '/' + files + ' files OK.');
 }
 
