@@ -51,7 +51,9 @@ function mergeMapKeys(acc, cur) {
 
   const entries = Object.entries(cur);
   for(var i = 0; i < entries.length; i++) {
-    const [k, v] = entries[i];
+    let [k, v] = entries[i];
+    if(v.replace)
+      v = v.replace(/^ +| +$/g, '');
 
     if(!acc[k])
       acc[k] = [];
@@ -123,11 +125,10 @@ function extract(el) {
   return rv;
 }
 
-const _parseStreetAddressFullUSRe = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/;
 
-function _parseStreetAddressFullUS(el) {
+function _parseStreetAddressUSFull(el) {
   const txt = innerText(el);
-  const rv = _parseStreetAddressFullUSRe.exec(txt);
+  const rv = /([^,]+), ([^,]+), ([A-Z][A-Z]) +([0-9]{5})/.exec(txt);
 
   if(rv)
     return {
@@ -139,7 +140,7 @@ function _parseStreetAddressFullUS(el) {
     }
 }
 
-function _parseStreetAddressNoCityNoStateUS(el) {
+function _parseStreetAddressUSNoCityNoState(el) {
   const txt = innerText(el);
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
 
@@ -151,10 +152,25 @@ function _parseStreetAddressNoCityNoStateUS(el) {
     }
 }
 
+function _parseStreetAddressCanadaCityNoProvince(el) {
+  const txt = innerText(el);
+  const rv = /^ *([0-9].+) +([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1],
+      postal_code: rv[2],
+      country: 'CA'
+    }
+  }
+}
+
+
 
 function parseStreetAddress(el) {
-  return _parseStreetAddressFullUS(el) ||
-    _parseStreetAddressNoCityNoStateUS(el);
+  return _parseStreetAddressUSFull(el) ||
+    _parseStreetAddressUSNoCityNoState(el) ||
+    _parseStreetAddressCanadaCityNoProvince(el);
 }
 
 function parseBeds(el) {
@@ -343,8 +359,16 @@ const rules = [
     ['.q-year-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
     ['.q-bedrooms + span', extractDigit('beds')],
-    ['.q-bathrooms + span', extractDigit('baths')]]
-  ]
+    ['.q-bathrooms + span', extractDigit('baths')]]],
+  ['.item-expanded', [
+    ['*', parseStreetAddress],
+    ['*', parseSqft],
+    ['*', extractPrice('price')],
+    ['.q-mls-num + dd', extractMLS],
+    ['.q-bedrooms + dd', extractDigit('beds')],
+    ['.q-bathrooms + dd', extractDigit('baths')]
+
+  ]]
 ];
 
 // If we're running in Chrome, load Selector Gadget and apply some rules.
