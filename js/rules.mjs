@@ -46,8 +46,9 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
 }
 
 function parseStreetAddress(el) {
-  const innerText1 = innerText(el);
-  const innerText2 = innerText(el, {'BR': ', '}, 'br');
+  const plainText = innerText(el);
+  const commaForBR = innerText(el, {'BR': ', '}, 'br');
+  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers');
 
   const fs = [
     _parseStreetAddressUSFull,
@@ -56,13 +57,20 @@ function parseStreetAddress(el) {
   ];
 
   for(var i = 0; i < fs.length; i++) {
-    const rv = fs[i](innerText2);
+    const rv = fs[i](commaForBRAndHeaders);
+    if(rv)
+      return rv;
+  }
+
+
+  for(var i = 0; i < fs.length; i++) {
+    const rv = fs[i](commaForBR);
     if(rv)
       return rv;
   }
 
   for(var i = 0; i < fs.length; i++) {
-    const rv = fs[i](innerText1);
+    const rv = fs[i](plainText);
     if(rv)
       return rv;
   }
@@ -260,7 +268,7 @@ export const rules = [
     ['*', parseBaths],
     ['*', parseSqft],
     ['*', parseMLS]]],
-  ['body', [
+  ['*', [
     ['.list-price, .q-list-price + div', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseStreetAddress],
@@ -284,6 +292,7 @@ export const rules = [
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseStreetAddress],
+    ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths]
 

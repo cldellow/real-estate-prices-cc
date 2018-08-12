@@ -4,14 +4,16 @@ export function innerText(el, subs, cacheKey) {
     return el.hasInnerText[cacheKey];
 
   if(el.nodeType == 1) {
-    if(subs && subs[el.nodeName.toUpperCase()])
-      return subs[el.nodeName.toUpperCase()];
     const rv = [];
 
     for(var i = 0; i < el.childNodes.length; i++) {
       rv.push(innerText(el.childNodes[i], subs, cacheKey));
     }
-    const ret = rv.join(' ').replace(/^ +| +$/g, '');
+
+    var ret = rv.join(' ').replace(/^ +| +$/g, '');
+    if(subs && subs[el.nodeName.toUpperCase()])
+      ret += subs[el.nodeName.toUpperCase()];
+
     if(!el.hasInnerText)
       el.hasInnerText = {};
 

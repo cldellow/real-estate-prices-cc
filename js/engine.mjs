@@ -121,12 +121,22 @@ export function removeSubsets(xs) {
 
 export function removeIncomplete(xs) {
   return xs.filter(item => {
+    const el = item['_el'];
+    var domOk = true;
+    if(el) {
+      // How many descendants does our element have? How many does the root have?
+      const ourEls = el.querySelectorAll('*').length;
+      const docEls = el.ownerDocument.querySelectorAll('*').length;
+      //console.log('DOM %: ' + (ourEls / docEls));
+      if(ourEls / docEls > 0.6)
+        domOk = false;
+    }
     const priceOk = item['price'];
     const countryOk = item['country'];
-    const cityOk = !item['city'] || item['city'].length < 40;
-    const addressOk = item['address'] && item['address'].length < 60;
+    const cityOk = !item['city'] || (item['city'].length < 40 && !/[0-9]/.exec(item['city']));
+    const addressOk = item['address'] && item['address'].length < 60 && / /.exec(item['address']);
 
-    return priceOk && countryOk && addressOk && cityOk;
+    return domOk && priceOk && countryOk && addressOk && cityOk;
   });
 }
 
