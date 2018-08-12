@@ -75,6 +75,7 @@ function parseBeds(el) {
     /^ *([0-9]) *bedbeds *$/i,
     /\bbedrooms: *([0-9])\b/i,
     /\bbeds: *([0-9])\b/i,
+    /^ *([0-9]) *beds? *. *[0-9] *baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -93,6 +94,7 @@ function parseBaths(el) {
     /^ *([0-9]) *baths? *$/i,
     /\bbathrooms: *([0-9])\b/i,
     /\bbaths: *([0-9])\b/i,
+    /^ *[0-9] *beds? *. *([0-9]) *baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -137,7 +139,7 @@ function extractPrice(field) {
     const txt = innerText(el);
     const res = [
       /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/,
-      /\$([0-9]{3}, *[0-9]{3})/
+      /\$([0-9]{2,3}, *[0-9]{3})/
     ];
 
     for(var i = 0; i < res.length; i++) {
