@@ -19,6 +19,7 @@ Source real estate prices from public sources.
 - `warc_date` - Date page was crawled
 - `listing_date` - Date listing was created, if known
 - `page_date` - Date page was authored, if known
+- `sold_date` - Date listing was sold, if known
 - `price` - Listing price, in $
 - `beds` - # of bedrooms
 - `baths` - # of baths
@@ -32,3 +33,9 @@ Source real estate prices from public sources.
 
 The system is designed to be run interactively in a browser while debugging. When you're ready to crawl at scale,
 the built-up rules are run in a server-side javascript environment.
+
+### Development
+
+1. run `./server`
+2. navigate to `javascript:(function(){var s=document.createElement('div');s.innerHTML='Loading...';s.style.color='black';s.style.padding='20px';s.style.position='fixed';s.style.zIndex='9999';s.style.fontSize='3.0em';s.style.border='2px solid black';s.style.right='40px';s.style.top='40px';s.setAttribute('class','selector_gadget_loading');s.style.background='white';document.body.appendChild(s);s=document.createElement('script');s.setAttribute('type','text/javascript');s.setAttribute('src','http://localhost:8000/js/bootstrap.js');document.body.appendChild(s);})();`
+3. check your console
