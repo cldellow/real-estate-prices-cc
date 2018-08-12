@@ -149,21 +149,50 @@ function parseSqft(el) {
 function extractPrice(field) {
   return function(el) {
     const txt = innerText(el);
-    const res = [
-      /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/,
-      /\$([0-9]{2,3}, *[0-9]{3})/
-    ];
-
-    for(var i = 0; i < res.length; i++) {
-      const re = res[i];
-      const rv = re.exec(txt);
-
-      if(rv)
-        return {
-          [field]: parseInt(rv[1].replace(/,/g, ''), 10)
-        }
+    const rv = extractPriceFromString(txt);
+    if(rv) {
+      return {
+        [field]: rv
+      }
     }
   }
+}
+
+export function extractPriceFromString(str) {
+  // Extract 0 or 1 prices form a string.
+  // eg: "$150,000" => 150000
+  //     "$0 to $100,000" => null
+  //     "The price is $100,000. That price again is $100,000." => 100000
+  const res = [
+    /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
+    /\$([0-9]{2,3}, *[0-9]{3})/g
+  ];
+
+  const rvs = {};
+
+  var its = 0;
+  for(var i = 0; i < res.length; i++) {
+    const re = res[i];
+    var rv = re.exec(str);
+    while(rv) {
+      its++;
+      // Store the offset so that when $123,456,789 parses as $123, $123,456, $123,456,789, we can take the longest match
+      const candidate = parseInt(rv[1].replace(/,/g, ''), 10);
+      if(rv.index in rvs) {
+        if(candidate > rvs[rv.index])
+          rvs[rv.index] = candidate;
+      } else {
+        rvs[rv.index] = candidate;
+      }
+      rv = re.exec(str);
+    }
+  }
+
+  const values = Object.values(rvs);
+  values.sort();
+
+  if(values.length && values[0] == values[values.length - 1])
+    return values[0];
 }
 
 function extractTextNoComma(field) {
