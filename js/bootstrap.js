@@ -2,7 +2,7 @@
 function rewrite(el) {
   if(el.nodeType == 1) { // Element
 
-    var txt = el.innerText;
+    var txt = innerText(el);
     if(txt.length <= 40) {
       txt = txt.toLowerCase().replace(/[^0-9a-z]+/g, '-').replace(/^-+|-+$/g, '');
       if(txt) {
@@ -15,6 +15,19 @@ function rewrite(el) {
     }
 
   }
+}
+
+function innerText(el) {
+  if(el.nodeType == 1) {
+    const rv = [];
+    for(var i = 0; i < el.childNodes.length; i++) {
+      rv.push(innerText(el.childNodes[i]));
+    }
+    return rv.join(' ').replace(/^ +| +$/g, '');
+  } else if (el.nodeType == 3) {
+    return el.textContent;
+  }
+  return '';
 }
 
 function mergeMapKeys(acc, cur) {
@@ -39,20 +52,24 @@ function tryListing(candidate) {
   const rv = {};
 
   const entries = Object.entries(candidate);
+  var ok = false;
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
 
-    if(v.length == 1)
+    if(v.length == 1) {
       rv[k] = v[0];
+      ok = true;
+    }
     else
       return;
   }
 
-  return rv;
+  if(ok)
+    return rv;
 }
 
-function applyRule(selector, rules) {
-  const els = document.body.querySelectorAll(selector);
+function applyRule(el, selector, rules) {
+  const els = el.querySelectorAll(selector);
 
   const rv = [];
   for(var i = 0; i < els.length; i++) {
@@ -72,14 +89,26 @@ function applyRule(selector, rules) {
     const listing = tryListing(candidate);
 
     if(listing) {
-      console.log(listing);
       rv.push(listing);
     }
   }
+
+  return rv;
+}
+
+function extract(el) {
+  const rv = [];
+  for(var i = 0; i < rules.length; i++) {
+    const tmp = applyRule(el, rules[i][0], rules[i][1]);
+    for(var j = 0; j < tmp.length; j++)
+      rv.push(tmp[j]);
+  }
+
+  return rv;
 }
 
 function parseStreetAddress(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const rv = /(.+), (.+), ([A-Z][A-Z]) +([0-9]{5})/.exec(txt);
 
   if(rv)
@@ -93,7 +122,7 @@ function parseStreetAddress(el) {
 }
 
 function parsePrice(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const res = [
     /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/,
     /\$([0-9]{3}, *[0-9]{3})/
@@ -111,7 +140,7 @@ function parsePrice(el) {
 }
 
 function parseBeds(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const res = [
     /^ *([0-9]) *beds? *$/i,
     /^ *([0-9]) *bedbeds *$/i
@@ -128,7 +157,7 @@ function parseBeds(el) {
 }
 
 function parseBaths(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const rv = /^ *([0-9]) *baths? *$/i.exec(txt);
   if(rv)
     return {
@@ -137,7 +166,7 @@ function parseBaths(el) {
 }
 
 function parseMLS(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const rv = /^ *MLS *#? *([A-Z0-9]{5,15}) *$/.exec(txt);
 
   if(rv)
@@ -147,7 +176,7 @@ function parseMLS(el) {
 }
 
 function parseSqft(el) {
-  const txt = el.innerText;
+  const txt = innerText(el);
   const res = [
     /^ *([0-9]{1,2},? *[0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
     /^ *([0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
@@ -192,18 +221,26 @@ const rules = [
     rewrite(document.body)
     console.log('done: ' + (new Date() - start));
 
+    const listings = extract(document.body);
 
-    for(var i = 0; i < rules.length; i++) {
-      applyRule(rules[i][0], rules[i][1]);
+    const rv = [];
+    for(var i = 0; i < listings.length; i++) {
+      rv.push(JSON.stringify(listings[i]));
     }
+
+    console.log(rv.join('\n'));
   }
 })();
 
 
-var exports = module.exports = {
-  rules: rules,
-  applyRule: applyRule,
-  mergeMapKeys: mergeMapKeys,
-  tryListing: tryListing,
-  rewrite: rewrite
-};
+if(typeof module !== 'undefined') {
+  var exports = module.exports = {
+    rules: rules,
+    applyRule: applyRule,
+    mergeMapKeys: mergeMapKeys,
+    tryListing: tryListing,
+    rewrite: rewrite,
+    extract: extract
+
+  };
+}
