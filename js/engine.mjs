@@ -92,7 +92,7 @@ export function isSubset(needle, haystack) {
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
 
-    if(haystack[k] != v)
+    if(k[0] != '_' && haystack[k] != v)
       return false;
   }
 
@@ -164,6 +164,7 @@ function applyRule(el, selector, rules) {
     const listing = tryListing(candidate);
 
     if(listing) {
+      listing['_el'] = el;
       rv.push(listing);
     }
   }
@@ -179,7 +180,17 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  return removeIncomplete(removeSubsets(rv));
+  const newRv = removeIncomplete(removeSubsets(rv));
+  for(var i = 0; i < newRv.length; i++) {
+    const el = newRv[i];
+    if(el['_el']) {
+      el['_el'].style.border = '3px dashed green';
+    }
+
+    delete el['_el'];
+  }
+
+  return newRv;
 }
 
 // Shim to export rewrite/extract to browser clients
