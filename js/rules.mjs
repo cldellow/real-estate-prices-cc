@@ -390,6 +390,32 @@ function expandAddressCityToStatePostalCode(el, listing) {
   }
 }
 
+function expandCityStateToAddressPostalCode(el, listing) {
+  const { address, postal_code, city, state} = listing;
+  if(address || postal_code || !city || !state)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const title = el.getAttribute('title');
+
+
+  if(!title)
+    return;
+
+  const re = RegExp("([0-9][A-Z0-9a-z .']+), *" + city + ', ' + state + ',* *([0-9]{5})');
+
+  const rv = re.exec(title);
+  if(rv) {
+    return {
+      address: rv[1],
+      postal_code: rv[2],
+      country: 'US'
+    }
+  }
+}
+
 export const rules = [
   ['*', [
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
@@ -411,7 +437,8 @@ export const rules = [
     ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')],
     [COLLATE, COLLATE],
-    ['a', expandAddressCityToStatePostalCode]
+    ['a', expandAddressCityToStatePostalCode],
+    ['a', expandCityStateToAddressPostalCode]
   ]]
 ];
 
