@@ -93,9 +93,10 @@ function parseStreetAddress(el) {
   if(el.parsedStreetAddress !== undefined)
     return el.parsedStreetAddress;
 
-  const plainText = innerText(el);
-  const commaForBR = innerText(el, {'BR': ', '}, 'br');
-  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers');
+  const priceRe = /\$[1-9][0-9]{1,2},[0-9]{3},[0-9]{3}|\$[1-9][0-9]{1,2},[0-9]{3}/g;
+  const plainText = innerText(el).replace(priceRe, '');
+  const commaForBR = innerText(el, {'BR': ', '}, 'br').replace(priceRe, '');
+  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers').replace(priceRe, '');
 
   const fs = [];
   if(el.possibleZip) {
@@ -148,6 +149,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) *beds? *. *[0-9]{1,2} *baths? *$/i,
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *bathrooms? */i,
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *baths? */i,
+    /^ *([0-9]{1,2}) *bd *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -169,7 +171,9 @@ function parseBaths(el) {
     /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *$/i,
     /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *bathrooms? */i,
     /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *baths? */i,
-    /^ *([0-9]{1,2}) total bath\(?s?\)? *$/i
+    /^ *([0-9]{1,2}) total bath\(?s?\)? *$/i,
+    /^ *([0-9]{1,2}) *ba *$/i,
+    /^ *([0-9]{1,2})\.[0-9] *ba *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
