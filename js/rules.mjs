@@ -25,7 +25,7 @@ function _parseStreetAddressUSFull(txt) {
   }
 }
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
-  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][a-z .']*) *$/.exec(txt);
+  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
 
   if(rv) {
     return {
@@ -34,6 +34,19 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     }
   }
 }
+
+function parseCityState(el) {
+  const txt = innerText(el);
+  const rv = /^ *([A-Z][A-Za-z .']*), *([A-Z][A-Z]) *$/.exec(txt);
+
+  if(rv) {
+    return {
+      city: rv[1].trim(),
+      state: rv[2].trim()
+    }
+  }
+}
+
 
 function _parseStreetAddressUSNoCityNoState(txt) {
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
@@ -351,7 +364,7 @@ function extractYear(field) {
   }
 }
 
-function expandAddress(el, listing) {
+function expandAddressCityToStatePostalCode(el, listing) {
   if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
     return;
 
@@ -388,6 +401,7 @@ export const rules = [
     ['*', parseBaths],
     ['*', parseMLS],
     ['*', parseStreetAddress],
+    ['*', parseCityState],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
@@ -397,7 +411,7 @@ export const rules = [
     ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')],
     [COLLATE, COLLATE],
-    ['a', expandAddress]
+    ['a', expandAddressCityToStatePostalCode]
   ]]
 ];
 

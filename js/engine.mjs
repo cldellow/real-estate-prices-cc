@@ -85,7 +85,11 @@ function tryListing(candidate, el) {
   if(entries.length == 0)
     return;
 
-  //console.log(candidate, el);
+  const ourEls = el.querySelectorAll('*').length;
+  const docEls = el.ownerDocument.querySelectorAll('*').length;
+  const domPct = ourEls / docEls;
+
+  console.log(candidate, el, domPct);
   const rv = {};
 
   var ok = false;
@@ -124,11 +128,89 @@ export function isSubset(needle, haystack) {
   return true;
 }
 
-export function removeSubsets(xs) {
-  const rv = [];
+export function isEqual(a, b) {
+  if(a == b)
+    return false;
 
+  const keysa = Object.keys(a).filter(key => key[0] != '_');
+  const keysb = Object.keys(b).filter(key => key[0] != '_');
+
+  keysa.sort();
+  keysb.sort();
+
+  if(keysa.length != keysb.length)
+    return false;
+
+  for(var i = 0; i < keysa.length; i++) {
+    if(keysa[i] != keysb[i])
+      return false;
+
+    if(a[keysa[i]] != b[keysa[i]])
+      return false;
+  }
+
+  return true;
+}
+
+export function isDescendant(child, parent) {
+  var p = child;
+  while(p) {
+    if(p == parent)
+      return true;
+
+    p = p.parentElement;
+  }
+
+  return false;
+}
+
+export function removeEquals(xs) {
+  const rv = [];
   const dead = {};
   for(var i = 0; i < xs.length; i++) {
+    if(dead[i])
+      continue;
+
+    var candidate = xs[i];
+    for(var j = 0; j < xs.length; j++) {
+      if(dead[j])
+        continue;
+
+      if(isEqual(xs[i], xs[j])) {
+        // Whichever has more specificity should become the candidate. The other becomes dead.
+        if(xs[i]['_el'] && xs[j]['_el'] && isDescendant(xs[i]['_el'], xs[j]['_el'])) {
+          dead[j] = true;
+        } else {
+          dead[i] = true;
+          dead[j] = true;
+          candidate = xs[j];
+        }
+      }
+    }
+
+    rv.push(candidate);
+  }
+  return rv;
+}
+
+
+export function removeSubsets(_xs) {
+  // Given a bunch of listings, remove duplicates. x is a duplicate of y
+  // if all of x's keys are present in y with the same values.
+  //
+  // Further, if x and y are equal, prefer to remove the entry that is higher in the DOM.
+  // (the `_el` key indicates the containing DOM element)
+  //
+  // Handle equality first, so that we can give preference to DOM specificity.
+  const xs = removeEquals(_xs);
+
+  const rv = [];
+  const dead = {};
+
+  for(var i = 0; i < xs.length; i++) {
+    if(dead[i])
+      continue;
+
     let ok = true;
     for(var j = 0; j < xs.length; j++)  {
       ok = ok && ((i == j || j in dead) || !isSubset(xs[i], xs[j]));
@@ -154,10 +236,13 @@ export function peekholeFixes(xs) {
   return xs;
 }
 
-export function removeIncomplete(xs) {
+export function removeTooBroad(xs) {
+  // Remove matches that consumed basically the entire page. These
+  // have a high likelihood of being garbage that are stitched together
+  // from unrelated facts.
   return xs.filter(item => {
-    const el = item['_el'];
     var domOk = true;
+    const el = item['_el'];
     if(el) {
       // How many descendants does our element have? How many does the root have?
       const ourEls = el.querySelectorAll('*').length;
@@ -166,12 +251,19 @@ export function removeIncomplete(xs) {
       if(ourEls / docEls >= 0.75)
         domOk = false;
     }
+
+    return domOk;
+  });
+}
+
+export function removeIncomplete(xs) {
+  return xs.filter(item => {
     const priceOk = item['price'];
     const countryOk = item['country'];
     const cityOk = !item['city'] || (item['city'].length < 40 && !/[0-9]/.exec(item['city']));
     const addressOk = item['address'] && item['address'].length < 60 && / /.exec(item['address']);
 
-    return domOk && priceOk && countryOk && addressOk && cityOk;
+    return priceOk && countryOk && addressOk && cityOk;
   });
 }
 
@@ -286,7 +378,7 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  const newRv = removeIncomplete(peekholeFixes(removeSubsets(rv)));
+  const newRv = removeIncomplete(peekholeFixes(removeSubsets(removeTooBroad(rv))));
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
     if(el['_el']) {
