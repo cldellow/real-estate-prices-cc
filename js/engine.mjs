@@ -80,6 +80,7 @@ function mergeMapKeys(acc, cur) {
 }
 
 function tryListing(candidate, el) {
+  // Return merged candidate iff it has no conflicting values.
   const entries = Object.entries(candidate);
   if(entries.length == 0)
     return;
@@ -194,6 +195,7 @@ function applyRule(el, selector, rules) {
   const rv = [];
   // Generate candidate listings
   for(var i = 0; i < els.length; i++) {
+    var collateIndex = rules.length;
     counter++;
     const listings = [];
     const el = els[i];
@@ -202,7 +204,10 @@ function applyRule(el, selector, rules) {
     for(var j = 0; j < rules.length; j++) {
       const [ruleSelector, f, consume] = rules[j];
 
-      if(ruleSelector == ruleExports.STOP_IF_NO_PRICE) {
+      if(ruleSelector == ruleExports.COLLATE) {
+        collateIndex = j + 1;
+        break;
+      } else if(ruleSelector == ruleExports.STOP_IF_NO_PRICE) {
         var prices = [];
         var soldPrices = [];
         for(var k = 0; k < listings.length; k++) {
@@ -222,7 +227,6 @@ function applyRule(el, selector, rules) {
         } else {
           break;
         }
-
       } else {
         const nodes = el.querySelectorAll(ruleSelector);
         for(var k = 0; k < nodes.length; k++) {
@@ -238,10 +242,32 @@ function applyRule(el, selector, rules) {
     }
 
     // Merge the partial listings into a single listing
-    const candidate = listings.reduce(mergeMapKeys, {})
+    var candidate = listings.reduce(mergeMapKeys, {})
 
     // Reject listings with duplicate keys
-    const listing = tryListing(candidate, el);
+    var listing = tryListing(candidate, el);
+
+    if(listing) {
+      for(var j = collateIndex; j < rules.length; j++) {
+        const [ruleSelector, f, consume] = rules[j];
+        const nodes = el.querySelectorAll(ruleSelector);
+        for(var k = 0; k < nodes.length; k++) {
+          if(nodes[k].consumed_run != counter) {
+            const nodeRv = f(nodes[k], listing);
+            if(nodeRv && consume) {
+              nodes[k].consumed_run = counter;
+            }
+            listings.push(nodeRv);
+          }
+        }
+      }
+    }
+
+    // Merge the partial listings into a single listing
+    candidate = listings.reduce(mergeMapKeys, {})
+
+    // Reject listings with duplicate keys
+    listing = tryListing(candidate, el);
 
     if(listing) {
       listing['_el'] = el;

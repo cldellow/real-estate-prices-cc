@@ -1,6 +1,7 @@
 import { innerText } from './innertext.mjs';
 
-export const STOP_IF_NO_PRICE = 'stop-if-no-price';
+export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
+export const COLLATE = 'rule:collate';
 
 const _parseStreetAddressUSFullRe = /([^,]+), +([^,]+), +([A-Z][A-Z]) +([0-9]{5})/;
 
@@ -20,6 +21,16 @@ function _parseStreetAddressUSFull(txt) {
       state: rv[3].trim(),
       postal_code: rv[4].trim(),
       country: 'US'
+    }
+  }
+}
+function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
+  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][a-z .']*) *$/.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1].trim(),
+      city: rv[2].trim()
     }
   }
 }
@@ -79,9 +90,6 @@ function validAddress(rv) {
 }
 
 function parseStreetAddress(el) {
-  if(!el.possibleZip && !el.possiblePostalCode)
-    return;
-
   if(el.parsedStreetAddress !== undefined)
     return el.parsedStreetAddress;
 
@@ -89,11 +97,17 @@ function parseStreetAddress(el) {
   const commaForBR = innerText(el, {'BR': ', '}, 'br');
   const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers');
 
-  const fs = [
-    _parseStreetAddressUSFull,
-    _parseStreetAddressUSNoCityNoState, 
-    _parseStreetAddressCanadaCityNoProvince
-  ];
+  const fs = [];
+  if(el.possibleZip) {
+    fs.push(_parseStreetAddressUSFull);
+    fs.push(_parseStreetAddressUSNoCityNoState);
+  }
+
+  if(el.possiblePostalCode) {
+    fs.push(_parseStreetAddressCanadaCityNoProvince);
+  }
+
+  fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
@@ -333,6 +347,31 @@ function extractYear(field) {
   }
 }
 
+function expandAddress(el, listing) {
+  if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const addressSlug = listing['address'].toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const citySlug = listing['city'].toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const re = RegExp(addressSlug + '-' + citySlug + '-([a-z]{2})-([0-9]{5})/');
+
+  const rv = re.exec(href);
+  if(rv) {
+    return {
+      postal_code: rv[2],
+      state: rv[1].toUpperCase(),
+      country: 'US'
+    }
+  }
+}
 
 export const rules = [
   ['*', [
@@ -352,6 +391,9 @@ export const rules = [
     ['.q-year-built + div, .q-year-built + dd', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
-    ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')]]]
+    ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')],
+    [COLLATE, COLLATE],
+    ['a', expandAddress]
+  ]]
 ];
 
