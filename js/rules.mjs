@@ -122,7 +122,7 @@ function validAddress(rv) {
     return;
 
   // If a series of 3 words repeats in the address, there's probably an issue.
-  const tokens = address.replace(/ +/g, ' ').split(' ');
+  const tokens = address.toLowerCase().replace(/ +/g, ' ').split(' ');
   for(var i = 0; i < tokens.length - 3; i++) {
     for(var j = i + 3; j <= tokens.length - 3; j++) {
       if(tokens[i] == tokens[j] && tokens[i + 1] == tokens[j + 1] && tokens[i + 2] == tokens[j + 2])
@@ -449,8 +449,14 @@ function expandCityStateToAddressPostalCode(el, listing) {
 
 export const rules = [
   ['*', [
+    // Blackhole some things that look like prices
+    ['.q-maintenance-charge-month + td', extractPrice('_condo_fee'), true],
+    ['.q-association-fee + td', extractPrice('_association_fee'), true],
+    ['.q-tax-amount + td', extractPrice('_tax_amount'), true],
+    ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
+
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
-    ['.close-price, .q-close-price + div', extractPrice('sold_price'), true],
+    ['.close-price, .q-close-price + div, .q-sold-price + td', extractPrice('sold_price'), true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseSqft],
@@ -464,10 +470,10 @@ export const rules = [
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
-    ['.q-year-built + div, .q-year-built + dd, .q-built + span', extractYear('year_built')],
+    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
-    ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
-    ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')],
+    ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td', extractDigit('beds')],
+    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractDigit('baths')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandCityStateToAddressPostalCode]

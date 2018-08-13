@@ -280,6 +280,31 @@ function dedupe(xs) {
   return rv;
 }
 
+function consumeNode(node, counter) {
+  node.consumed_run = counter;
+
+  if(node.nodeType == 1) {
+    for(var i = 0; i < node.childNodes.length; i++) {
+      consumeNode(node.childNodes[i], counter);
+    }
+  }
+}
+
+function isConsumed(node, counter) {
+  if(node.consumed_run == counter)
+    return true;
+
+  if(node.nodeType == 1) {
+    for(var i = 0; i < node.childNodes.length; i++) {
+      if(isConsumed(node.childNodes[i], counter))
+        return true;
+    }
+  }
+
+  return false;
+}
+
+
 var counter = 0;
 function applyRule(el, selector, rules) {
   const els = el.querySelectorAll(selector);
@@ -322,12 +347,14 @@ function applyRule(el, selector, rules) {
       } else {
         const nodes = el.querySelectorAll(ruleSelector);
         for(var k = 0; k < nodes.length; k++) {
-          if(nodes[k].consumed_run != counter) {
+          if(!isConsumed(nodes[k], counter)) {
             const nodeRv = f(nodes[k]);
             if(nodeRv && consume) {
-              nodes[k].consumed_run = counter;
+              consumeNode(nodes[k], counter);
             }
             listings.push(nodeRv);
+          } else {
+            //console.log('skipping node', nodes[k]);
           }
         }
       }
@@ -344,10 +371,10 @@ function applyRule(el, selector, rules) {
         const [ruleSelector, f, consume] = rules[j];
         const nodes = el.querySelectorAll(ruleSelector);
         for(var k = 0; k < nodes.length; k++) {
-          if(nodes[k].consumed_run != counter) {
+          if(!isConsumed(nodes[k], counter)) {
             const nodeRv = f(nodes[k], listing);
             if(nodeRv && consume) {
-              nodes[k].consumed_run = counter;
+              consumeNode(nodes[k], counter);
             }
             listings.push(nodeRv);
           }
