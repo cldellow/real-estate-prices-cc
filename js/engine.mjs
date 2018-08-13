@@ -63,16 +63,23 @@ function mergeMapKeys(acc, cur) {
   if(!cur)
     return acc;
 
+  const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');
+
   const entries = Object.entries(cur);
   for(var i = 0; i < entries.length; i++) {
     let [k, v] = entries[i];
+
     if(v.replace)
       v = v.replace(/^ +| +$/g, '');
 
     if(!acc[k])
       acc[k] = [];
 
-    if(acc[k].indexOf(v) == -1)
+    if(acc[k].findIndex(el => {
+      if(el.replace && v.replace)
+        return normalize(el) == normalize(v)
+      return el == v;
+    }) == -1)
       acc[k].push(v);
   }
 
@@ -89,7 +96,7 @@ function tryListing(candidate, el) {
   const docEls = el.ownerDocument.querySelectorAll('*').length;
   const domPct = ourEls / docEls;
 
-  //console.log(candidate, el, domPct);
+  console.log(candidate, el, domPct);
   const rv = {};
 
   var ok = false;

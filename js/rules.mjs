@@ -238,7 +238,6 @@ function parseBaths(el) {
     /^ *([0-9]{1,2})\.[0-9] *ba *$/i,
     /^ *baths *([0-9]{1,2}) *$/i,
     /^ *bathrooms *([0-9]{1,2}) *$/i,
-
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -256,6 +255,8 @@ function parseHalfBaths(el) {
   const res = [
     /^ *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
     /& *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
+    /^ *Bathrooms: *[0-9]* *\(? *full *\)? *([0-9]{1,2}) *\(? *half *\)? *$/i,
+    /^ *Full: *[0-9]+ *\/ *Half: *([0-9]{1,2}) *$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -304,6 +305,18 @@ function parseSqft(el) {
       return {
         sqft: parseInt(rv[1].replace(/[ ,]+/, ''), 10)
       }
+  }
+}
+
+function parsePostalCode(el) {
+  const txt = innerText(el);
+  const rv = /^[ :]*([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]) *$/.exec(txt);
+
+  if(rv) {
+    return {
+      postal_code: rv[1].replace(/ /g, ''),
+      country: 'CA'
+    }
   }
 }
 
@@ -590,12 +603,13 @@ export const rules = [
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
+    ['.q-postal-code + span', parsePostalCode],
     ['.q-lot-size + td', extractLotSizeFromSquareFeet],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
-    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td', extractYear('year_built')],
+    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractDigit('baths')],
