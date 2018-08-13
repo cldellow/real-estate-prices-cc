@@ -89,7 +89,7 @@ function tryListing(candidate, el) {
   const docEls = el.ownerDocument.querySelectorAll('*').length;
   const domPct = ourEls / docEls;
 
-  //console.log(candidate, el, domPct);
+  console.log(candidate, el, domPct);
   const rv = {};
 
   var ok = false;

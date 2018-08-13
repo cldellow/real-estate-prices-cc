@@ -85,6 +85,11 @@ function validAddress(rv) {
   if(address[0] == '0')
     return;
 
+  // If we have what looks a lot like a bland promotional statement, we probably
+  // parsed badly.
+  if(address.indexOf(' is a ') >= 0)
+    return;
+
   if(/\( *\)/.exec(address))
     return;
 
