@@ -162,7 +162,7 @@ export function removeIncomplete(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls > 0.6)
+      if(ourEls / docEls > 0.7)
         domOk = false;
     }
     const priceOk = item['price'];
