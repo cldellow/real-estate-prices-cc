@@ -17,6 +17,9 @@ describe('extractPrice', () => {
     expect(extractPriceFromString('$12,345 is the price. $23,456 is not the price.')).toBe(undefined);
   });
 
+  it('should support $400K', () => {
+    expect(extractPriceFromString('$400K')).toBe(400000);
+  });
 
 
 });

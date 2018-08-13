@@ -275,6 +275,7 @@ export function extractPriceFromString(str) {
   //     "$0 to $100,000" => null
   //     "The price is $100,000. That price again is $100,000." => 100000
   const res = [
+    /\$([1-9][0-9]{1,2}) *K/g,
     /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
     /\$([0-9]{2,3}, *[0-9]{3})/g
   ];
@@ -288,7 +289,9 @@ export function extractPriceFromString(str) {
     while(rv) {
       its++;
       // Store the offset so that when $123,456,789 parses as $123, $123,456, $123,456,789, we can take the longest match
-      const candidate = parseInt(rv[1].replace(/,/g, ''), 10);
+      var candidate = parseInt(rv[1].replace(/,/g, ''), 10);
+      if(candidate < 1000)
+        candidate *= 1000;
       if(rv.index in rvs) {
         if(candidate > rvs[rv.index])
           rvs[rv.index] = candidate;
