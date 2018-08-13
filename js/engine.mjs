@@ -17,6 +17,14 @@ import { innerText } from './innertext.mjs';
 // Tag DOM with extra classes for targeting.
 export function rewrite(el) {
   if(el.nodeType == 1) { // Element
+    // Some sites spam crap in hidden elements? Ignore that.
+    if(el.classList.contains('hidden')) {
+      while(el.childNodes.length)
+        el.childNodes[0].remove();
+
+      return;
+    }
+
 
     var txt = innerText(el);
     if (/[0-9]{5}/.exec(txt)) {

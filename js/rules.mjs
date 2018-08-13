@@ -102,6 +102,47 @@ function _parseStreetAddressUSNoCityNoState(txt) {
   }
 }
 
+function _parseStreetAddressCanadaCityProvince(txt) {
+  const rv = /^ *([0-9].+)[, ]+(.+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
+
+  if(rv) {
+    var state = rv[2];
+
+    if(state.startsWith('Newfoundland'))
+      state = 'NL';
+    else if(state.startsWith('British'))
+      state = 'BC'
+    else if(state.startsWith('P'))
+      state = 'PE';
+    else if(state.startsWith('Nova'))
+      state = 'NS';
+    else if(state.startsWith('Q'))
+      state = 'QC';
+    else if(state.startsWith('On'))
+      state = 'ON';
+    else if(state.startsWith('Man'))
+      state = 'MB';
+    else if(state.startsWith('Sask'))
+      state = 'SK';
+    else if(state.startsWith('Al'))
+      state = 'AB';
+    else if(state.startsWith('Y'))
+      state = 'YT';
+    else if(state.startsWith('Northwest'))
+      state = 'NT';
+    else if(state.startsWith('Nu'))
+      state = 'NU';
+
+    return {
+      address: rv[1].trim(),
+      state: state.trim(),
+      postal_code: rv[3].trim(),
+      country: 'CA'
+    }
+  }
+}
+
+
 function _parseStreetAddressCanadaCityNoProvince(txt) {
   const rv = /^ *([0-9].+) +([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
 
@@ -165,6 +206,7 @@ function parseStreetAddress(el) {
   }
 
   if(el.possiblePostalCode) {
+    fs.push(_parseStreetAddressCanadaCityProvince);
     fs.push(_parseStreetAddressCanadaCityNoProvince);
   }
 
@@ -610,9 +652,10 @@ export const rules = [
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td', extractSquareFeet],
-    ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td', extractDigit('beds')],
-    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractDigit('baths')],
+    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td', extractSquareFeet],
+    ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
+    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td', extractDigit('baths')],
+    ['.q-half-bathrooms + td', extractDigit('half_baths')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractIntegerFromFloat('baths')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
