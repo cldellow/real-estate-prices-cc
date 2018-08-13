@@ -45,7 +45,7 @@ export function rewrite(el) {
     for(var i = 0; i < el.childNodes.length; i++) {
       // If this is a naked text node intermingled with other content, wrap it in a span to make
       // targeting easier.
-      if(el.childNodes[i].nodeType == 3 && el.childNodes.length > 1) {
+      if(el.childNodes[i].nodeType == 3 && el.childNodes.length > 1 && el.childNodes[i].textContent.trim().length > 0) {
         const wrapped = el.ownerDocument.createElement('span');
         const textNode = el.ownerDocument.createTextNode(el.childNodes[i].textContent);
         wrapped.appendChild(textNode);
@@ -248,7 +248,7 @@ export function removeTooBroad(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls >= 0.75)
+      if(ourEls / docEls >= 0.70)
         domOk = false;
     }
 

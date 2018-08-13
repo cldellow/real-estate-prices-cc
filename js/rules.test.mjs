@@ -6,6 +6,11 @@ describe('extractPrice', () => {
   });
 
   it('should extract price when single value', () => {
+    expect(extractPriceFromString('$ 100,000')).toBe(100000);
+  });
+
+
+  it('should extract price when single value', () => {
     expect(extractPriceFromString('$12,345,678')).toBe(12345678);
   });
 
@@ -20,6 +25,11 @@ describe('extractPrice', () => {
   it('should support $400K', () => {
     expect(extractPriceFromString('$400K')).toBe(400000);
   });
+
+  it('should support $ 400K', () => {
+    expect(extractPriceFromString('$ 400K')).toBe(400000);
+  });
+
 
 
 });

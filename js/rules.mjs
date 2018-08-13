@@ -3,7 +3,7 @@ import { innerText } from './innertext.mjs';
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
-const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+), +([A-Z][A-Z]) +([0-9]{5})/;
+const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = false;
@@ -26,7 +26,7 @@ function _parseStreetAddressUSFull(txt) {
 }
 
 function _parseStreetAddressStateZip(txt) {
-  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]),* *([0-9]{5}) *$/.exec(txt);
+  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]) *,* *([0-9]{5}) *$/.exec(txt);
 
   if(rv) {
     return {
@@ -35,10 +35,23 @@ function _parseStreetAddressStateZip(txt) {
       country: 'US'
     }
   }
+
+  const rv2 = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]) *,* *([0-9]{5}) *- *[0-9]{4} *$/.exec(txt);
+  if(rv2) {
+    return {
+      address: rv2[1].trim(),
+      state: rv2[2].trim(),
+      country: 'US'
+    }
+  }
 }
 
 
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
+  if(/[0-9] *car /i.exec(txt))
+    return;
+
+
   const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
 
   if(rv) {
@@ -51,6 +64,9 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
 
 function parseCityState(el) {
   const txt = innerText(el);
+  if(/[0-9] *car /i.exec(txt))
+    return;
+
   const rv = /^ *([A-Z][A-Za-z .']*), *([A-Z][A-Z]) *$/.exec(txt);
 
   if(rv) {
@@ -230,6 +246,23 @@ function parseBaths(el) {
   }
 }
 
+function parseHalfBaths(el) {
+  const txt = innerText(el);
+  const res = [
+    /^ *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
+    /& *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const re = res[i];
+    const rv = re.exec(txt);
+    if(rv)
+      return {
+        half_baths: parseInt(rv[1], 10)
+      }
+  }
+}
+
 function parseMLSAndMLSId(el) {
   if(el.nodeType == 1 && el.nodeName.toUpperCase() == 'A') {
     const href = el.getAttribute('href');
@@ -287,9 +320,9 @@ export function extractPriceFromString(str) {
   //     "$0 to $100,000" => null
   //     "The price is $100,000. That price again is $100,000." => 100000
   const res = [
-    /\$([1-9][0-9]{1,2}) *K/g,
-    /\$([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
-    /\$([0-9]{2,3}, *[0-9]{3})/g
+    /\$ *([1-9][0-9]{1,2}) *K/g,
+    /\$ *([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
+    /\$ *([0-9]{2,3}, *[0-9]{3})/g
   ];
 
   const rvs = {};
@@ -343,11 +376,35 @@ function extractZip(el) {
     }
 }
 
+function sqft2acres(sqft) {
+  return sqft * 0.000022956841138040226540538088;
+}
+
+function extractLotSizeFromSquareFeet(el) {
+  const txt = innerText(el);
+  const res = [
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *builder *$/i,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *appraisal district *$/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+
+    if(rv)
+      return {
+        lot_size: sqft2acres(parseInt(rv[1].replace(/[ ,]+/g, ''), 10))
+      }
+  }
+}
+
 function extractSquareFeet(el) {
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{3}) *$/,
-    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *builder *$/i,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *appraisal district *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -380,6 +437,16 @@ function extractDigit(field) {
   }
 }
 
+function extractIntegerFromFloat(field) {
+  return function(el) {
+    const txt = innerText(el);
+    const rv = /^[ :]*([0-9]+)\.[0-9] *$/.exec(txt);
+    if(rv)
+      return {[field]: parseInt(rv[1], 10)}
+  }
+}
+
+
 function extractDate(field) {
   return function(el) {
     const txt = innerText(el);
@@ -401,11 +468,20 @@ function extractDate(field) {
 function extractYear(field) {
   return function(el) {
     const txt = innerText(el);
-    const rv = /^[ :]*([0-9]{4}) *$/.exec(txt);
-    if(rv) {
-      const year = parseInt(rv[1], 10);
-      if(year >= 1850 && year <= 2050)
-        return {[field]: year};
+    const res = [
+      /^[ :]*([0-9]{4}) *$/,
+      /^[ :]*([0-9]{4}) *\/ *seller *$/i,
+      /^[ :]*([0-9]{4}) *\/ *builder *$/i,
+      /^[ :]*([0-9]{4}) *\/ *appraisal *district *$/i,
+    ];
+
+    for(var i = 0; i < res.length; i++) {
+      const rv = res[i].exec(txt);
+      if(rv) {
+        const year = parseInt(rv[1], 10);
+        if(year >= 1850 && year <= 2050)
+          return {[field]: year};
+      }
     }
   }
 }
@@ -503,19 +579,22 @@ export const rules = [
     ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths],
+    ['*', parseHalfBaths],
     ['*', parseMLS],
     ['a', parseMLSAndMLSId],
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
+    ['.q-lot-size + td', extractLotSizeFromSquareFeet],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
+    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractDigit('baths')],
+    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractIntegerFromFloat('baths')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandCityStateToAddressPostalCode],
