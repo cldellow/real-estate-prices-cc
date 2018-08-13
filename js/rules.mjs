@@ -388,7 +388,7 @@ export const rules = [
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
-    ['.q-year-built + div, .q-year-built + dd', extractYear('year_built')],
+    ['.q-year-built + div, .q-year-built + dd, .q-built + span', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd', extractDigit('baths')],
