@@ -230,6 +230,18 @@ function parseBaths(el) {
   }
 }
 
+function parseMLSAndMLSId(el) {
+  if(el.nodeType == 1 && el.nodeName.toUpperCase() == 'A') {
+    const href = el.getAttribute('href');
+    const re = /mls=([0-9]+)&mlsid=([0-9]+)/.exec(href);
+    if(re) {
+      return {
+        _mls_mlsid: re[1] + '-' + re[2]
+      }
+    }
+  }
+}
+
 function parseMLS(el) {
   const txt = innerText(el);
   const rv = /^ *MLS *#? *([A-Z0-9]{5,15}) *$/.exec(txt);
@@ -450,6 +462,32 @@ function expandCityStateToAddressPostalCode(el, listing) {
   }
 }
 
+function expandMLSAndMLSIdToAddressStatePostalCode(el, listing) {
+  const { _mls_mlsid, address, state, postal_code} = listing;
+  if(!_mls_mlsid || address || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const re = RegExp(_mls_mlsid + "-([0-9].+)-([A-Za-z]{2})-([0-9]{5})");
+
+  const rv = re.exec(href);
+  if(rv) {
+    return {
+      address: rv[1].replace(/-/g, ' '),
+      state: rv[2].toUpperCase(),
+      postal_code: rv[3],
+      country: 'US'
+    }
+  }
+}
+
 export const rules = [
   ['*', [
     // Blackhole some things that look like prices
@@ -466,6 +504,7 @@ export const rules = [
     ['*', parseBeds],
     ['*', parseBaths],
     ['*', parseMLS],
+    ['a', parseMLSAndMLSId],
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
@@ -479,7 +518,8 @@ export const rules = [
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractDigit('baths')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
-    ['a', expandCityStateToAddressPostalCode]
+    ['a', expandCityStateToAddressPostalCode],
+    ['a', expandMLSAndMLSIdToAddressStatePostalCode]
   ]]
 ];
 
