@@ -1,8 +1,8 @@
-{"price":1499000,"beds":5,"baths":4,"address":"80 Birch Ln","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":2279000,"sqft":4304,"beds":5,"baths":4,"address":"163 Woodmere Blvd","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":3499000,"sqft":5800,"beds":7,"baths":5,"address":"170 Willow Rd","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":4950000,"beds":9,"baths":12,"address":"55 Woodmere Blvd","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":2350000,"beds":5,"baths":6,"address":"75 S Woodmere Blvd","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":799000,"beds":4,"baths":3,"address":"41 Wood Ln","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":2295000,"beds":6,"baths":6,"address":"5 Willow Rd","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
-{"price":2590000,"beds":6,"baths":8,"address":"160 Noye Ln","city":"Woodsburgh","postal_code":"11598","state":"NY","country":"US"}
+{"price":1499000,"beds":5,"baths":4,"address":"80 Birch Ln","city":"Woodsburgh","lot_size":0.38,"postal_code":"11598","state":"NY","country":"US"}
+{"price":2279000,"sqft":4304,"beds":5,"baths":4,"address":"163 Woodmere Blvd","city":"Woodsburgh","lot_size":0.57,"postal_code":"11598","state":"NY","country":"US"}
+{"price":3499000,"sqft":5800,"beds":7,"baths":5,"address":"170 Willow Rd","city":"Woodsburgh","lot_size":0.61,"postal_code":"11598","state":"NY","country":"US"}
+{"price":4950000,"beds":9,"baths":12,"address":"55 Woodmere Blvd","city":"Woodsburgh","lot_size":1.18,"postal_code":"11598","state":"NY","country":"US"}
+{"price":2350000,"beds":5,"baths":6,"address":"75 S Woodmere Blvd","city":"Woodsburgh","lot_size":0.52,"postal_code":"11598","state":"NY","country":"US"}
+{"price":799000,"beds":4,"baths":3,"address":"41 Wood Ln","city":"Woodsburgh","lot_size":0.14,"postal_code":"11598","state":"NY","country":"US"}
+{"price":2295000,"beds":6,"baths":6,"address":"5 Willow Rd","city":"Woodsburgh","lot_size":0.53,"postal_code":"11598","state":"NY","country":"US"}
+{"price":2590000,"beds":6,"baths":8,"address":"160 Noye Ln","city":"Woodsburgh","lot_size":0.95,"postal_code":"11598","state":"NY","country":"US"}

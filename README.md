@@ -26,6 +26,7 @@ Source real estate prices from public sources.
 - `baths` - # of baths
 - `half_baths` - # of half baths
 - `sqft` - Floor space in sqft
+- `lot_size` - Lot size in acres
 - `lat` - Latitude
 - `lng` - Longitude
 - `year_built` - Year built (eg `1990`)

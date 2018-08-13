@@ -24,6 +24,20 @@ function _parseStreetAddressUSFull(txt) {
     }
   }
 }
+
+function _parseStreetAddressStateZip(txt) {
+  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]),* *([0-9]{5}) *$/.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1].trim(),
+      state: rv[2].trim(),
+      country: 'US'
+    }
+  }
+}
+
+
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
   const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
 
@@ -43,6 +57,17 @@ function parseCityState(el) {
     return {
       city: rv[1].trim(),
       state: rv[2].trim()
+    }
+  }
+}
+
+function parseAcres(el) {
+  const txt = innerText(el);
+  const rv = /^ *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i.exec(txt);
+
+  if(rv) {
+    return {
+      lot_size: parseFloat(rv[1].trim())
     }
   }
 }
@@ -120,6 +145,7 @@ function parseStreetAddress(el) {
   if(el.possibleZip) {
     fs.push(_parseStreetAddressUSFull);
     fs.push(_parseStreetAddressUSNoCityNoState);
+    fs.push(_parseStreetAddressStateZip);
   }
 
   if(el.possiblePostalCode) {
@@ -433,6 +459,7 @@ export const rules = [
     ['*', parseMLS],
     ['*', parseStreetAddress],
     ['*', parseCityState],
+    ['*', parseAcres],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
