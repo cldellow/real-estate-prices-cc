@@ -210,6 +210,8 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *bathrooms? */i,
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *baths? */i,
     /^ *([0-9]{1,2}) *bd *$/i,
+    /^ *beds *([0-9]{1,2}) *$/i,
+    /^ *bedrooms *([0-9]{1,2}) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -234,6 +236,9 @@ function parseBaths(el) {
     /^ *([0-9]{1,2}) total bath\(?s?\)? *$/i,
     /^ *([0-9]{1,2}) *ba *$/i,
     /^ *([0-9]{1,2})\.[0-9] *ba *$/i,
+    /^ *baths *([0-9]{1,2}) *$/i,
+    /^ *bathrooms *([0-9]{1,2}) *$/i,
+
   ];
 
   for(var i = 0; i < res.length; i++) {
