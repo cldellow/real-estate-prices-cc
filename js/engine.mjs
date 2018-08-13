@@ -281,27 +281,15 @@ function dedupe(xs) {
 }
 
 function consumeNode(node, counter) {
-  node.consumed_run = counter;
-
-  if(node.nodeType == 1) {
-    for(var i = 0; i < node.childNodes.length; i++) {
-      consumeNode(node.childNodes[i], counter);
-    }
+  var p = node;
+  while(p) {
+    p.consumed_run = counter;
+    p = p.parentNode;
   }
 }
 
 function isConsumed(node, counter) {
-  if(node.consumed_run == counter)
-    return true;
-
-  if(node.nodeType == 1) {
-    for(var i = 0; i < node.childNodes.length; i++) {
-      if(isConsumed(node.childNodes[i], counter))
-        return true;
-    }
-  }
-
-  return false;
+  return node.consumed_run == counter;
 }
 
 
