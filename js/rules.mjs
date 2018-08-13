@@ -3,7 +3,7 @@ import { innerText } from './innertext.mjs';
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
-const _parseStreetAddressUSFullRe = /([^,]+), +([^,]+), +([A-Z][A-Z]) +([0-9]{5})/;
+const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+), +([A-Z][A-Z]) +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = false;
