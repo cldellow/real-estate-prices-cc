@@ -374,6 +374,22 @@ function extractPrice(field) {
   }
 }
 
+function parseSoldPrice(el) {
+  const txt = innerText(el);
+  const res = [
+    /^SOLD: *(\$ *[0-9,]*) *$/
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+    if(rv) {
+      const price = extractPriceFromString(rv);
+      if(price)
+        return {sold_price: price};
+    }
+  }
+}
+
 export function extractPriceFromString(str) {
   // Extract 0 or 1 prices form a string.
   // eg: "$150,000" => 150000
@@ -634,6 +650,7 @@ export const rules = [
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
     ['.close-price, .q-close-price + div, .q-sold-price + td', extractPrice('sold_price'), true],
+    ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseSqft],
