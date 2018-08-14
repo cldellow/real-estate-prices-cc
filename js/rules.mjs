@@ -46,6 +46,96 @@ function _parseStreetAddressStateZip(txt) {
   }
 }
 
+const USStates = [
+  ['Alabama', 'AL'],
+  ['Alaska', 'AK'],
+  ['Arizona', 'AZ'],
+  ['Arkansas', 'AR'],
+  ['California', 'CA'],
+  ['Colorado', 'CO'],
+  ['Connecticut', 'CT'],
+  ['Delaware', 'DE'],
+  ['Florida', 'FL'],
+  ['Georgia', 'GA'],
+  ['Hawaii', 'HI'],
+  ['Idaho', 'ID'],
+  ['Illinois', 'IL'],
+  ['Indiana', 'IN'],
+  ['Iowa', 'IA'],
+  ['Kansas', 'KS'],
+  ['Kentucky', 'KY'],
+  ['Louisiana', 'LA'],
+  ['Maine', 'ME'],
+  ['Maryland', 'MD'],
+  ['Massachusetts', 'MA'],
+  ['Michigan', 'MI'],
+  ['Minnesota', 'MN'],
+  ['Mississippi', 'MS'],
+  ['Missouri', 'MO'],
+  ['Montana', 'MT'],
+  ['Nebraska', 'NE'],
+  ['Nevada', 'NV'],
+  ['New Hampshire', 'NH'],
+  ['New Jersey', 'NJ'],
+  ['New Mexico', 'NM'],
+  ['New York', 'NY'],
+  ['North Carolina', 'NC'],
+  ['North Dakota', 'ND'],
+  ['Ohio', 'OH'],
+  ['Oklahoma', 'OK'],
+  ['Oregon', 'OR'],
+  ['Pennsylvania', 'PA'],
+  ['Rhode Island', 'RI'],
+  ['South Carolina', 'SC'],
+  ['South Dakota', 'SD'],
+  ['Tennessee', 'TN'],
+  ['Texas', 'TX'],
+  ['Utah', 'UT'],
+  ['Vermont', 'VT'],
+  ['Virginia', 'VA'],
+  ['Washington', 'WA'],
+  ['West Virginia', 'WV'],
+  ['Wisconsin', 'WI'],
+  ['Wyoming', 'WY']
+];
+
+const _usStateToAbbrev = {};
+for(var i = 0; i < USStates.length; i++) {
+  const [name, abbrev] = USStates[i];
+  _usStateToAbbrev[abbrev] = abbrev;
+  _usStateToAbbrev[name] = abbrev;
+  _usStateToAbbrev[name.toUpperCase()] = abbrev;
+}
+
+const _usStateAlternation = (function() {
+  const rv = [];
+  for(var i = 0; i < USStates.length; i++) {
+    const [name, abbrev] = USStates[i];
+    rv.push(name);
+    rv.push(name.toUpperCase());
+    rv.push(abbrev);
+  }
+
+
+  return rv.join('|');
+})();
+
+const _parseStreetAddressUSCityStateNoPostalRE = new RegExp(
+  '^ *([0-9][^,]+), *([^,]+), *(' + _usStateAlternation + ')'
+);
+
+function _parseStreetAddressUSCityStateNoPostal(txt) {
+  const rv = _parseStreetAddressUSCityStateNoPostalRE.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1],
+      city: rv[2],
+      state: _usStateToAbbrev[rv[3]],
+      country: 'US'
+    }
+  }
+}
 
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
   if(/[0-9] *car /i.exec(txt))
@@ -210,6 +300,7 @@ function parseStreetAddress(el) {
     fs.push(_parseStreetAddressCanadaCityNoProvince);
   }
 
+  fs.push(_parseStreetAddressUSCityStateNoPostal);
   fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
 
   for(var i = 0; i < fs.length; i++) {
@@ -280,6 +371,7 @@ function parseBaths(el) {
     /^ *([0-9]{1,2})\.[0-9] *ba *$/i,
     /^ *baths *([0-9]{1,2}) *$/i,
     /^ *bathrooms *([0-9]{1,2}) *$/i,
+    /^ *baths *([0-9]{1,2}) *full *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -460,6 +552,7 @@ function extractLotSizeFromSquareFeet(el) {
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *sq\.?u?a?r?e? *f?e?e?t *$/,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *builder *$/i,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *appraisal district *$/i,
   ];
@@ -653,6 +746,7 @@ export const rules = [
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['.q-lot-size + td', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths],
@@ -663,7 +757,6 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['.q-postal-code + span', parsePostalCode],
-    ['.q-lot-size + td', extractLotSizeFromSquareFeet],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
