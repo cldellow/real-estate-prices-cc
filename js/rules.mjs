@@ -318,7 +318,7 @@ function parseStreetAddress(el) {
   const plainText = innerText(el).replace(priceRe, '');
   const commaForBR = innerText(el, {'BR': ', '}, 'br').replace(priceRe, '');
   // This should maybe just be for all block elements? Meh.
-  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ','}, 'br+headers').replace(priceRe, '');
+  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ',', 'P': ','}, 'br+headers').replace(priceRe, '');
 
   const fs = [];
   if(el.possibleZip) {
@@ -398,6 +398,7 @@ function parseBaths(el) {
     /\bbathrooms: *([0-9]{1,2})\b/i,
     /\bbaths: *([0-9]{1,2})\b/i,
     /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *$/i,
+    /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *,/i,
     /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *bathrooms? */i,
     /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *baths? */i,
     /^ *([0-9]{1,2}) total bath\(?s?\)? *$/i,
@@ -409,6 +410,7 @@ function parseBaths(el) {
     /^ *baths *([0-9]{1,2}) *full *$/i,
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
     /^ *([0-9]{1,2}) * bathrooms? *$/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*,\s*([0-9])\s*bath *s?\s*,\s*[0-9,]+\s*sq\s*ft/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -469,6 +471,8 @@ function parseSqft(el) {
     /^ *([0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
     /^ *square feet *([0-9]{1,2},[0-9]{3}) *$/i,
     /^ *square feet *([0-9]{3}) *$/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{1,2},[0-9]{3})+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{3})+\s*sq\s*ft/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -670,6 +674,11 @@ function extractDate(field) {
 
       if(c >= 1850 && c <= 2050 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
         return {[field]: `${c}-${a}-${b}`};
+
+      if(c >= 10 && c <= 30 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
+        return {[field]: `${2000 + c}-${a}-${b}`};
+
+
     }
   }
 }
@@ -794,7 +803,7 @@ export const rules = [
     ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
-    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sale-price + span', extractPrice('sold_price'), true],
+    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
@@ -816,7 +825,7 @@ export const rules = [
     ['.q-zip + span, .q-zip-code + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span', extractMLS],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
-    ['.q-sale-date + span', extractDate('sold_date')],
+    ['.q-sold + span, .q-sale-date + span, .q-sold-date + *', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span, .q-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],

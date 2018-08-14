@@ -17,10 +17,11 @@ export function innerText(el, subs, cacheKey) {
     if(!el.hasInnerText)
       el.hasInnerText = {};
 
+    ret = ret.replace(/\u00A0/g, ' ');
     el.hasInnerText[cacheKey] = ret;
     return ret;
   } else if (el.nodeType == 3) {
-    return el.textContent;
+    return el.textContent.replace(/\u00A0/g, ' ');
   }
   return '';
 }

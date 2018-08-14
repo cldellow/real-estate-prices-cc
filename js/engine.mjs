@@ -338,6 +338,8 @@ export function removeTooBroad(xs) {
 
 export function removeIncomplete(xs) {
   return xs.filter(item => {
+    if(!item['price'] && item['sold_price'])
+      item['price'] = item['sold_price'];
     const priceOk = item['price'];
     const countryOk = item['country'];
     const cityOk = !item['city'] || (item['city'].length < 40 && !/[0-9]/.exec(item['city']));
@@ -408,6 +410,7 @@ function applyRule(el, selector, rules) {
         prices = dedupe(prices);
         soldPrices = dedupe(soldPrices);
         if(prices.length == 1 ||
+          (prices.length == 0 && soldPrices.length == 1) ||
           (soldPrices.length == 1 && prices.filter(price => soldPrices.indexOf(price) >= 0).length == 1)) {
         } else {
           break;
