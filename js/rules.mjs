@@ -845,6 +845,7 @@ export const rules = [
     ['.q-association-fee + td', extractPrice('_association_fee'), true],
     ['.q-tax-amount + td', extractPrice('_tax_amount'), true],
     ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
+    ['.q-bc-assessment-2017 + span', extractPrice('_assessment'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
     ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
