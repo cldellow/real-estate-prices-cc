@@ -4,14 +4,17 @@ export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
 const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
-  const debug = false;
+  const debug = !false;
 
   if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
     console.log('_parseStreetAddressUSFull: ' + txt);
   }
-  const rv = _parseStreetAddressUSFullRe.exec(txt);
+  var rv = _parseStreetAddressUSFullAptRe.exec(txt);
+  if(!rv)
+    rv = _parseStreetAddressUSFullRe.exec(txt);
 
   if(rv) {
     //console.log(rv);
@@ -766,7 +769,7 @@ export const rules = [
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sale-date + span', extractDate('sold_date')],
-    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span', extractYear('year_built')],
+    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span, .q-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td', extractDigit('baths')],
