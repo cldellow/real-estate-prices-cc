@@ -200,11 +200,19 @@ function parseCityState(el) {
 
 function parseAcres(el) {
   const txt = innerText(el);
-  const rv = /^ *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i.exec(txt);
+  const res = [
+    /^ *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
+    /^ *lot size:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
+    /^ *lot acreage is:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *$/i,
+  ];
 
-  if(rv) {
-    return {
-      lot_size: parseFloat(rv[1].trim())
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+
+    if(rv) {
+      return {
+        lot_size: parseFloat(rv[1].trim())
+      }
     }
   }
 }
@@ -379,6 +387,7 @@ function parseBeds(el) {
     /^ *bedrooms? *([0-9]{1,2}) *$/i,
     /^ *([0-9]{1,2}) * bedrooms? *$/i,
     /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
+    /^ *([0-9]{1,2}) Bed, [0-9.]+ Bath \([0-9] Full Bath\), [0-9]{1,2},[0-9]{3} sqft */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -473,6 +482,7 @@ function parseSqft(el) {
     /^ *square feet *([0-9]{3}) *$/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{1,2},[0-9]{3})+\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{3})+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2} Bed, [0-9.]+ Bath \([0-9] Full Bath\), ([0-9]{1,2},[0-9]{3}) sqft */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -686,12 +696,19 @@ function extractDate(field) {
 function parseYearBuilt(el) {
   const txt = innerText(el);
 
-  const rv = /^ *([0-9]{4}) *year built *$/i.exec(txt);
+  const res = [
+    /^ *([0-9]{4}) *year built *$/i,
+    /^ *built in:? *([0-9]{4}) *$/i,
+  ];
 
-  if(rv) {
-    const year = parseInt(rv[1], 10);
-    if(year >= 1850 && year <= 2050)
-      return {year_built: year};
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+
+    if(rv) {
+      const year = parseInt(rv[1], 10);
+      if(year >= 1850 && year <= 2050)
+        return {year_built: year};
+    }
   }
 }
 
