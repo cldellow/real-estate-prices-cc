@@ -465,12 +465,18 @@ function parseMLSAndMLSId(el) {
 
 function parseMLS(el) {
   const txt = innerText(el);
-  const rv = /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/.exec(txt);
+  const res = [
+    /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/,
+    /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
+  ];
 
-  if(rv)
-    return {
-      external_id: rv[1]
-    }
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+    if(rv)
+      return {
+        external_id: rv[1]
+      }
+  }
 }
 
 function parseSqft(el) {
