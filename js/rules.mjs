@@ -126,9 +126,34 @@ const _usStateAlternation = (function() {
   return rv.join('|');
 })();
 
+const _onlyUSStateRe = new RegExp('^ *(' + _usStateAlternation + ') *$');
+function parseState(el) {
+  const txt = innerText(el);
+  const rv = _onlyUSStateRe.exec(txt);
+
+  if(rv) {
+    return {
+      state: _usStateToAbbrev[rv[1]],
+      country: 'US'
+    }
+  }
+}
+
+function parseAddressNoStateNoZip(el) {
+  const txt = innerText(el);
+  const rv = /^ *([1-9][0-9]* *[0-9A-Z][^ ]+ *[0-9A-Z].+) *$/.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1]
+    }
+  }
+}
+
 const _parseStreetAddressUSCityStateNoPostalRE = new RegExp(
   '^ *([0-9][^,]+), *([^,]+), *(' + _usStateAlternation + ')'
 );
+
 
 function _parseStreetAddressUSCityStateNoPostal(txt) {
   const rv = _parseStreetAddressUSCityStateNoPostalRE.exec(txt);
@@ -554,7 +579,8 @@ function extractZip(el) {
 
   if(rv)
     return {
-      postal_code: rv[1]
+      postal_code: rv[1],
+      country: 'US'
     }
 }
 
@@ -603,7 +629,7 @@ function extractSquareFeet(el) {
 
 function extractMLS(el) {
   const txt = innerText(el);
-  const rv = /^[ :]*([A-Z]{0,2}[0-9]{5,}) *$/.exec(txt);
+  const rv = /^[ :]*#? *([A-Z]{0,2}[0-9]{5,}) *$/.exec(txt);
 
   if(rv)
     return {
@@ -772,7 +798,7 @@ export const rules = [
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['.q-lot-size + td', extractLotSizeFromSquareFeet, true],
+    ['.q-lot-size + td, .q-acres + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths],
@@ -783,14 +809,16 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['*', parseYearBuilt],
+    ['.q-address + span', parseAddressNoStateNoZip],
+    ['.q-state + span', parseState],
     ['.q-postal-code + span', parsePostalCode],
     ['.q-city + span', extractTextNoComma('city')],
-    ['.q-zip + span', extractZip],
-    ['.q-mls + span, .q-mls-num + dd', extractMLS],
+    ['.q-zip + span, .q-zip-code + span', extractZip],
+    ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span', extractMLS],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sale-date + span', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span, .q-built + div', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span', extractSquareFeet],
+    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td', extractDigit('baths')],
     ['.q-half-bathrooms + td', extractDigit('half_baths')],
