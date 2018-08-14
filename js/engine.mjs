@@ -141,12 +141,6 @@ function tryListing(candidate, el) {
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
 
-    console.log(k);
-    console.log(v);
-    if(k == 'address' && v.length == 2) {
-      console.log(normalize(v[0]));
-      console.log(normalize(v[1]));
-    }
     if(v.length == 1) {
       rv[k] = v[0];
       ok = true;
@@ -164,10 +158,16 @@ function tryListing(candidate, el) {
       else
         rv[k] = v[0];
       ok = true;
-    }
-
-
-    else
+    } else if(k == 'address' && v.length == 2 && candidate['city'] && candidate['city'].length == 1 &&
+      candidate['state'] && candidate['state'].length == 1 &&
+        ((normalize(v[0]) + normalize(candidate['city'][0]) + normalize(candidate['state'][0]) == normalize(v[1])) ||
+          (normalize(v[1]) + normalize(candidate['city'][0]) + normalize(candidate['state'][0]) == normalize(v[0])))) {
+      if(v[0].length > v[1].length)
+        rv[k] = v[1];
+      else
+        rv[k] = v[0];
+      ok = true;
+    } else
       return;
   }
 
