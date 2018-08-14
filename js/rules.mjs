@@ -794,6 +794,33 @@ function expandMLSAndMLSIdToAddressStatePostalCode(el, listing) {
   }
 }
 
+function expandExternalIdCityToAddressStatePostalCode(el, listing) {
+  const { external_id, address, city, state, postal_code} = listing;
+  if(!external_id || !city || address || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const citySlug = city.toLowerCase().replace(/[^a-z]+/g, '-');
+  const re = RegExp(external_id + "-([0-9].+)-" + citySlug + "-([A-Za-z]{2})-([0-9]{5})");
+
+  const rv = re.exec(href);
+  if(rv) {
+    return {
+      address: rv[1].replace(/-/g, ' '),
+      state: rv[2].toUpperCase(),
+      postal_code: rv[3],
+      country: 'US'
+    }
+  }
+}
+
 export const rules = [
   ['*', [
     // Blackhole some things that look like prices
@@ -835,7 +862,8 @@ export const rules = [
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandCityStateToAddressPostalCode],
-    ['a', expandMLSAndMLSIdToAddressStatePostalCode]
+    ['a', expandMLSAndMLSIdToAddressStatePostalCode],
+    ['a', expandExternalIdCityToAddressStatePostalCode],
   ]]
 ];
 
