@@ -35,6 +35,7 @@ function _parseStreetAddressStateZip(txt) {
     return {
       address: rv[1].trim(),
       state: rv[2].trim(),
+      postal_code: rv[3].trim(),
       country: 'US'
     }
   }
@@ -44,6 +45,7 @@ function _parseStreetAddressStateZip(txt) {
     return {
       address: rv2[1].trim(),
       state: rv2[2].trim(),
+      postal_code: rv2[3].trim(),
       country: 'US'
     }
   }
