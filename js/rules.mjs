@@ -733,6 +733,35 @@ function extractYear(field) {
   }
 }
 
+function expandLinkToAddressCityStatePostalCode(el, listing) {
+  const { address, city, state, postal_code } = listing;
+  if(address || city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const maybeAddress = innerText(el);
+  const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+  const re = RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5})/', 'i');
+
+  const rv = re.exec(href);
+  if(rv) {
+    return {
+      address: maybeAddress,
+      city: rv[1],
+      postal_code: rv[3],
+      state: rv[2].toUpperCase(),
+      country: 'US'
+    }
+  }
+}
+
 function expandAddressCityToStatePostalCode(el, listing) {
   if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
     return;
@@ -882,6 +911,7 @@ export const rules = [
     ['a', expandCityStateToAddressPostalCode],
     ['a', expandMLSAndMLSIdToAddressStatePostalCode],
     ['a', expandExternalIdCityToAddressStatePostalCode],
+    ['a', expandLinkToAddressCityStatePostalCode],
   ]]
 ];
 
