@@ -3,7 +3,7 @@ import { innerText } from './innertext.mjs';
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
-const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
+const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})/;
 const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
@@ -456,7 +456,7 @@ function parseMLSAndMLSId(el) {
 
 function parseMLS(el) {
   const txt = innerText(el);
-  const rv = /^ *MLS *#? *([A-Z0-9]{5,15}) *$/.exec(txt);
+  const rv = /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/.exec(txt);
 
   if(rv)
     return {
@@ -531,7 +531,7 @@ export function extractPriceFromString(str) {
   //     "$0 to $100,000" => null
   //     "The price is $100,000. That price again is $100,000." => 100000
   const res = [
-    /\$ *([1-9][0-9]{1,2}) *K/g,
+    /\$ *([1-9][0-9]{1,2}) *[kK]/g,
     /\$ *([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
     /\$ *([0-9]{2,3}, *[0-9]{3})/g
   ];
