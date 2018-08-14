@@ -286,7 +286,8 @@ function parseStreetAddress(el) {
   const priceRe = /\$[1-9][0-9]{1,2},[0-9]{3},[0-9]{3}|\$[1-9][0-9]{1,2},[0-9]{3}/g;
   const plainText = innerText(el).replace(priceRe, '');
   const commaForBR = innerText(el, {'BR': ', '}, 'br').replace(priceRe, '');
-  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', '}, 'br+headers').replace(priceRe, '');
+  // This should maybe just be for all block elements? Meh.
+  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ','}, 'br+headers').replace(priceRe, '');
 
   const fs = [];
   if(el.possibleZip) {
@@ -345,6 +346,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) *bd *$/i,
     /^ *beds *([0-9]{1,2}) *$/i,
     /^ *bedrooms *([0-9]{1,2}) *$/i,
+    /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -372,6 +374,7 @@ function parseBaths(el) {
     /^ *baths *([0-9]{1,2}) *$/i,
     /^ *bathrooms *([0-9]{1,2}) *$/i,
     /^ *baths *([0-9]{1,2}) *full *$/i,
+    /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -762,7 +765,7 @@ export const rules = [
     ['.q-mls + span, .q-mls-num + dd', extractMLS],
     ['.q-list-date + div', extractDate('listing_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td', extractSquareFeet],
+    ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td', extractDigit('baths')],
     ['.q-half-bathrooms + td', extractDigit('half_baths')],

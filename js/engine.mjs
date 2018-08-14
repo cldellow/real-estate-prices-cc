@@ -51,6 +51,35 @@ export function rewrite(el) {
     }
 
     for(var i = 0; i < el.childNodes.length; i++) {
+      // Remove empty text nodes
+      if(el.childNodes[i].nodeType == 3 && el.childNodes[i].textContent.trim().length == 0) {
+        el.childNodes[i].remove();
+        i--;
+      }
+    }
+
+    for(var i = 0; i < el.childNodes.length; i++) {
+      // Candidate rule: if adjacent children are both headers, wrap them in a div.
+      if(i + 1 < el.childNodes.length &&
+         el.childNodes[i].nodeType == 1 && 
+         el.childNodes[i + 1].nodeType == 1 &&
+         el.childNodes[i].nodeName.match(/h[1-6]/i) &&
+         el.childNodes[i + 1].nodeName.match(/h[1-6]/i) &&
+         !el.childNodes[i].tainted) {
+        const div = el.ownerDocument.createElement('div');
+        const fst = el.childNodes[i];
+        const snd = el.childNodes[i + 1];
+        el.insertBefore(div, fst);
+        fst.tainted = true; // prevent recursing into this and immediately doing it again
+        fst.remove();
+        snd.remove();
+        div.appendChild(fst);
+        div.appendChild(snd);
+        i--;
+        continue;
+      }
+
+
       // If this is a naked text node intermingled with other content, wrap it in a span to make
       // targeting easier.
       if(el.childNodes[i].nodeType == 3 && el.childNodes.length > 1 && el.childNodes[i].textContent.trim().length > 0) {
