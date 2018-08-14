@@ -345,7 +345,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *baths? */i,
     /^ *([0-9]{1,2}) *bd *$/i,
     /^ *beds *([0-9]{1,2}) *$/i,
-    /^ *bedrooms *([0-9]{1,2}) *$/i,
+    /^ *bedrooms? *([0-9]{1,2}) *$/i,
     /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
   ];
 
@@ -372,7 +372,7 @@ function parseBaths(el) {
     /^ *([0-9]{1,2}) *ba *$/i,
     /^ *([0-9]{1,2})\.[0-9] *ba *$/i,
     /^ *baths *([0-9]{1,2}) *$/i,
-    /^ *bathrooms *([0-9]{1,2}) *$/i,
+    /^ *bathrooms? *([0-9]{1,2}) *$/i,
     /^ *baths *([0-9]{1,2}) *full *$/i,
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
   ];
@@ -521,7 +521,7 @@ export function extractPriceFromString(str) {
   const values = Object.values(rvs);
   values.sort();
 
-  if(values.length && values[0] == values[values.length - 1])
+  if(values.length && values[0] == values[values.length - 1] && values[0] > 50000)
     return values[0];
 }
 
@@ -745,7 +745,7 @@ export const rules = [
     ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
-    ['.close-price, .q-close-price + div, .q-sold-price + td', extractPrice('sold_price'), true],
+    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sale-price + span', extractPrice('sold_price'), true],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],

@@ -15,11 +15,11 @@ describe('extractPrice', () => {
   });
 
   it('should extract price when same value', () => {
-    expect(extractPriceFromString('$12,345 is the price. $12,345 is the price.')).toBe(12345);
+    expect(extractPriceFromString('$123,456 is the price. $123,456 is the price.')).toBe(123456);
   });
 
   it('should not extract price when different values', () => {
-    expect(extractPriceFromString('$12,345 is the price. $23,456 is not the price.')).toBe(undefined);
+    expect(extractPriceFromString('$123,456 is the price. $234,567 is not the price.')).toBe(undefined);
   });
 
   it('should support $400K', () => {
@@ -29,6 +29,12 @@ describe('extractPrice', () => {
   it('should support $ 400K', () => {
     expect(extractPriceFromString('$ 400K')).toBe(400000);
   });
+
+  it('should ignore prices below 50k', () => {
+    // These are usually things like land transfer tax, or a price drop.
+    expect(extractPriceFromString('$ 40K')).toBe(undefined);
+  });
+
 
 
 

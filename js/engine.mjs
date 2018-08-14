@@ -18,7 +18,7 @@ import { innerText } from './innertext.mjs';
 export function rewrite(el) {
   if(el.nodeType == 1) { // Element
     // Some sites spam crap in hidden elements? Ignore that.
-    if(el.classList.contains('hidden')) {
+    if(el.classList.contains('hidden') || el.classList.contains('agent-info')) {
       while(el.childNodes.length)
         el.childNodes[0].remove();
 
@@ -96,11 +96,12 @@ export function rewrite(el) {
   }
 }
 
+const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');
+
 function mergeMapKeys(acc, cur) {
   if(!cur)
     return acc;
 
-  const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');
 
   const entries = Object.entries(cur);
   for(var i = 0; i < entries.length; i++) {
@@ -140,6 +141,12 @@ function tryListing(candidate, el) {
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
 
+    console.log(k);
+    console.log(v);
+    if(k == 'address' && v.length == 2) {
+      console.log(normalize(v[0]));
+      console.log(normalize(v[1]));
+    }
     if(v.length == 1) {
       rv[k] = v[0];
       ok = true;
@@ -149,7 +156,18 @@ function tryListing(candidate, el) {
       // special case: if we have 2 prices, but one is the sale price, the other is likely the listing price
       rv[k] = v.filter(price => candidate['sold_price'].indexOf(price) == -1)[0];
       ok = true;
-    } else
+    } else if(k == 'address' && v.length == 2 && candidate['city'] && candidate['city'].length == 1 &&
+        ((normalize(v[0]) + normalize(candidate['city'][0]) == normalize(v[1])) ||
+          (normalize(v[1]) + normalize(candidate['city'][0]) == normalize(v[0])))) {
+      if(v[0].length > v[1].length)
+        rv[k] = v[1];
+      else
+        rv[k] = v[0];
+      ok = true;
+    }
+
+
+    else
       return;
   }
 
@@ -278,6 +296,24 @@ export function peekholeFixes(xs) {
     }
   }
   return xs;
+}
+
+export function removeConflictingElements(xs) {
+  // If elements A and B contribute a listing, and A is a parent of B, reject B.
+  const rv = [];
+  for(var i = 0; i < xs.length; i++) {
+    var ok = true;
+    for(var j = 0; j < xs.length; j++) {
+      if(i != j && xs[i]['_el'] && xs[j]['_el'] && isDescendant(xs[i]['_el'], xs[j]['_el'])) {
+        ok = false;
+        break;
+      }
+    }
+
+    if(ok)
+      rv.push(xs[i]);
+  }
+  return rv;
 }
 
 export function removeTooBroad(xs) {
@@ -437,7 +473,7 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  const newRv = removeIncomplete(peekholeFixes(removeSubsets(removeTooBroad(rv))));
+  const newRv = removeIncomplete(removeConflictingElements(peekholeFixes(removeSubsets(removeTooBroad(rv)))));
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
     if(el['_el']) {
