@@ -350,6 +350,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) *bd *$/i,
     /^ *beds *([0-9]{1,2}) *$/i,
     /^ *bedrooms? *([0-9]{1,2}) *$/i,
+    /^ *([0-9]{1,2}) * bedrooms? *$/i,
     /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
   ];
 
@@ -379,6 +380,7 @@ function parseBaths(el) {
     /^ *bathrooms? *([0-9]{1,2}) *$/i,
     /^ *baths *([0-9]{1,2}) *full *$/i,
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
+    /^ *([0-9]{1,2}) * bathrooms? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -437,6 +439,8 @@ function parseSqft(el) {
   const res = [
     /^ *([0-9]{1,2},? *[0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
     /^ *([0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
+    /^ *square feet *([0-9]{1,2},[0-9]{3}) *$/i,
+    /^ *square feet *([0-9]{3}) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -641,6 +645,18 @@ function extractDate(field) {
   }
 }
 
+function parseYearBuilt(el) {
+  const txt = innerText(el);
+
+  const rv = /^ *([0-9]{4}) *year built *$/i.exec(txt);
+
+  if(rv) {
+    const year = parseInt(rv[1], 10);
+    if(year >= 1850 && year <= 2050)
+      return {year_built: year};
+  }
+}
+
 function extractYear(field) {
   return function(el) {
     const txt = innerText(el);
@@ -763,6 +779,7 @@ export const rules = [
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
+    ['*', parseYearBuilt],
     ['.q-postal-code + span', parsePostalCode],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span', extractZip],
