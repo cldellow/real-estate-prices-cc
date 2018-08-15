@@ -4,7 +4,7 @@ export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
 const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})/;
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+ *?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})/;
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+ *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = !false;
@@ -391,6 +391,9 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) * bedrooms? *$/i,
     /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
     /^ *([0-9]{1,2}) Bed, [0-9.]+ Bath \([0-9] Full Bath\), [0-9]{1,2},[0-9]{3} sqft */i,
+    /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
+
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -422,7 +425,8 @@ function parseBaths(el) {
     /^ *baths *([0-9]{1,2}) *full *$/i,
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
     /^ *([0-9]{1,2}) * bathrooms? *$/i,
-    /^ *[0-9]{1,2}\s*bed *s?\s*,\s*([0-9])\s*bath *s?\s*,\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bathrooms *([0-9])\/[0-9]+ *$/i,
   ];
 
@@ -493,6 +497,9 @@ function parseSqft(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{1,2},[0-9]{3})+\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*,\s*[0-9]\s*bath *s?\s*,\s*([0-9]{3})+\s*sq\s*ft/i,
     /^ *[0-9]{1,2} Bed, [0-9.]+ Bath \([0-9] Full Bath\), ([0-9]{1,2},[0-9]{3}) sqft */i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
+
   ];
 
   for(var i = 0; i < res.length; i++) {

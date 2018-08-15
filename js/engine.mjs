@@ -481,6 +481,7 @@ export function extract(el) {
     const el = newRv[i];
     if(el['_el']) {
       el['_el'].style.border = '3px dashed green';
+      el['_el'].style.backgroundColor = '#beb';
     }
 
     delete el['_el'];
