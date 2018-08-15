@@ -791,16 +791,22 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
 
   const maybeAddress = innerText(el);
   const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
-  const re = RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5})/', 'i');
 
-  const rv = re.exec(href);
-  if(rv) {
-    return {
-      address: maybeAddress,
-      city: rv[1],
-      postal_code: rv[3],
-      state: rv[2].toUpperCase(),
-      country: 'US'
+  const res = [
+    new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5})/', 'i'),
+    new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})$', 'i')
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        address: maybeAddress,
+        city: rv[1],
+        postal_code: rv[3],
+        state: rv[2].toUpperCase(),
+        country: 'US'
+      }
     }
   }
 }
