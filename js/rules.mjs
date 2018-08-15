@@ -540,10 +540,28 @@ function extractPrice(field) {
   }
 }
 
+function parseSoldDate(el) {
+  const txt = innerText(el);
+  const res = [
+    /^ *date sold *: *(.+) *$/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+    if(rv) {
+      const soldDate = extractDateFromString(rv[1]);
+
+      if(soldDate)
+        return {sold_date: soldDate};
+    }
+  }
+}
+
 function parseSoldPrice(el) {
   const txt = innerText(el);
   const res = [
-    /^SOLD: *(\$ *[0-9,]*) *$/
+    /^ *SOLD: *(\$ *[0-9,]*) *$/,
+    /^ *sold for *:? *(\$ *[0-9,]*) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -691,26 +709,30 @@ function extractIntegerFromFloat(field) {
 }
 
 
+export function extractDateFromString(txt) {
+  const rv = /^[ :]*([0-9]{1,4})[/-]([0-9]{1,2})[/-]([0-9]{1,4}) *$/.exec(txt);
+  if(rv) {
+    const a = parseInt(rv[1], 10);
+    const b = parseInt(rv[2], 10);
+    const c = parseInt(rv[3], 10);
+
+    if(a >= 1850 && a <= 2050 && b >= 1 && b <= 12 && c >= 1 && c <= 31)
+      return `${a}-${b}-${c}`;
+
+    if(c >= 1850 && c <= 2050 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
+      return `${c}-${a}-${b}`;
+
+    if(c >= 10 && c <= 30 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
+      return `${2000 + c}-${a}-${b}`;
+  }
+}
+
 function extractDate(field) {
   return function(el) {
     const txt = innerText(el);
-    const rv = /^[ :]*([0-9]{1,4})[/-]([0-9]{1,2})[/-]([0-9]{1,4}) *$/.exec(txt);
-    if(rv) {
-      const a = parseInt(rv[1], 10);
-      const b = parseInt(rv[2], 10);
-      const c = parseInt(rv[3], 10);
-
-      if(a >= 1850 && a <= 2050 && b >= 1 && b <= 12 && c >= 1 && c <= 31)
-        return {[field]: `${a}-${b}-${c}`};
-
-      if(c >= 1850 && c <= 2050 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
-        return {[field]: `${c}-${a}-${b}`};
-
-      if(c >= 10 && c <= 30 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
-        return {[field]: `${2000 + c}-${a}-${b}`};
-
-
-    }
+    const rv = extractDateFromString(txt);
+    if(rv)
+      return {[field]: rv};
   }
 }
 
@@ -913,6 +935,7 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['*', parseYearBuilt],
+    ['*', parseSoldDate],
     ['.q-address + span', parseAddressNoStateNoZip],
     ['.q-state + span', parseState],
     ['.q-postal-code + span', parsePostalCode],
