@@ -181,6 +181,18 @@ function tryListing(candidate, el) {
       else
         rv[k] = v[0];
       ok = true;
+    } else if(k == 'city' && v.length == 2 && candidate['address'] && candidate['address'].length == 1 &&
+      candidate['state'] && candidate['state'].length == 1 && candidate['city'].indexOf(candidate['state'][0]) >= 0 &&
+      candidate['address'][0].endsWith(candidate['city'].find(x => x != candidate['state'][0]))
+    ) {
+      // We have something like:
+      // Address = 8 JARDEM Rhinebeck
+      // City = Rhinebeck, NY
+      // State = NY
+      //
+      // Drop the state from the city listing.
+      rv[k] = v.find(x => x != candidate['state'][0]);
+      ok = true;
     } else
       return;
   }

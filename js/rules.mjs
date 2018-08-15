@@ -191,10 +191,14 @@ function parseCityState(el) {
   const rv = /^ *([A-Z][A-Za-z .']*), *([A-Z][A-Z]) *$/.exec(txt);
 
   if(rv) {
-    return {
+    const m = {
       city: rv[1].trim(),
       state: rv[2].trim()
-    }
+    };
+
+    if(_usStateToAbbrev[rv[2].trim()])
+      m['country'] = 'US';
+    return m;
   }
 }
 
@@ -434,6 +438,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bathrooms *([0-9])\/[0-9]+ *$/i,
+    /^ *([0-9]{1,2}) *full *baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -778,6 +783,38 @@ function extractYear(field) {
   }
 }
 
+function expandLinkToPostalCode(el, listing) {
+  const { address, city, state, postal_code } = listing;
+  if(!address || !city || !state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const txt = innerText(el);
+
+  const addressSlug = address.toLowerCase().replace(city.toLowerCase(), '').trim().replace(/[^a-z0-9]/g, '-');
+  const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+
+  const res = [
+    new RegExp(addressSlug + '-' + citySlug + '-' + state + '-([0-9]{5})\.html', 'i')
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        postal_code: rv[1].toUpperCase()
+      }
+    }
+  }
+}
+
 function expandLinkToAddressCityState(el, listing) {
   const { price, address, city, state, postal_code } = listing;
   if(!price || address || city || state || postal_code)
@@ -1008,6 +1045,7 @@ export const rules = [
     ['a', expandExternalIdCityToAddressStatePostalCode],
     ['a', expandLinkToAddressCityStatePostalCode],
     ['a', expandLinkToAddressCityState],
+    ['a', expandLinkToPostalCode],
   ]]
 ];
 
