@@ -420,6 +420,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
     /^ *([0-9]{1,2}) * bathrooms? *$/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*,\s*([0-9])\s*bath *s?\s*,\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *bathrooms *([0-9])\/[0-9]+ *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {

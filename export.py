@@ -26,7 +26,12 @@ def parse(in_name, out_name):
                 try:
                     contents = _bytes.decode("utf-8")
                 except UnicodeDecodeError:
-                    contents = _bytes.decode("windows-1252")
+                    try:
+                        contents = _bytes.decode("windows-1252")
+                    except UnicodeDecodeError:
+                        print('unable to parse')
+                        next
+
                 contents = re.sub(nuke_re,
                                   ' ',
                                   contents,
@@ -37,6 +42,8 @@ def parse(in_name, out_name):
                 contents = contents + '\n'
                 _bytes = bytes(contents, 'utf-8')
                 output.write(_bytes)
+
+                output.write("""<script>(function(){var s=document.createElement('div');s.innerHTML='Loading...';s.style.color='black';s.style.padding='20px';s.style.position='fixed';s.style.zIndex='9999';s.style.fontSize='3.0em';s.style.border='2px solid black';s.style.right='40px';s.style.top='40px';s.setAttribute('class','selector_gadget_loading');s.style.background='white';document.body.appendChild(s);s=document.createElement('script');s.setAttribute('type','text/javascript');s.setAttribute('src','http://localhost:8000/js/bootstrap.js?' + (new Date()).getTime() );document.body.appendChild(s);})();</script>""".encode('utf-8'))
             i = i + 1
 
 if __name__ == '__main__':
