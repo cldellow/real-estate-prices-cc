@@ -296,6 +296,10 @@ function validAddress(rv) {
   if(address[0] == '0')
     return;
 
+  // does the address look like a price?
+  if(/[0-9]{2},[0-9]{3}/.exec(address))
+    return;
+
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
   if(address.indexOf(' is a ') >= 0)
