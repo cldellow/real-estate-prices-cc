@@ -273,7 +273,7 @@ function _parseStreetAddressCanadaCityProvince(txt) {
 
 
 function _parseStreetAddressCanadaCityNoProvince(txt) {
-  const rv = /^ *([0-9].+) +([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
+  const rv = /^ *([0-9].+) +([A-Za-z][0-9][A-Za-z] *[0-9][A-Za-z][0-9]).*$/.exec(txt);
 
   if(rv) {
     return {
@@ -583,8 +583,8 @@ export function extractPriceFromString(str) {
   //     "The price is $100,000. That price again is $100,000." => 100000
   const res = [
     /\$ *([1-9][0-9]{1,2}) *[kK]/g,
-    /\$ *([0-9]{1,3}, *[0-9]{3}, *[0-9]{3})/g,
-    /\$ *([0-9]{2,3}, *[0-9]{3})/g
+    /\$ *([0-9]{1,3},? *[0-9]{3}, *[0-9]{3})/g,
+    /\$ *([0-9]{2,3},? *[0-9]{3})/g
   ];
 
   const rvs = {};
@@ -778,6 +778,50 @@ function extractYear(field) {
   }
 }
 
+function expandLinkToAddressCityState(el, listing) {
+  const { price, address, city, state, postal_code } = listing;
+  if(!price || address || city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const txt = innerText(el);
+
+  const rvResult = /^ *\$ *([0-9,]{3,10}) *- *(.+)$/.exec(txt);
+  if(!rvResult)
+    return;
+
+  var [_, maybePrice, maybeAddress] = rvResult;
+  maybePrice = maybePrice.replace(/,/g, '');
+
+  if(maybePrice != price)
+    return;
+
+  const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
+
+  const res = [
+    new RegExp(addressSlug + '_([a-z_]+)_([a-z][a-z])_$', 'i')
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        address: maybeAddress.replace(/_/g, ' '),
+        city: rv[1],
+        state: rv[2].toUpperCase(),
+        country: 'US'
+      }
+    }
+  }
+}
+
 function expandLinkToAddressCityStatePostalCode(el, listing) {
   const { address, city, state, postal_code } = listing;
   if(address || city || state || postal_code)
@@ -795,8 +839,8 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
   const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
 
   const res = [
-    new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5})/', 'i'),
-    new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})$', 'i')
+    new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
+    new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i')
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -805,9 +849,9 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
       return {
         address: maybeAddress,
         city: rv[1],
-        postal_code: rv[3],
+        postal_code: rv[3].toUpperCase(),
         state: rv[2].toUpperCase(),
-        country: 'US'
+        country: parseInt(rv[3]) ? 'US' : 'CA'
       }
     }
   }
@@ -920,10 +964,9 @@ function expandExternalIdCityToAddressStatePostalCode(el, listing) {
 
 export const rules = [
   ['*', [
-    // Blackhole some things that look like prices
     ['.q-maintenance-charge-month + td', extractPrice('_condo_fee'), true],
     ['.q-association-fee + td', extractPrice('_association_fee'), true],
-    ['.q-tax-amount + td', extractPrice('_tax_amount'), true],
+    ['.q-tax-amount + *', extractPrice('_tax_amount'), true],
     ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
     ['.q-bc-assessment-2017 + span', extractPrice('_assessment'), true],
 
@@ -964,6 +1007,7 @@ export const rules = [
     ['a', expandMLSAndMLSIdToAddressStatePostalCode],
     ['a', expandExternalIdCityToAddressStatePostalCode],
     ['a', expandLinkToAddressCityStatePostalCode],
+    ['a', expandLinkToAddressCityState],
   ]]
 ];
 

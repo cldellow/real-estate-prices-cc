@@ -15,18 +15,29 @@ import { innerText } from './innertext.mjs';
  */
 
 // Tag DOM with extra classes for targeting.
+function clearInnerText(el) {
+  // When we alter the DOM, we need to invalidate caches of computed inner text values.
+  var p = el;
+  while(p) {
+    p.hasInnerText = null;
+    p = p.parentNode;
+  }
+}
+
 export function rewrite(el) {
   if(el.nodeType == 1) { // Element
+    var txt = innerText(el);
+
     // Some sites spam crap in hidden elements? Ignore that.
-    if(el.classList.contains('hidden') || el.classList.contains('agent-info')) {
+    if(el.classList.contains('hidden') || el.classList.contains('agent-info') || /^ *zestimate *\$ *[0-9]{2,3},?[0-9]{3}.{1,50}$/i.exec(txt)) {
       while(el.childNodes.length)
         el.childNodes[0].remove();
 
+      clearInnerText(el);
       return;
     }
 
 
-    var txt = innerText(el);
     if (/[0-9]{5}/.exec(txt)) {
       var p = el;
       while(p) {
@@ -35,7 +46,7 @@ export function rewrite(el) {
       }
     }
 
-    if (/[A-Z][0-9][A-Z] *[0-9][A-Z][0-9]/.exec(txt)) {
+    if (/[A-Z][0-9][A-Z] *[0-9][A-Z][0-9]/i.exec(txt)) {
       var p = el;
       while(p) {
         p.possiblePostalCode = true;
@@ -56,6 +67,7 @@ export function rewrite(el) {
         el.childNodes[i].remove();
         i--;
       }
+      clearInnerText(el);
     }
 
     for(var i = 0; i < el.childNodes.length; i++) {
@@ -76,6 +88,7 @@ export function rewrite(el) {
         div.appendChild(fst);
         div.appendChild(snd);
         i--;
+        clearInnerText(el);
         continue;
       }
 
@@ -88,6 +101,7 @@ export function rewrite(el) {
         wrapped.appendChild(textNode);
         el.insertBefore(wrapped, el.childNodes[i]);
         el.childNodes[i + 1].remove();
+        clearInnerText(el);
       }
 
       rewrite(el.childNodes[i]);

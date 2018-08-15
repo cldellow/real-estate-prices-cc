@@ -73,7 +73,7 @@ function runTests(dir) {
   var ok = 0;
 
   fs.readdirSync(dir).forEach(oracle => {
-    const onlyRun = null; //'0058';
+    const onlyRun = null; //'0080';
     if(!oracle.endsWith('.jsonl') || (onlyRun && oracle.indexOf(onlyRun) < 0))
       return;
 
