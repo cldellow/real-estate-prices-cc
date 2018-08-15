@@ -4,7 +4,7 @@ export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
 const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})/;
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *), +([^,]+), +([A-Z][A-Z]),? +([0-9]{5})/;
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+ *?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = !false;
@@ -299,6 +299,9 @@ function validAddress(rv) {
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
   if(address.indexOf(' is a ') >= 0)
+    return;
+
+  if(/under contract/i.exec(address))
     return;
 
   if(/\( *\)/.exec(address))
