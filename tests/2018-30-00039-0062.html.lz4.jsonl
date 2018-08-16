@@ -1,3 +1,6 @@
-{"price":155000,"beds":2,"baths":1,"city":"Sterling Heights","state":"MI","address":"44183 Carrnation Drive","postal_code":"48313","country":"US"}
-{"price":135000,"beds":3,"baths":1,"city":"Sterling Heights","state":"MI","address":"33555 Ryan","postal_code":"48310","country":"US"}
-{"price":117000,"city":"Sterling Heights","state":"MI","address":"35254 Terrybrook","postal_code":"48312","country":"US"}
+{"price":469800,"address":"4099 Nathan West","city":"Sterling Heights","state":"MI","postal_code":"48310","country":"US"}
+{"price":194900,"address":"4733 Benjamin Drive","city":"Sterling Heights","state":"MI","postal_code":"48310","country":"US"}
+{"price":224500,"beds":3,"baths":2,"address":"39620 Byers Drive","city":"Sterling Heights","state":"MI","postal_code":"48310","country":"US"}
+{"price":155000,"beds":2,"baths":1,"city":"Sterling Heights","state":"MI","country":"US","address":"44183 Carrnation Drive","postal_code":"48313"}
+{"price":135000,"beds":3,"baths":1,"city":"Sterling Heights","state":"MI","country":"US","address":"33555 Ryan","postal_code":"48310"}
+{"price":117000,"city":"Sterling Heights","state":"MI","country":"US","address":"35254 Terrybrook","postal_code":"48312"}

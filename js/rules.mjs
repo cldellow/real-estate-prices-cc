@@ -895,6 +895,36 @@ function expandLinkToAddressCityState(el, listing) {
   }
 }
 
+function expandLinkToFullAddress(el, listing) {
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+
+  //chicago-suburbs-west/downers-grove/home/4940-Seeley-Avenue,-Downers-Grove,-IL-60515/9690154/photos
+  const maybeAddressCityStateZip = /^.+\/([0-9][^,]+),-([A-Z][^,]+),-([A-Z][A-Z])-([0-9]{5})\/.*$/.exec(href);
+
+  if(!maybeAddressCityStateZip)
+    return;
+
+  const [_, address, city, state, zip] = maybeAddressCityStateZip;
+  console.log(city);
+  console.log('cc');
+
+  if(maybeAddressCityStateZip)
+    return {
+      address: address.replace(/-+/g, ' '),
+      city: city.replace(/-+/g, ' '),
+      state: state,
+      postal_code: zip,
+      country: 'US'
+    };
+}
+
 function expandLinkToEntireListing(el, listing) {
   // Only accept very minimal listings to avoid contagion.
   const keys = Object.keys(listing);
@@ -914,18 +944,12 @@ function expandLinkToEntireListing(el, listing) {
   if(!title)
     return;
 
-  console.log(href);
-  console.log(title);
-
   const maybeCityStateZip = /^.*property in ([A-Z][^,]+), *([A-Z][A-Z]),? *([0-9]{5}) *$/i.exec(title);
 
   if(!maybeCityStateZip)
     return;
 
   const [_, _city, _state, _zip] = maybeCityStateZip;
-  console.log(maybeCityStateZip);
-  console.log(_city);
-  console.log('cc');
 
   const maybeAddress = new RegExp('/' + _city.replace(/[^a-z]+/ig, '') + ',' + _state + '/([0-9]+_[^/]+)').exec(href);
 
@@ -1127,7 +1151,8 @@ export const rules = [
     ['a', expandLinkToAddressCityStatePostalCode],
     ['a', expandLinkToAddressCityState],
     ['a', expandLinkToPostalCode],
-    ['a', expandLinkToEntireListing]
+    ['a', expandLinkToEntireListing],
+    ['a', expandLinkToFullAddress],
   ]]
 ];
 
