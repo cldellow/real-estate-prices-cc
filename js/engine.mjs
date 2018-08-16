@@ -29,7 +29,7 @@ export function rewrite(el) {
     var txt = innerText(el);
 
     // Some sites spam crap in hidden elements? Ignore that.
-    if(el.classList.contains('hidden') || el.classList.contains('agent-info') || /^ *zestimate *\$ *[0-9]{2,3},?[0-9]{3}.{1,50}$/i.exec(txt)) {
+    if(el.nodeName == 'TEXTAREA' || el.classList.contains('hidden') || el.classList.contains('agent-info') || /^ *zestimate *\$ *[0-9]{2,3},?[0-9]{3}.{1,50}$/i.exec(txt)) {
       while(el.childNodes.length)
         el.childNodes[0].remove();
 

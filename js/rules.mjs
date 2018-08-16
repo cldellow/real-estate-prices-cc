@@ -402,6 +402,8 @@ function parseBeds(el) {
     /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bed ([0-9]{1,2})\s*$/i,
+    /^ *([0-9]{1,2})\s* br *, [0-9]+\s*full ba$/i,
+    /^ *\$ *[0-9,]{3,10} *([0-9]{1,2})\s* beds, *[0-9]{1,2}\s*full ba/i,
 
   ];
 
@@ -439,6 +441,8 @@ function parseBaths(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bathrooms *([0-9])\/[0-9]+ *$/i,
     /^ *([0-9]{1,2}) *full *baths? *$/i,
+    /^ *[0-9]{1,2}\s* br *, ([0-9]+)\s*full ba$/i,
+    /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *([0-9]{1,2})\s*full ba/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -457,7 +461,8 @@ function parseHalfBaths(el) {
     /^ *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
     /& *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
     /^ *Bathrooms: *[0-9]* *\(? *full *\)? *([0-9]{1,2}) *\(? *half *\)? *$/i,
-    /^ *Full: *[0-9]+ *\/ *Half: *([0-9]{1,2}) *$/i
+    /^ *Full: *[0-9]+ *\/ *Half: *([0-9]{1,2}) *$/i,
+    /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *[0-9]{1,2}\s*full ba, *([0-9]) *½ *ba/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -697,6 +702,16 @@ function extractMLS(el) {
     }
 }
 
+function extractCity(el) {
+  const txt = innerText(el);
+  const rv = /^ *([A-Z][a-z ]+) *$/.exec(txt);
+
+  if(rv)
+    return {
+      city: rv[1]
+    }
+}
+
 function extractDigit(field) {
   return function(el) {
     const txt = innerText(el);
@@ -857,6 +872,50 @@ function expandLinkToAddressCityState(el, listing) {
       }
     }
   }
+}
+
+function expandLinkToEntireListing(el, listing) {
+  // Only accept very minimal listings to avoid contagion.
+  const keys = Object.keys(listing);
+  for(var i = 0; i < keys.length; i++)
+    if(keys[i] != 'price' && keys[i] != 'baths' && keys[i] != 'beds' && keys[i] != 'half_baths')
+      return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+  const title = el.getAttribute('title');
+
+  if(!href)
+    return;
+
+  if(!title)
+    return;
+
+  console.log(href);
+  console.log(title);
+
+  const maybeCityStateZip = /^.*property in ([A-Z][^,]+), *([A-Z][A-Z]),? *([0-9]{5}) *$/i.exec(title);
+
+  if(!maybeCityStateZip)
+    return;
+
+  const [_, _city, _state, _zip] = maybeCityStateZip;
+  console.log(maybeCityStateZip);
+  console.log(_city);
+  console.log('cc');
+
+  const maybeAddress = new RegExp('/' + _city.replace(/[^a-z]+/ig, '') + ',' + _state + '/([0-9]+_[^/]+)').exec(href);
+
+  if(maybeAddress)
+    return {
+      address: maybeAddress[1].replace(/_+/g, ' '),
+      city: _city,
+      state: _state,
+      postal_code: _zip,
+      country: 'US'
+    };
 }
 
 function expandLinkToAddressCityStatePostalCode(el, listing) {
@@ -1024,6 +1083,7 @@ export const rules = [
     ['*', parseAcres],
     ['*', parseYearBuilt],
     ['*', parseSoldDate],
+    ['.q-town + span', extractCity],
     ['.q-address + span', parseAddressNoStateNoZip],
     ['.q-state + span', parseState],
     ['.q-postal-code + span', parsePostalCode],
@@ -1046,6 +1106,7 @@ export const rules = [
     ['a', expandLinkToAddressCityStatePostalCode],
     ['a', expandLinkToAddressCityState],
     ['a', expandLinkToPostalCode],
+    ['a', expandLinkToEntireListing]
   ]]
 ];
 
