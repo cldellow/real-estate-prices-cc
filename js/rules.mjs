@@ -168,6 +168,25 @@ function _parseStreetAddressUSCityStateNoPostal(txt) {
   }
 }
 
+const _parseStreetAddressCanadaCityStateNoPostalRE = new RegExp(
+  '^ *([0-9][^,]+), *([^,]+), *(BC|AB|SK|MB|ON|QC|PE|NS|NB|NL|NU|NT|YT)'
+);
+
+
+function _parseStreetAddressCanadaCityStateNoPostal(txt) {
+  const rv = _parseStreetAddressCanadaCityStateNoPostalRE.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1],
+      city: rv[2],
+      state: rv[3],
+      country: 'CA'
+    }
+  }
+}
+
+
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
   if(/[0-9] *car /i.exec(txt))
     return;
@@ -353,6 +372,7 @@ function parseStreetAddress(el) {
 
   fs.push(_parseStreetAddressUSCityStateNoPostal);
   fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
+  fs.push(_parseStreetAddressCanadaCityStateNoPostal);
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
