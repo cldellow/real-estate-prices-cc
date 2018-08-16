@@ -24,7 +24,7 @@ function clearInnerText(el) {
   }
 }
 
-export function rewrite(el) {
+function dorewrite(el) {
   if(el.nodeType == 1) { // Element
     var txt = innerText(el);
 
@@ -104,10 +104,22 @@ export function rewrite(el) {
         clearInnerText(el);
       }
 
-      rewrite(el.childNodes[i]);
+      dorewrite(el.childNodes[i]);
     }
 
   }
+}
+
+export function rewrite(el) {
+  dorewrite(el);
+  function remove(xs) {
+    for(var i = 0; xs && i < xs.length; i++)
+      xs[i].remove();
+  }
+  remove(el.querySelectorAll('.q-bedroom-2-x'));
+  remove(el.querySelectorAll('.q-bedroom-3-x'));
+  remove(el.querySelectorAll('.q-bedroom-4-x'));
+  remove(el.querySelectorAll('.q-bedroom-5-x'));
 }
 
 const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');

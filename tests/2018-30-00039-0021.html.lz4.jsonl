@@ -8,3 +8,4 @@
 {"price":599000,"beds":4,"baths":5,"address":"10821 Ballard Path","city":"Austin","state":"TX","postal_code":"78717","country":"US"}
 {"price":815000,"beds":3,"baths":3,"address":"1513 Forest Trail #10","city":"Austin","state":"TX","postal_code":"78703","country":"US"}
 {"price":1000000,"sqft":2674,"beds":4,"baths":4,"address":"1902 Ford St","city":"Austin","state":"TX","postal_code":"78704","country":"US"}
+{"price":1000000,"beds":4,"baths":4,"address":"1902 Ford St Austin","state":"TX","postal_code":"78704","country":"US"}
