@@ -328,7 +328,7 @@ function validAddress(rv) {
   if(address.indexOf(' is a ') >= 0)
     return;
 
-  if(/under contract/i.exec(address))
+  if(/under contract|\?/i.exec(address))
     return;
 
   if(/\( *\)/.exec(address))
@@ -464,6 +464,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2}\s* br *, ([0-9]+)\s*full ba$/i,
     /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *([0-9]{1,2})\s*full ba/i,
     /^ *full *bathrooms *:? *([0-9]) *$/i,
+    /^ *([0-9]{1,2})\/[0-9] *Full\/Half *Baths *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -485,6 +486,7 @@ function parseHalfBaths(el) {
     /^ *Full: *[0-9]+ *\/ *Half: *([0-9]{1,2}) *$/i,
     /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *[0-9]{1,2}\s*full ba, *([0-9]) *½ *ba/i,
     /^ *half *bathrooms *:? *([0-9]) *$/i,
+    /^ *[0-9]{1,2}\/([0-9]) *Full\/Half *Baths *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -597,6 +599,8 @@ function parseSoldPrice(el) {
   const res = [
     /^ *SOLD: *(\$ *[0-9,]*) *$/,
     /^ *sold for *:? *(\$ *[0-9,]*) *$/i,
+    /^ *sale price *:? *(\$ *[0-9,]+) *$/i,
+    /^ *(\$ *[0-9,]+) *sale price *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
