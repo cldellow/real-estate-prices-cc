@@ -768,6 +768,29 @@ export function extractDateFromString(txt) {
     if(c >= 10 && c <= 30 && a >= 1 && a <= 12 && b >= 1 && b <= 31)
       return `${2000 + c}-${a}-${b}`;
   }
+
+  const rv2 = /^ *(Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|Sept|September|Oct|October|Nov|November|Dec|December) ([0-9]{1,2}) *,? *([0-9]{4}) *$/.exec(txt);
+  if(rv2) {
+    const [_, _month, _day, _year] = rv2;
+    const day = parseInt(_day, 10);
+    const year = parseInt(_year, 10);
+
+    var month = 1;
+    if(/Feb/.exec(_month)) month = 2;
+    if(/Mar/.exec(_month)) month = 3;
+    if(/Apr/.exec(_month)) month = 4;
+    if(/May/.exec(_month)) month = 5;
+    if(/Jun/.exec(_month)) month = 6;
+    if(/Jul/.exec(_month)) month = 7;
+    if(/Aug/.exec(_month)) month = 8;
+    if(/Sep/.exec(_month)) month = 9;
+    if(/Oct/.exec(_month)) month = 10;
+    if(/Nov/.exec(_month)) month = 11;
+    if(/Dec/.exec(_month)) month = 12;
+
+    if(year >= 1850 && year <= 2050 && day >= 1 && day <= 31)
+      return `${year}-${month}-${day}`;
+  }
 }
 
 function extractDate(field) {
@@ -1112,11 +1135,11 @@ export const rules = [
     ['.q-bc-assessment-2017 + span', extractPrice('_assessment'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
-    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
+    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sold-price + dd, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
-    ['.q-lot-size + td, .q-acres + span', extractLotSizeFromSquareFeet, true],
+    ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
     ['*', parseBaths],
@@ -1136,7 +1159,7 @@ export const rules = [
     ['.q-zip + span, .q-zip-code + span', extractZip],
     ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span', extractMLS],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
-    ['.q-sold + span, .q-sale-date + span, .q-sold-date + *', extractDate('sold_date')],
+    ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span, .q-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
