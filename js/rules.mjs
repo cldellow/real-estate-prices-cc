@@ -407,7 +407,7 @@ function parseBeds(el) {
   const txt = innerText(el);
   const res = [
     /^ *([0-9]{1,2}) *bed\(?s?\)? *$/i,
-    /^ *([0-9]{1,2}) *bedbeds *$/i,
+    /^ *([0-9]{1,2}) *bed\s*beds *$/i,
     /\bbedrooms: *([0-9]{1,2})\b/i,
     /\bbeds: *([0-9]{1,2})\b/i,
     /^ *([0-9]{1,2}) *beds? *. *[0-9]{1,2} *baths? *$/i,
@@ -576,6 +576,7 @@ function parseSoldDate(el) {
   const txt = innerText(el);
   const res = [
     /^ *date sold *: *(.+) *$/i,
+    /^[( ]*sold on *(.+?)[ )]*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
