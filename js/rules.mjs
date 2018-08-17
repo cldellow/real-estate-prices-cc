@@ -1040,10 +1040,14 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
 
   const maybeAddress = innerText(el);
   const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+  const addressSlugNoApt = maybeAddress.toLowerCase().trim().replace(/[ ,]*#[0-9]+$/, '').replace(/[^a-z0-9]/g, '-');
+  console.log(addressSlugNoApt);
 
   const res = [
     new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
-    new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i')
+    new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
+    new RegExp('/' + addressSlugNoApt + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
+    new RegExp(addressSlugNoApt + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i')
   ];
 
   for(var i = 0; i < res.length; i++) {

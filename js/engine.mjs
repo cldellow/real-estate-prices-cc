@@ -120,6 +120,12 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-bedroom-3-x'));
   remove(el.querySelectorAll('.q-bedroom-4-x'));
   remove(el.querySelectorAll('.q-bedroom-5-x'));
+
+  // Don't trust any page that talks about estimated values.
+  if(el.querySelectorAll('.q-estimated-value').length) {
+    console.log('ESTIMATED VALUE - removing all!');
+    remove(el.childNodes);
+  }
 }
 
 const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');
