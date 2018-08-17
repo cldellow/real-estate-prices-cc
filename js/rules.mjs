@@ -386,6 +386,11 @@ function validAddress(rv) {
   if(/[0-9] *beds|[0-9] BR /.exec(address))
     return;
 
+  // or sqft?
+  if(/sqft/i.exec(address))
+    return;
+
+
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
   if(address.indexOf(' is a ') >= 0 || address.indexOf('market value') >= 0)
