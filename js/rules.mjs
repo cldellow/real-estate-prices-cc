@@ -562,6 +562,7 @@ function parseBaths(el) {
     /^ *full *bath\(?s?\)? *([0-9]{1,2}) *$/i,
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full *,? *[0-9]{1,2} *half baths? *$/i,
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full baths? *$/i,
+    /^ *([0-9]{1,2}) full *,? *[0-9]{1,2} *half bat?h?s? *$/i,
     /([0-9]{1,2})\/[1-35-9] Bath/i, // avoid capturing "3/4" baths, which usually means something else
   ];
 
@@ -589,6 +590,7 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} *full *\/ *([0-9]{1,2}) *half bathrooms *$/i,
     /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
     /^ *[0-9]{1,2} beds? *,? *[0-9]{1,2} full *,? *([0-9]{1,2}) *half baths? *$/i,
+    /^ *[0-9]{1,2} full *,? *([0-9]{1,2}) *half bat?h?s? *$/i,
     /[0-9]{1,2}\/([1-35-9]) Bath/i,
   ];
 
