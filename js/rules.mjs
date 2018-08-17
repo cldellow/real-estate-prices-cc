@@ -251,6 +251,7 @@ function parseAcres(el) {
     /^ *lot size:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
     /^ *lot acreage is:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *$/i,
     /^ *[0-9,]{3,6} sq ft; lot: ([0-9.]+) acres *$/i,
+    /^\s*[0-9,]{3,6}\s*sqft\s*lot\s*([0-9][0-9. ]+)\s*acr?e?s?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -258,10 +259,25 @@ function parseAcres(el) {
 
     if(rv) {
       return {
-        lot_size: parseFloat(rv[1].trim())
+        lot_size: parseFloat(rv[1].replace(/ /g, ''))
       }
     }
   }
+
+  const sqftRes = [
+    /^\s*[0-9,]{3,6}\s*sqft\s*lot\s*([0-9][0-9,]+)\s*sq *ft\s*$/i,
+  ];
+
+  for(var i = 0; i < sqftRes.length; i++) {
+    const rv = sqftRes[i].exec(txt);
+
+    if(rv) {
+      return {
+        lot_size: sqft2acres(parseFloat(rv[1].replace(/[ ,]/g, '')))
+      }
+    }
+  }
+
 }
 
 
@@ -494,7 +510,9 @@ function parseBeds(el) {
     /^ *([0-9]{1,2})\s* br *, [0-9]+\s*full ba$/i,
     /^ *\$ *[0-9,]{3,10} *([0-9]{1,2})\s* beds, *[0-9]{1,2}\s*full ba/i,
     /^ *([0-9]{1,2}) *lit\(?s?\)?\s*,?\s*[0-9.]+ *salles? de bain *$/i,
-    /^ *([0-9]{1,2}) beds - [0-9]{1,2}[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i
+    /^ *([0-9]{1,2}) beds - [0-9]{1,2}[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i,
+    /^ *([0-9]{1,2}) beds? *,? *[0-9]{1,2} full *,? *[0-9]{1,2} *half baths? *$/i,
+    /^ *([0-9]{1,2}) beds? *,? *[0-9]{1,2} full baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -542,6 +560,8 @@ function parseBaths(el) {
     / [0-9]{1,2} *beds? *\| *([0-9]{1,2}) *baths? */i,
     /^ *[0-9]{1,2} beds - ([0-9]{1,2})[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i,
     /^ *full *bath\(?s?\)? *([0-9]{1,2}) *$/i,
+    /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full *,? *[0-9]{1,2} *half baths? *$/i,
+    /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -567,6 +587,7 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} full *bathrooms *,? *([0-9]{1,2}) * half bathrooms *$/i,
     /^ *[0-9]{1,2} *full *\/ *([0-9]{1,2}) *half bathrooms *$/i,
     /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
+    /^ *[0-9]{1,2} beds? *,? *[0-9]{1,2} full *,? *([0-9]{1,2}) *half baths? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -623,7 +644,9 @@ function parseSqft(el) {
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
     /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
     /^ *([0-9,]{3,6}) sq ft; lot: [0-9.]+ acres *$/i,
-    /^ *[0-9]{1,2} beds - [0-9]{1,2}[.0-9]{0,2} baths - ([0-9]{3,4}) * sqft *$/i
+    /^ *[0-9]{1,2} beds - [0-9]{1,2}[.0-9]{0,2} baths - ([0-9]{3,4}) * sqft *$/i,
+    /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9. ]+\s*acr?e?s?\s*$/i,
+    /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9,]+\s*sq *ft\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1079,7 +1102,7 @@ function expandLinkToEntireListing(el, listing) {
 
   const [_, _city, _state, _zip] = maybeCityStateZip;
 
-  const maybeAddress = new RegExp('/' + _city.replace(/[^a-z]+/ig, '') + ',' + _state + '/([0-9]+_[^/]+)').exec(href);
+  const maybeAddress = new RegExp('/' + _city.replace(/[^a-z]+/ig, '_') + ',' + _state + '/([0-9]+_[^/]+)').exec(href);
 
   if(maybeAddress)
     return {
