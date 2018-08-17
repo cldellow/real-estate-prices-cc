@@ -562,6 +562,7 @@ function parseBaths(el) {
     /^ *full *bath\(?s?\)? *([0-9]{1,2}) *$/i,
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full *,? *[0-9]{1,2} *half baths? *$/i,
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full baths? *$/i,
+    /([0-9]{1,2})\/[1-35-9] Bath/i, // avoid capturing "3/4" baths, which usually means something else
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -588,6 +589,7 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} *full *\/ *([0-9]{1,2}) *half bathrooms *$/i,
     /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
     /^ *[0-9]{1,2} beds? *,? *[0-9]{1,2} full *,? *([0-9]{1,2}) *half baths? *$/i,
+    /[0-9]{1,2}\/([1-35-9]) Bath/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -936,6 +938,7 @@ function parseYearBuilt(el) {
 
   const res = [
     /^ *([0-9]{4}) *year built *$/i,
+    /^ *([0-9]{4}) *built *$/i,
     /^ *built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
   ];
@@ -1136,7 +1139,8 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
     new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
     new RegExp('/' + addressSlugNoApt + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
     new RegExp(addressSlugNoApt + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
-    new RegExp('/' + addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})/mls', 'i')
+    new RegExp('/' + addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})/mls', 'i'),
+    new RegExp('/' + addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})/$', 'i'),
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1297,6 +1301,7 @@ export const rules = [
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
+    ['*', parseYearBuilt],
     ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-dimensions + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
@@ -1312,7 +1317,6 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['*', parseLotSize],
-    ['*', parseYearBuilt],
     ['*', parseSoldDate],
     ['.q-town + span', extractCity],
     ['.q-address + span', parseAddressNoStateNoZip],

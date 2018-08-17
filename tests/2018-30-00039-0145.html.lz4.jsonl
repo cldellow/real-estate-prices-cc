@@ -1,2 +1,2 @@
-{"price":315000,"sqft":2014,"beds":4,"baths":2,"external_id":"1289851","address":"268 Parkside Lp","city":"Napavine","state":"WA","postal_code":"98532","country":"US","lot_size":0.17,"year_built":2018}
-{"price":315000,"sqft":2014,"beds":4,"baths":2,"external_id":"1289851","address":"268 Parkside Lp Napavine","state":"WA","postal_code":"98532","country":"US","lot_size":0.17}
+{"price":315000,"external_id":"1289851","address":"268 Parkside Lp","city":"Napavine","state":"WA","postal_code":"98532","country":"US"}
+{"price":315000,"year_built":2018,"sqft":2014,"beds":4,"baths":2,"external_id":"1289851","address":"268 Parkside Lp Napavine","state":"WA","postal_code":"98532","country":"US","lot_size":0.17}
