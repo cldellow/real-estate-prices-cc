@@ -424,6 +424,7 @@ function parseBeds(el) {
     /^ *bed ([0-9]{1,2})\s*$/i,
     /^ *([0-9]{1,2})\s* br *, [0-9]+\s*full ba$/i,
     /^ *\$ *[0-9,]{3,10} *([0-9]{1,2})\s* beds, *[0-9]{1,2}\s*full ba/i,
+    /^ *([0-9]{1,2}) *lit\(?s?\)?\s*,?\s*[0-9.]+ *salles? de bain *$/i,
 
   ];
 
@@ -465,6 +466,7 @@ function parseBaths(el) {
     /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *([0-9]{1,2})\s*full ba/i,
     /^ *full *bathrooms *:? *([0-9]) *$/i,
     /^ *([0-9]{1,2})\/[0-9] *Full\/Half *Baths *$/i,
+    /^ *[0-9]{1,2} *lit\(?s?\)?\s*,?\s*([0-9]+)[.0-9]*? *salles? de bain *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -540,6 +542,7 @@ function parseSqft(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *sq *ft ([0-9,]{3,4})\s*$/i,
+    /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -941,8 +944,6 @@ function expandLinkToFullAddress(el, listing) {
     return;
 
   const [_, address, city, state, zip] = maybeAddressCityStateZip;
-  console.log(city);
-  console.log('cc');
 
   if(maybeAddressCityStateZip)
     return {
