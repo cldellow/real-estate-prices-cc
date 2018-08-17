@@ -139,6 +139,29 @@ function parseState(el) {
   }
 }
 
+const CAProvinces = [
+  ['British Columbia', 'BC'],
+  ['Alberta', 'AB'],
+  ['Saskatchewan', 'SK'],
+  ['Manitoba', 'MB'],
+  ['Ontario', 'ON'],
+  ['Quebec', 'QC'],
+  ['Nova Scotia', 'NS'],
+  ['New Brunswick', 'NB'],
+  ['Prince Edward Island', 'PE'],
+  ['Newfoundland', 'NL'],
+  ['Nunavut', 'NU'],
+  ['Yukon', 'YT'],
+  ['Northwest Territories', 'NT']
+];
+const _caProvinceToAbbrev = {};
+for(var i = 0; i < CAProvinces.length; i++) {
+  const [name, abbrev] = CAProvinces[i];
+  _caProvinceToAbbrev[abbrev] = abbrev;
+  _caProvinceToAbbrev[name] = abbrev;
+  _caProvinceToAbbrev[name.toUpperCase()] = abbrev;
+}
+
 function parseAddressNoStateNoZip(el) {
   const txt = innerText(el);
   const rv = /^ *([1-9][0-9]* *[0-9A-Z][^ ]+ *[0-9A-Z].+) *$/.exec(txt);
@@ -324,6 +347,10 @@ function validAddress(rv) {
   if(/[0-9]{2},[0-9]{3}/.exec(address))
     return;
 
+  // is it just numbers?
+  if(/^[0-9]+$/.exec(address))
+    return;
+
   // or a number of beds?
   if(/[0-9] *beds/.exec(address))
     return;
@@ -351,6 +378,41 @@ function validAddress(rv) {
     }
   }
   return rv;
+}
+
+function parseLocationBlock(el) {
+  function sel(css) {
+    const rv = el.querySelectorAll(css);
+    if(rv.length == 1)
+      return rv[0];
+  }
+
+  const _location = sel('.q-location');
+  const _address = sel('.q-address + *');
+  const _city = sel('.q-city + *');
+  const _province = sel('.q-province-state + *');
+  const _zip = sel('.q-postal-zip-code + *');
+  if(!(_location && _address && _city && _province && _zip))
+    return;
+
+  const address = innerText(_address);
+  const city = innerText(_city);
+  const province = innerText(_province);
+  const zip = innerText(_zip);
+
+  if(/^ *[A-Z][0-9][A-Z] *[0-9][A-Z][0-9] *$/i.exec(zip) && _caProvinceToAbbrev[province.toUpperCase()]) {
+    return {
+      address: address,
+      city: city,
+      state: _caProvinceToAbbrev[province.toUpperCase()],
+      postal_code: zip.toUpperCase().replace(/ /g, ''),
+      country: 'CA'
+    }
+  }
+  console.log(address);
+  console.log(city);
+  console.log(province);
+  console.log(zip);
 }
 
 function parseStreetAddress(el) {
@@ -1041,7 +1103,6 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
   const maybeAddress = innerText(el);
   const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
   const addressSlugNoApt = maybeAddress.toLowerCase().trim().replace(/[ ,]*#[0-9]+$/, '').replace(/[^a-z0-9]/g, '-');
-  console.log(addressSlugNoApt);
 
   const res = [
     new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
@@ -1218,6 +1279,7 @@ export const rules = [
     ['*', parseHalfBaths],
     ['*', parseMLS],
     ['a', parseMLSAndMLSId],
+    ['*', parseLocationBlock],
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
