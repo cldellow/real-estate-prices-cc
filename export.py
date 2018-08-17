@@ -30,7 +30,7 @@ def parse(in_name, out_name):
                         contents = _bytes.decode("windows-1252")
                     except UnicodeDecodeError:
                         print('unable to parse')
-                        next
+                        continue
 
                 contents = re.sub(nuke_re,
                                   ' ',
