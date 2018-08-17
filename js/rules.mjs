@@ -154,6 +154,19 @@ const CAProvinces = [
   ['Yukon', 'YT'],
   ['Northwest Territories', 'NT']
 ];
+
+const _caProvinceAlternation = (function() {
+  const rv = [];
+  for(var i = 0; i < CAProvinces.length; i++) {
+    const [name, abbrev] = CAProvinces[i];
+    rv.push(name);
+    rv.push(name.toUpperCase());
+    rv.push(abbrev);
+  }
+
+  return rv.join('|');
+})();
+
 const _caProvinceToAbbrev = {};
 for(var i = 0; i < CAProvinces.length; i++) {
   const [name, abbrev] = CAProvinces[i];
@@ -192,7 +205,7 @@ function _parseStreetAddressUSCityStateNoPostal(txt) {
 }
 
 const _parseStreetAddressCanadaCityStateNoPostalRE = new RegExp(
-  '^ *([0-9][^,]+), *([^,]+), *(BC|AB|SK|MB|ON|QC|PE|NS|NB|NL|NU|NT|YT)'
+  '^ *([0-9][^,]+), *([^,]+), *(' + _caProvinceAlternation + ')'
 );
 
 
@@ -203,7 +216,7 @@ function _parseStreetAddressCanadaCityStateNoPostal(txt) {
     return {
       address: rv[1],
       city: rv[2],
-      state: rv[3],
+      state: _caProvinceToAbbrev[rv[3].toUpperCase()],
       country: 'CA'
     }
   }
@@ -252,6 +265,7 @@ function parseAcres(el) {
     /^ *lot acreage is:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *$/i,
     /^ *[0-9,]{3,6} sq ft; lot: ([0-9.]+) acres *$/i,
     /^\s*[0-9,]{3,6}\s*sqft\s*lot\s*([0-9][0-9. ]+)\s*acr?e?s?\s*$/i,
+    /^ *([0-9.]+) ac *lot *size *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
