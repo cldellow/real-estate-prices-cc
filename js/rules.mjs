@@ -227,6 +227,7 @@ function parseAcres(el) {
     /^ *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
     /^ *lot size:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
     /^ *lot acreage is:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *$/i,
+    /^ *[0-9,]{3,6} sq ft; lot: ([0-9.]+) acres *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -323,9 +324,13 @@ function validAddress(rv) {
   if(/[0-9]{2},[0-9]{3}/.exec(address))
     return;
 
+  // or a number of beds?
+  if(/[0-9] *beds/.exec(address))
+    return;
+
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
-  if(address.indexOf(' is a ') >= 0)
+  if(address.indexOf(' is a ') >= 0 || address.indexOf('market value') >= 0)
     return;
 
   if(/under contract|\?/i.exec(address))
@@ -467,6 +472,7 @@ function parseBaths(el) {
     /^ *full *bathrooms *:? *([0-9]) *$/i,
     /^ *([0-9]{1,2})\/[0-9] *Full\/Half *Baths *$/i,
     /^ *[0-9]{1,2} *lit\(?s?\)?\s*,?\s*([0-9]+)[.0-9]*? *salles? de bain *$/i,
+    /^ *([0-9]{1,2}) full *bathrooms *,? *[0-9]{1,2} * half bathrooms *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -489,6 +495,7 @@ function parseHalfBaths(el) {
     /^ *\$ *[0-9,]{3,10} *[0-9]{1,2}\s* beds, *[0-9]{1,2}\s*full ba, *([0-9]) *½ *ba/i,
     /^ *half *bathrooms *:? *([0-9]) *$/i,
     /^ *[0-9]{1,2}\/([0-9]) *Full\/Half *Baths *$/i,
+    /^ *[0-9]{1,2} full *bathrooms *,? *([0-9]{1,2}) * half bathrooms *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -544,6 +551,7 @@ function parseSqft(el) {
     /^ *sq *ft ([0-9,]{3,4})\s*$/i,
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
     /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
+    /^ *([0-9,]{3,6}) sq ft; lot: [0-9.]+ acres *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
