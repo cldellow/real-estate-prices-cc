@@ -192,7 +192,7 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     return;
 
 
-  const rv = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
+  const rv = /^ *([1-9][0-9A-Za-z .'#]+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
 
   if(rv) {
     return {
@@ -543,6 +543,7 @@ function parseSqft(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *sq *ft ([0-9,]{3,4})\s*$/i,
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
+    /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -683,6 +684,22 @@ function sqft2acres(sqft) {
   return sqft * 0.000022956841138040226540538088;
 }
 
+function parseLotSize(el) {
+  const txt = innerText(el);
+  const res = [
+    /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+
+    if(rv)
+      return {
+        lot_size: sqft2acres(parseInt(rv[1].replace(/[ ,]+/g, ''), 10))
+      }
+  }
+}
+
 function extractLotSizeFromSquareFeet(el) {
   const txt = innerText(el);
   const res = [
@@ -817,6 +834,7 @@ function parseYearBuilt(el) {
   const res = [
     /^ *([0-9]{4}) *year built *$/i,
     /^ *built in:? *([0-9]{4}) *$/i,
+    /^ *year built *:? *([0-9]{4}) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1028,6 +1046,32 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
   }
 }
 
+function expandAddressCityToStatePostalCode2(el, listing) {
+  if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  // be very aggressive: nuke non alphanumerics.
+  const addressCitySlug = (listing['address'] + listing['city']).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const re = RegExp(addressCitySlug + '([a-z][a-z])([0-9]{5})$');
+
+  const rv = re.exec(href.toLowerCase().replace(/[^a-z0-9]/g, ''));
+  if(rv) {
+    return {
+      postal_code: rv[2],
+      state: rv[1].toUpperCase(),
+      country: 'US'
+    }
+  }
+}
+
 function expandAddressCityToStatePostalCode(el, listing) {
   if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
     return;
@@ -1156,6 +1200,7 @@ export const rules = [
     ['*', parseStreetAddress],
     ['*', parseCityState],
     ['*', parseAcres],
+    ['*', parseLotSize],
     ['*', parseYearBuilt],
     ['*', parseSoldDate],
     ['.q-town + span', extractCity],
@@ -1175,6 +1220,7 @@ export const rules = [
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractIntegerFromFloat('baths')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
+    ['a', expandAddressCityToStatePostalCode2],
     ['a', expandCityStateToAddressPostalCode],
     ['a', expandMLSAndMLSIdToAddressStatePostalCode],
     ['a', expandExternalIdCityToAddressStatePostalCode],

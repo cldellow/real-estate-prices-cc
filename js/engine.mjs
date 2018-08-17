@@ -29,7 +29,7 @@ function dorewrite(el) {
     var txt = innerText(el);
 
     // Some sites spam crap in hidden elements? Ignore that.
-    if(el.nodeName == 'TEXTAREA' || el.classList.contains('hidden') || el.classList.contains('agent-info') || /^ *zestimate *\$ *[0-9]{2,3},?[0-9]{3}.{1,50}$/i.exec(txt)) {
+    if(el.nodeName == 'TEXTAREA' || el.classList.contains('rich-snippet-hidden') || el.classList.contains('hidden') || el.classList.contains('agent-info') || /^ *zestimate *\$ *[0-9]{2,3},?[0-9]{3}.{1,50}$/i.exec(txt)) {
       while(el.childNodes.length)
         el.childNodes[0].remove();
 
@@ -150,6 +150,18 @@ function mergeMapKeys(acc, cur) {
   return acc;
 }
 
+function _differsOnlyByUnitSuffix(a, b) {
+  if(a.toUpperCase().startsWith(b.toUpperCase())) {
+    const remnant = a.substring(b.length); 
+    if(/ *# *[0-9]+ */.exec(remnant))
+      return a;
+  }
+}
+
+function differsOnlyByUnitSuffix(a, b) {
+  return _differsOnlyByUnitSuffix(a, b) || _differsOnlyByUnitSuffix(b, a);
+}
+
 function tryListing(candidate, el) {
   // Return merged candidate iff it has no conflicting values.
   const entries = Object.entries(candidate);
@@ -193,6 +205,10 @@ function tryListing(candidate, el) {
       else
         rv[k] = v[0];
       ok = true;
+    } else if // does address only differ by a unit suffix? eg 450 alton rd and 450 alton rd #605
+     (k == 'address' && v.length == 2 && differsOnlyByUnitSuffix(v[0], v[1])) {
+      rv[k] = differsOnlyByUnitSuffix(v[0], v[1]);
+      ok = true;
     } else if(k == 'city' && v.length == 2 && candidate['address'] && candidate['address'].length == 1 &&
       candidate['state'] && candidate['state'].length == 1 && candidate['city'].indexOf(candidate['state'][0]) >= 0 &&
       candidate['address'][0].endsWith(candidate['city'].find(x => x != candidate['state'][0]))
@@ -221,8 +237,16 @@ export function isSubset(needle, haystack) {
   for(var i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
 
-    if(k[0] != '_' && haystack[k] != v)
-      return false;
+    if(k[0] == '_')
+      continue;
+
+    if(haystack[k] == v)
+      continue;
+
+    if(k == 'address' && v && haystack[k] && haystack[k].toLowerCase().startsWith(v.toLowerCase()))
+      continue;
+
+    return false;
   }
 
   return true;
