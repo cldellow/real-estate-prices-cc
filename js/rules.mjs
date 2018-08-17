@@ -282,7 +282,7 @@ function _parseStreetAddressCanadaCityProvince(txt) {
   const rv = /^ *([0-9].+)[, ]+(.+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
 
   if(rv) {
-    var state = rv[2];
+    var state = rv[3];
 
     if(state.startsWith('Newfoundland'))
       state = 'NL';
@@ -311,8 +311,9 @@ function _parseStreetAddressCanadaCityProvince(txt) {
 
     return {
       address: rv[1].trim(),
+      city: rv[2].trim(),
       state: state.trim(),
-      postal_code: rv[3].trim(),
+      postal_code: rv[4].trim(),
       country: 'CA'
     }
   }
