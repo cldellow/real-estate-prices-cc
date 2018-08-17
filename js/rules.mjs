@@ -493,7 +493,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2})\s* br *, [0-9]+\s*full ba$/i,
     /^ *\$ *[0-9,]{3,10} *([0-9]{1,2})\s* beds, *[0-9]{1,2}\s*full ba/i,
     /^ *([0-9]{1,2}) *lit\(?s?\)?\s*,?\s*[0-9.]+ *salles? de bain *$/i,
-
+    /^ *([0-9]{1,2}) beds - [0-9]{1,2}[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -539,6 +539,8 @@ function parseBaths(el) {
     /^ *([0-9]{1,2}) *full *\/ *[0-9]{1,2} *half bathrooms *$/i,
     /^ *([0-9]{1,2}) *full *, *[0-9]{1,2} *partial baths *$/i,
     / [0-9]{1,2} *beds? *\| *([0-9]{1,2}) *baths? */i,
+    /^ *[0-9]{1,2} beds - ([0-9]{1,2})[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i,
+    /^ *full *bath\(?s?\)? *([0-9]{1,2}) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -616,10 +618,11 @@ function parseSqft(el) {
     /^ *[0-9]{1,2} Bed, [0-9.]+ Bath \([0-9] Full Bath\), ([0-9]{1,2},[0-9]{3}) sqft */i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
-    /^ *sq *ft ([0-9,]{3,4})\s*$/i,
+    /^ *sq\.? *ft\.? ([0-9,]{3,4})\s*$/i,
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
     /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
     /^ *([0-9,]{3,6}) sq ft; lot: [0-9.]+ acres *$/i,
+    /^ *[0-9]{1,2} beds - [0-9]{1,2}[.0-9]{0,2} baths - ([0-9]{3,4}) * sqft *$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
