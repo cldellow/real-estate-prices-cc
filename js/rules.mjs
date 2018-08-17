@@ -416,6 +416,7 @@ function parseBeds(el) {
     /\bbedrooms: *([0-9]{1,2})\b/i,
     /\bbeds: *([0-9]{1,2})\b/i,
     /^ *([0-9]{1,2}) *beds? *. *[0-9]{1,2} *baths? *$/i,
+    / ([0-9]{1,2}) *beds? *\| *[0-9]{1,2} *baths? */i,
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2} *bathrooms? */i,
     /^ *([0-9]{1,2}) *bedrooms? *. *[0-9]{1,2}[.0-9]{0,2} *baths? */i,
     /^ *([0-9]{1,2}) *bds?[ ,]*$/i,
@@ -473,6 +474,9 @@ function parseBaths(el) {
     /^ *([0-9]{1,2})\/[0-9] *Full\/Half *Baths *$/i,
     /^ *[0-9]{1,2} *lit\(?s?\)?\s*,?\s*([0-9]+)[.0-9]*? *salles? de bain *$/i,
     /^ *([0-9]{1,2}) full *bathrooms *,? *[0-9]{1,2} * half bathrooms *$/i,
+    /^ *([0-9]{1,2}) *full *\/ *[0-9]{1,2} *half bathrooms *$/i,
+    /^ *([0-9]{1,2}) *full *, *[0-9]{1,2} *partial baths *$/i,
+    / [0-9]{1,2} *beds? *\| *([0-9]{1,2}) *baths? */i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -496,6 +500,8 @@ function parseHalfBaths(el) {
     /^ *half *bathrooms *:? *([0-9]) *$/i,
     /^ *[0-9]{1,2}\/([0-9]) *Full\/Half *Baths *$/i,
     /^ *[0-9]{1,2} full *bathrooms *,? *([0-9]{1,2}) * half bathrooms *$/i,
+    /^ *[0-9]{1,2} *full *\/ *([0-9]{1,2}) *half bathrooms *$/i,
+    /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
