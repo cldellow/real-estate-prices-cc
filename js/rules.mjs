@@ -353,7 +353,7 @@ function validAddress(rv) {
     return;
 
   // or a number of beds?
-  if(/[0-9] *beds/.exec(address))
+  if(/[0-9] *beds|[0-9] BR /.exec(address))
     return;
 
   // If we have what looks a lot like a bland promotional statement, we probably
@@ -1112,7 +1112,8 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
     new RegExp('/' + addressSlug + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
     new RegExp(addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
     new RegExp('/' + addressSlugNoApt + '/([a-z-]+)/([a-z][a-z])/([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])/', 'i'),
-    new RegExp(addressSlugNoApt + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i')
+    new RegExp(addressSlugNoApt + '-([a-z-]+)-([a-z][a-z])-([0-9]{5}|[a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
+    new RegExp('/' + addressSlug + '-([a-z-]+)-([a-z][a-z])-([0-9]{5})/mls', 'i')
   ];
 
   for(var i = 0; i < res.length; i++) {
