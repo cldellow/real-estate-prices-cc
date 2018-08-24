@@ -3,54 +3,6 @@ import { innerText } from './innertext.mjs';
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
-const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})\b/;
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
-
-function _parseStreetAddressUSFull(txt) {
-  const debug = !false;
-
-  if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
-    console.log('_parseStreetAddressUSFull: ' + txt);
-  }
-  var rv = _parseStreetAddressUSFullAptRe.exec(txt);
-  if(!rv)
-    rv = _parseStreetAddressUSFullRe.exec(txt);
-
-  if(rv) {
-    //console.log(rv);
-    return {
-      address: rv[1].trim(),
-      city: rv[2].trim(),
-      state: rv[3].trim(),
-      postal_code: rv[4].trim(),
-      country: 'US'
-    }
-  }
-}
-
-function _parseStreetAddressStateZip(txt) {
-  const rv = /^ *([1-9][0-9A-Za-z .']+),? *([A-Z][A-Z]) *,* *([0-9]{5})\b */.exec(txt);
-
-  if(rv) {
-    return {
-      address: rv[1].trim(),
-      state: rv[2].trim(),
-      postal_code: rv[3].trim(),
-      country: 'US'
-    }
-  }
-
-  const rv2 = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]) *,* *([0-9]{5}) *- *[0-9]{4} *$/.exec(txt);
-  if(rv2) {
-    return {
-      address: rv2[1].trim(),
-      state: rv2[2].trim(),
-      postal_code: rv2[3].trim(),
-      country: 'US'
-    }
-  }
-}
-
 const USStates = [
   ['Alabama', 'AL'],
   ['Alaska', 'AK'],
@@ -125,6 +77,55 @@ const _usStateAlternation = (function() {
 
   return rv.join('|');
 })();
+
+
+const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,]+), +([^,]+?),? +(' + _usStateAlternation + ') *,? +([0-9]{5})\\b');
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
+
+function _parseStreetAddressUSFull(txt) {
+  const debug = !false;
+
+  if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
+    console.log('_parseStreetAddressUSFull: ' + txt);
+  }
+  var rv = _parseStreetAddressUSFullAptRe.exec(txt);
+  if(!rv)
+    rv = _parseStreetAddressUSFullRe.exec(txt);
+
+  if(rv) {
+    //console.log(rv);
+    return {
+      address: rv[1].trim(),
+      city: rv[2].trim(),
+      state: _usStateToAbbrev[rv[3].trim()],
+      postal_code: rv[4].trim(),
+      country: 'US'
+    }
+  }
+}
+
+function _parseStreetAddressStateZip(txt) {
+  const rv = /^ *([1-9][0-9A-Za-z .']+),? *([A-Z][A-Z]) *,* *([0-9]{5})\b */.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1].trim(),
+      state: rv[2].trim(),
+      postal_code: rv[3].trim(),
+      country: 'US'
+    }
+  }
+
+  const rv2 = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]) *,* *([0-9]{5}) *- *[0-9]{4} *$/.exec(txt);
+  if(rv2) {
+    return {
+      address: rv2[1].trim(),
+      state: rv2[2].trim(),
+      postal_code: rv2[3].trim(),
+      country: 'US'
+    }
+  }
+}
 
 const _onlyUSStateRe = new RegExp('^ *(' + _usStateAlternation + ') *$');
 function parseState(el) {
