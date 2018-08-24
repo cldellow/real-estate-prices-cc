@@ -3,8 +3,8 @@ import { innerText } from './innertext.mjs';
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
 
-const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})/;
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})/;
+const _parseStreetAddressUSFullRe = /([0-9][^,]+), +([^,]+?),? +([A-Z][A-Z]) *,? +([0-9]{5})\b/;
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = !false;
@@ -29,7 +29,7 @@ function _parseStreetAddressUSFull(txt) {
 }
 
 function _parseStreetAddressStateZip(txt) {
-  const rv = /^ *([1-9][0-9A-Za-z .']+),? *([A-Z][A-Z]) *,* *([0-9]{5}) */.exec(txt);
+  const rv = /^ *([1-9][0-9A-Za-z .']+),? *([A-Z][A-Z]) *,* *([0-9]{5})\b */.exec(txt);
 
   if(rv) {
     return {
