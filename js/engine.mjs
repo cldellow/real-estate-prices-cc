@@ -116,7 +116,8 @@ function dorewrite(el) {
     // Ban elements that look like contact info -- a phone # followed by an address, or vice versa.
     // Apply this ban as low as possible.
     txt = innerText(el);
-    if(/[0-9]{3}-[0-9]{3}-[0-9]{4}\s*[0-9]+[^,]+,[^,]+,\s+[A-Z]{2} /.exec(txt)) {
+    if(/[0-9]{3}-[0-9]{3}-[0-9]{4}\s*[0-9]+[^,]+,[^,]+,\s+[A-Z]{2} /.exec(txt) ||
+       /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/.exec(txt)) {
       console.log("looks like contact: ");
       console.log(txt);
       el.remove();
