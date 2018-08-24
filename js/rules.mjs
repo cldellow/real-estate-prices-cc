@@ -532,6 +532,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) beds - [0-9]{1,2}[.0-9]{0,2} baths - [0-9]{3,4} * sqft *$/i,
     /^ *([0-9]{1,2}) beds? *,? *[0-9]{1,2} full *,? *[0-9]{1,2} *half baths? *$/i,
     /^ *([0-9]{1,2}) beds? *,? *[0-9]{1,2} full baths? *$/i,
+    /([0-9]{1,2})\s+Beds,\s+[0-9]{1,2}\s+Baths/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -583,6 +584,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full baths? *$/i,
     /^ *([0-9]{1,2}) full *,? *[0-9]{1,2} *half bat?h?s? *$/i,
     /([0-9]{1,2})\/[1-35-9] Bath/i, // avoid capturing "3/4" baths, which usually means something else
+    /[0-9]{1,2}\s+Beds,\s+([0-9]{1,2})\s+Baths/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
