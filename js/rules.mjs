@@ -382,6 +382,9 @@ function validAddress(rv) {
   if(/[0-9]{2},[0-9]{3}/.exec(address))
     return;
 
+  if(/^[0-9 ,#-]+$/.exec(address))
+    return;
+
   // is it just numbers?
   if(/^[0-9]+$/.exec(address))
     return;
@@ -459,7 +462,7 @@ function parseStreetAddress(el) {
   const plainText = innerText(el).replace(priceRe, '');
   const commaForBR = innerText(el, {'BR': ', '}, 'br').replace(priceRe, '');
   // This should maybe just be for all block elements? Meh.
-  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ',', 'P': ','}, 'br+headers').replace(priceRe, '');
+  const commaForBRAndHeaders = innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ',', 'DIV': ',', 'P': ','}, 'br+headers').replace(priceRe, '');
 
   const fs = [];
   if(el.possibleZip) {
@@ -535,6 +538,7 @@ function parseBeds(el) {
     /([0-9]{1,2})\s+Beds,\s+[0-9]{1,2}\s+Baths/i,
     /([0-9]{1,2})\s+Beds,\s+[0-9]{1,2}\s+Full Baths/i,
     /([0-9]{1,2})\s+bedrooms and\s+[0-9]{1,2}\s+Full Baths/i,
+    /^ *([0-9]{1,2})\s+beds?\s*\|\s*[0-9]{1,2}\.[0-9]+\s+Baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -590,6 +594,7 @@ function parseBaths(el) {
     /[0-9]{1,2}\s+Beds,\s+([0-9]{1,2})\s+Full Baths/i,
     /[0-9]{1,2}\s+Beds,?\s+([0-9]{1,2})\.[0-9]+\s+Baths/i,
     /[0-9]{1,2}\s+bedrooms and\s+([0-9]{1,2})\s+Full Baths/i,
+    /^ *[0-9]{1,2}\s+beds?\s*\|\s*([0-9]{1,2})\.[0-9]+\s+Baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
