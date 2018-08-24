@@ -104,23 +104,26 @@ function _parseStreetAddressUSFull(txt) {
   }
 }
 
+const _parseStreetAddressStateZipRe1 = new RegExp('^ *([1-9][0-9A-Za-z .\']+),? *(' + _usStateAlternation + ') *,* *([0-9]{5})\\b *');
+const _parseStreetAddressStateZipRe2 = new RegExp('^ *([1-9][0-9A-Za-z .\']+), *(' + _usStateAlternation + ') *,* *([0-9]{5}) *- *[0-9]{4} *$');
+
 function _parseStreetAddressStateZip(txt) {
-  const rv = /^ *([1-9][0-9A-Za-z .']+),? *([A-Z][A-Z]) *,* *([0-9]{5})\b */.exec(txt);
+  const rv = _parseStreetAddressStateZipRe1.exec(txt);
 
   if(rv) {
     return {
       address: rv[1].trim(),
-      state: rv[2].trim(),
+      state: _usStateToAbbrev[rv[2].trim()],
       postal_code: rv[3].trim(),
       country: 'US'
     }
   }
 
-  const rv2 = /^ *([1-9][0-9A-Za-z .']+), *([A-Z][A-Z]) *,* *([0-9]{5}) *- *[0-9]{4} *$/.exec(txt);
+  const rv2 = _parseStreetAddressStateZipRe2.exec(txt);
   if(rv2) {
     return {
       address: rv2[1].trim(),
-      state: rv2[2].trim(),
+      state: _usStateToAbbrev[rv2[2].trim()],
       postal_code: rv2[3].trim(),
       country: 'US'
     }
@@ -1351,7 +1354,7 @@ export const rules = [
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year-built + span, .q-built + div', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span', extractSquareFeet],
+    ['.q-sq-feet + span, .q-sq-ft + strong, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span', extractSquareFeet],
     ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
