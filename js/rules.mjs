@@ -80,7 +80,7 @@ const _usStateAlternation = (function() {
 
 
 const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,]+), +([^,]+?),? +(' + _usStateAlternation + ') *,? +([0-9]{5})\\b');
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *[0-9]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *#? *[0-9-]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = !false;
@@ -388,7 +388,7 @@ function validAddress(rv) {
     return;
 
   // or sqft?
-  if(/sqft/i.exec(address))
+  if(/sqft|for sale/i.exec(address))
     return;
 
 
