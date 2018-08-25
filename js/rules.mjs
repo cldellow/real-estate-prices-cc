@@ -609,6 +609,7 @@ function parseBeds(el) {
     /^ *Bed\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*([0-9]{1,2}) BR, [0-9]{1,2}(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, ([0-9]) bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
+    /^ *([0-9])\s*Beds,?\s*[0-9]\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -677,6 +678,7 @@ function parseBaths(el) {
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, ([0-9]{1,2})[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *Baths\s*([0-9]{1,2})\s*-0\s*$/i,
     /^ *([0-9]{1,2})\s*full bathrooms\s*$/i,
+    /^ *[0-9]\s*Beds,?\s*([0-9])\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -771,6 +773,7 @@ function parseSqft(el) {
     /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9. ]+\s*acr?e?s?\s*$/i,
     /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9,]+\s*sq *ft\s*$/i,
     /^\s*[0-9]{1,2} BR, [0-9]{1,2}\.?[0-9]* BA, ([0-9]{3,5}) sq ?ft\s*$/i,
+    /^ *[0-9]\s*Beds,?\s*[0-9]\s*Bath Areas\s*([0-9,]{3,6})\s*SqFt\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -803,6 +806,23 @@ function extractPrice(field) {
       return {
         [field]: rv
       }
+    }
+  }
+}
+
+function parseListingDate(el) {
+  const txt = innerText(el);
+  const res = [
+    /^ *listed *: *(.+) *$/i,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
+    if(rv) {
+      const listingDate = extractDateFromString(rv[1]);
+
+      if(listingDate)
+        return {listing_date: listingDate};
     }
   }
 }
@@ -1133,7 +1153,7 @@ function expandLinkToPostalCode(el, listing) {
   const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
 
   const res = [
-    new RegExp(addressSlug + '-' + citySlug + '-' + state + '-([0-9]{5})\.html', 'i')
+    new RegExp(addressSlug + '-' + citySlug + '-' + state + '-([0-9]{5})\.html', 'i'),
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1141,6 +1161,34 @@ function expandLinkToPostalCode(el, listing) {
     if(rv) {
       return {
         postal_code: rv[1].toUpperCase()
+      }
+    }
+  }
+}
+
+function expandLinkToPostalCodeWhenAddress(el, listing) {
+  const { price, address, city, state, postal_code } = listing;
+  if(!price || !address || city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const res = [
+    new RegExp('yahoo.com/py/maps.py.*csz=([A-Z][0-9][A-Z][0-9][A-Z][0-9])&')
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        postal_code: rv[1].toUpperCase(),
+        country: 'CA'
       }
     }
   }
@@ -1483,8 +1531,8 @@ export const rules = [
     ['*', parseSqft],
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span', extractDigit('baths'), true],
-    ['.q-half-bathrooms + td, .q-3-4-baths + span, .q-half-baths + span', extractDigit('half_baths'), true],
-    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-baths + td', extractIntegerFromFloat('baths')],
+    ['.q-half-bathrooms + td, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
+    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bath + td, .q-baths + td', extractIntegerFromFloat('baths')],
     ['*', parseBaths],
     ['*', parseHalfBaths],
     ['*', parseMLS],
@@ -1501,7 +1549,8 @@ export const rules = [
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span, .q-zip-code + span', extractZip],
     ['.q-county-zip + td', extractZipAfterCounty],
-    ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span', extractMLS],
+    ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span, .q-mls-no + td', extractMLS],
+    ['*', parseListingDate],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
@@ -1517,8 +1566,9 @@ export const rules = [
     ['a', expandLinkToAddressCityStatePostalCodeUnderscore],
     ['a', expandLinkToAddressCityState],
     ['a', expandLinkToPostalCode],
+    ['a', expandLinkToPostalCodeWhenAddress],
     ['a', expandLinkToEntireListing],
-    ['a', expandLinkToFullAddress],
+    ['a', expandLinkToFullAddress]
   ]]
 ];
 

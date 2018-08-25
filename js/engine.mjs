@@ -124,6 +124,8 @@ function dorewrite(el) {
       /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/.exec(txt) // eg: Bedroom 1    13x13   2 (last arg is level)
       || /\b[1-9][0-9]+ .{1,40}, [A-Z][A-Z],?\s*[0-9]{5}\s*\(?[0-9]{3}\)-? ?[0-9]{3}-?[0-9]{4}/.exec(txt)
       || /from\s*\$[0-9,]{3,10}/i.exec(txt)
+      || /\(?[0-9]{3}\)?-? ?[0-9]{3}-? ?[0-9]{4}.{1,90}[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]/.exec(txt)
+      || /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/.exec(txt)
     ) {
       console.log("looks like contact: ");
       console.log(txt);
@@ -436,7 +438,7 @@ export function removeTooBroad(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls >= 0.72)
+      if(ourEls / docEls >= 0.8)
         domOk = false;
     }
 
