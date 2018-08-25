@@ -1258,6 +1258,39 @@ function expandLinkToAddressCityStatePostalCode(el, listing) {
   }
 }
 
+function expandLinkToAddressCityStatePostalCodeUnderscore(el, listing) {
+  const { address, city, state, postal_code } = listing;
+  if(address || city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const maybeAddress = innerText(el);
+  const addressSlug = maybeAddress.toLowerCase().trim().replace(/[^a-z0-9]/g, '_');
+
+  const res = [
+    new RegExp('/' + addressSlug + '_([a-z_]+)_([a-z][a-z])_([0-9]{5})$', 'i'),
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        address: maybeAddress,
+        city: rv[1].replace(/_/g, ' '),
+        postal_code: rv[3].toUpperCase(),
+        state: rv[2].toUpperCase(),
+        country: 'US'
+      }
+    }
+  }
+}
 function expandAddressCityToStatePostalCode2(el, listing) {
   if(listing['state'] || listing['postal_code'] || !listing['address'] || !listing['city'])
     return;
@@ -1439,6 +1472,7 @@ export const rules = [
     ['a', expandMLSAndMLSIdToAddressStatePostalCode],
     ['a', expandExternalIdCityToAddressStatePostalCode],
     ['a', expandLinkToAddressCityStatePostalCode],
+    ['a', expandLinkToAddressCityStatePostalCodeUnderscore],
     ['a', expandLinkToAddressCityState],
     ['a', expandLinkToPostalCode],
     ['a', expandLinkToEntireListing],
