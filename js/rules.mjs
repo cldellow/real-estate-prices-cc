@@ -699,7 +699,6 @@ function parseHalfBaths(el) {
     const re = res[i];
     const rv = re.exec(txt);
     if(rv) {
-      console.log('extracted: ' + rv[1] + ' -- ' + txt);
       return {
         half_baths: parseInt(rv[1], 10)
       }
@@ -799,6 +798,7 @@ function parseSoldDate(el) {
     /^ *sold *: *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ )]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
+    /^ *sold for *:? *\$ *[0-9,]* *on ([0-9/ -]+?) *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -817,6 +817,7 @@ function parseSoldPrice(el) {
   const res = [
     /^ *SOLD: *(\$ *[0-9,]*) *$/,
     /^ *sold for *:? *(\$ *[0-9,]*) *$/i,
+    /^ *sold for *:? *(\$ *[0-9,]*) *on [0-9/ -]+$/i,
     /^ *sale price *:? *(\$ *[0-9,]+) *$/i,
     /^ *(\$ *[0-9,]+) *sale price *$/i,
     /^ *(\$ *[0-9,]+) *\(?sold price\)? *$/i,
@@ -1455,6 +1456,7 @@ export const rules = [
     ['.q-bc-assessment-2017 + span', extractPrice('_assessment'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
+    ['*', parseSoldDate],
     ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sold-price + dd, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
@@ -1475,7 +1477,6 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['*', parseLotSize],
-    ['*', parseSoldDate],
     ['.q-town + span', extractCity],
     ['.q-address + span, .q-address + td', parseAddressNoStateNoZip],
     ['.q-state + span', parseState],
