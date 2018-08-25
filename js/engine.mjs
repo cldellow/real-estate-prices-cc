@@ -413,7 +413,7 @@ export function removeTooBroad(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls >= 0.70)
+      if(ourEls / docEls >= 0.72)
         domOk = false;
     }
 
