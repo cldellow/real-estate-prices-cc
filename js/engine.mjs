@@ -501,7 +501,14 @@ function applyRule(el, selector, rules) {
           break;
         }
       } else {
-        const nodes = el.querySelectorAll(ruleSelector);
+        const selectedNodes = el.querySelectorAll(ruleSelector);
+        const nodes = [];
+        for(var q = 0; q < selectedNodes.length; q++) {
+          nodes.push(selectedNodes[q]);
+        }
+        if(ruleSelector === '*')
+          nodes.push(el);
+
         for(var k = 0; k < nodes.length; k++) {
           if(!isConsumed(nodes[k], counter)) {
             const nodeRv = f(nodes[k]);
