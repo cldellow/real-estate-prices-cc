@@ -1282,6 +1282,7 @@ function expandLinkToAddressCityStatePostalCodeUnderscore(el, listing) {
 
   const res = [
     new RegExp('/' + addressSlug + '_([a-z_]+)_([a-z][a-z])_([0-9]{5})$', 'i'),
+    new RegExp(addressSlug + '-([a-z_]+)-([a-z][a-z])-([0-9]{5})', 'i'),
   ];
 
   for(var i = 0; i < res.length; i++) {
