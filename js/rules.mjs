@@ -607,6 +607,11 @@ function parseBeds(el) {
 
 function parseBaths(el) {
   const txt = innerText(el);
+
+  if(/1\/2 Bathrooms:/.exec(txt)) {
+    return;
+  }
+
   const res = [
     /^ *([0-9]{1,2}) *baths? *$/i,
     /\bbathrooms: *([0-9]{1,2})\b/i,
@@ -661,16 +666,18 @@ function parseBaths(el) {
   for(var i = 0; i < res.length; i++) {
     const re = res[i];
     const rv = re.exec(txt);
-    if(rv)
+    if(rv) {
       return {
         baths: parseInt(rv[1], 10)
       }
+    }
   }
 }
 
 function parseHalfBaths(el) {
   const txt = innerText(el);
   const res = [
+    / *1\/2 Bathrooms?:?\s*([0-9]{1,2}) */i,
     /^ *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
     /& *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
     /^ *Bathrooms: *[0-9]* *\(? *full *\)? *([0-9]{1,2}) *\(? *half *\)? *$/i,
@@ -683,7 +690,7 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
     /^ *[0-9]{1,2} beds? *,? *[0-9]{1,2} full *,? *([0-9]{1,2}) *half baths? *$/i,
     /^ *[0-9]{1,2} full *,? *([0-9]{1,2}) *half bat?h?s? *$/i,
-    /[0-9]{1,2}\/([1-35-9]) Bath/i,
+    /[0-9]{1,2}\/([1-35-9]) Bath/i, // avoid 3/4
     /^ *Bath\(Half\)\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*Bathrooms\s*[0-9]{1,2} Full,\s*([0-9])\s*Half\s*$/i,
   ];
@@ -691,10 +698,12 @@ function parseHalfBaths(el) {
   for(var i = 0; i < res.length; i++) {
     const re = res[i];
     const rv = re.exec(txt);
-    if(rv)
+    if(rv) {
+      console.log('extracted: ' + rv[1] + ' -- ' + txt);
       return {
         half_baths: parseInt(rv[1], 10)
       }
+    }
   }
 }
 
