@@ -630,6 +630,7 @@ function parseBaths(el) {
     /^ *Baths\s*([0-9]{1,2})\s*\(full\)\s*$/i,
     /^ *Bath\(Full\)\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*[0-9]{1,2} BR, ([0-9]{1,2})(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
+    /^\s*Bathrooms\s*([0-9]{1,2}) Full,\s*[0-9]\s*Half\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -659,6 +660,7 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} full *,? *([0-9]{1,2}) *half bat?h?s? *$/i,
     /[0-9]{1,2}\/([1-35-9]) Bath/i,
     /^ *Bath\(Half\)\s*:\s*([0-9]{1,2})\s*$/i,
+    /^\s*Bathrooms\s*[0-9]{1,2} Full,\s*([0-9])\s*Half\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1411,7 +1413,7 @@ export const rules = [
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-apx-sqft + td', extractSquareFeet],
+    ['.q-sq-feet + span, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-approx-sq-ft + div, .q-apx-sqft + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
