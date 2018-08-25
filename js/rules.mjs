@@ -185,7 +185,7 @@ for(var i = 0; i < CAProvinces.length; i++) {
 
 function parseAddressNoStateNoZip(el) {
   const txt = innerText(el);
-  const rv = /^ *([1-9][0-9]* *[0-9A-Z][^ ]+ *[0-9A-Z].+) *$/.exec(txt);
+  const rv = /^ *([1-9][0-9]* *[0-9A-Z][^, ]+ *[0-9A-Z][^,]+) *$/.exec(txt);
 
   if(rv) {
     return {
@@ -856,6 +856,17 @@ function extractZip(el) {
     }
 }
 
+function extractZipAfterCounty(el) {
+  const txt = innerText(el);
+  const rv = /^\s*[A-za-z ]+,\s*([0-9]{5}) *$/.exec(txt);
+
+  if(rv)
+    return {
+      postal_code: rv[1],
+      country: 'US'
+    }
+}
+
 function sqft2acres(sqft) {
   return sqft * 0.000022956841138040226540538088;
 }
@@ -1378,7 +1389,7 @@ export const rules = [
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span', extractDigit('baths'), true],
     ['.q-half-bathrooms + td, .q-half-baths + span', extractDigit('half_baths'), true],
-    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td', extractIntegerFromFloat('baths')],
+    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-baths + td', extractIntegerFromFloat('baths')],
     ['*', parseBaths],
     ['*', parseHalfBaths],
     ['*', parseMLS],
@@ -1390,17 +1401,18 @@ export const rules = [
     ['*', parseLotSize],
     ['*', parseSoldDate],
     ['.q-town + span', extractCity],
-    ['.q-address + span', parseAddressNoStateNoZip],
+    ['.q-address + span, .q-address + td', parseAddressNoStateNoZip],
     ['.q-state + span', parseState],
     ['.q-postal-code + span', parsePostalCode],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span, .q-zip-code + span', extractZip],
+    ['.q-county-zip + td', extractZipAfterCounty],
     ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span', extractMLS],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span', extractSquareFeet],
-    ['.q-bedrooms + span, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
+    ['.q-sq-feet + span, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-apx-sqft + td', extractSquareFeet],
+    ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td', extractDigit('beds')],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandAddressCityToStatePostalCode2],
