@@ -134,19 +134,6 @@ function _parseStreetAddressStateZip(txt) {
   }
 }
 
-const _onlyUSStateRe = new RegExp('^ *(' + _usStateAlternation + ') *$');
-function parseState(el) {
-  const txt = innerText(el);
-  const rv = _onlyUSStateRe.exec(txt);
-
-  if(rv) {
-    return {
-      state: _usStateToAbbrev[rv[1]],
-      country: 'US'
-    }
-  }
-}
-
 const CAProvinces = [
   ['British Columbia', 'BC'],
   ['Alberta', 'AB'],
@@ -181,6 +168,20 @@ for(var i = 0; i < CAProvinces.length; i++) {
   _caProvinceToAbbrev[abbrev] = abbrev;
   _caProvinceToAbbrev[name] = abbrev;
   _caProvinceToAbbrev[name.toUpperCase()] = abbrev;
+}
+
+
+const _usOrCaStateRe = new RegExp('^ *(' + _usStateAlternation + '|' + _caProvinceAlternation + ') *$');
+function parseState(el) {
+  const txt = innerText(el);
+  const rv = _usOrCaStateRe.exec(txt);
+
+  if(rv) {
+    return {
+      state: _usStateToAbbrev[rv[1]] || _caProvinceToAbbrev[rv[1]],
+      country: _usStateToAbbrev[rv[1]] ? 'US' : 'CA'
+    }
+  }
 }
 
 function parseAddressNoStateNoZip(el) {
@@ -1015,7 +1016,7 @@ function extractMLS(el) {
 
 function extractCity(el) {
   const txt = innerText(el);
-  const rv = /^ *([A-Z][a-z ]+) *$/.exec(txt);
+  const rv = /^\s*([A-Z][A-Za-z ]+)\s*$/.exec(txt);
 
   if(rv)
     return {
@@ -1542,10 +1543,10 @@ export const rules = [
     ['*', parseCityState],
     ['*', parseAcres],
     ['*', parseLotSize],
-    ['.q-town + span', extractCity],
+    ['.q-town + span, .q-city + td', extractCity],
     ['.q-address + span, .q-address + td', parseAddressNoStateNoZip],
-    ['.q-state + span', parseState],
-    ['.q-postal-code + span', parsePostalCode],
+    ['.q-state + span, .q-province + td', parseState],
+    ['.q-postal-code + span, .q-postal-code + td', parsePostalCode],
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span, .q-zip-code + span', extractZip],
     ['.q-county-zip + td', extractZipAfterCounty],
