@@ -295,6 +295,7 @@ function parseAcres(el) {
     /^ *[0-9,]{3,6} sq ft; lot: ([0-9.]+) acres *$/i,
     /^\s*[0-9,]{3,6}\s*sqft\s*lot\s*([0-9][0-9. ]+)\s*acr?e?s?\s*$/i,
     /^ *([0-9.]+) ac *lot *size *$/i,
+    /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, [0-9][0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -483,6 +484,19 @@ function stripPriceAndParentheticals(txt) {
   return txt.replace(/^\s*\$[0-9][0-9,]+[\s,]*/, '').replace(/\(AKA [^)]+\)/g, '');
 }
 
+function _parseStreetAddressFromProse(txt) {
+  // "123 Foo Rd is a $279,000, 3 bedroom, 2.0 bath home on a 0.25 acre lot located in Easton, MD."
+  const rv = /^\s*([1-9].+) is a\s*, [0-9] bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/.exec(txt);
+  if(rv) {
+    return {
+      address: rv[1],
+      city: rv[2],
+      state: rv[3],
+      country: _usStateToAbbrev[rv[3]] ? 'US' : 'CA'
+    }
+  }
+}
+
 function parseStreetAddress(el) {
   if(el.parsedStreetAddress !== undefined)
     return el.parsedStreetAddress;
@@ -509,6 +523,7 @@ function parseStreetAddress(el) {
   fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
   fs.push(_parseStreetAddressCanadaCityStateNoPostal);
   fs.push(_parseStreetAddressStateNoPostalMaybeCity);
+  fs.push(_parseStreetAddressFromProse);
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
@@ -571,6 +586,7 @@ function parseBeds(el) {
     /^ *([0-9]{1,2})\s+beds?\s*\|\s*[0-9]{1,2}\.[0-9]+\s+Baths?\s*$/i,
     /^ *Bed\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*([0-9]{1,2}) BR, [0-9]{1,2}(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
+    /^\s*[1-9].+ is a \$[0-9,]+, ([0-9]) bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -631,6 +647,7 @@ function parseBaths(el) {
     /^ *Bath\(Full\)\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*[0-9]{1,2} BR, ([0-9]{1,2})(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
     /^\s*Bathrooms\s*([0-9]{1,2}) Full,\s*[0-9]\s*Half\s*$/i,
+    /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, ([0-9]{1,2})[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
