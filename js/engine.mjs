@@ -410,6 +410,19 @@ export function removeConflictingElements(xs) {
   return rv;
 }
 
+export function removeMobileHome(xs) {
+  return xs.filter(item => {
+    var looksLikeMobileHome = false;
+    const el = item['_el'];
+    if(el) {
+      looksLikeMobileHome = /mobile home|manuf\/mobile|double.wide|single.wide/i.exec(innerText(el));
+    }
+
+    return !looksLikeMobileHome;
+  });
+}
+
+
 export function removeTooBroad(xs) {
   // Remove matches that consumed basically the entire page. These
   // have a high likelihood of being garbage that are stitched together
@@ -577,7 +590,7 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  const newRv = removeIncomplete(removeConflictingElements(peekholeFixes(removeSubsets(removeTooBroad(rv)))));
+  const newRv = removeMobileHome(removeIncomplete(removeConflictingElements(peekholeFixes(removeSubsets(removeTooBroad(rv))))));
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
     if(el['_el']) {

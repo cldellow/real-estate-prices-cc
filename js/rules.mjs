@@ -424,6 +424,8 @@ function validAddress(rv) {
   if(/sqft|for sale/i.exec(address))
     return;
 
+  if(/Mobile Home/i.exec(address))
+    return;
 
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
