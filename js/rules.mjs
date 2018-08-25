@@ -796,6 +796,7 @@ function parseSoldDate(el) {
   const txt = innerText(el);
   const res = [
     /^ *date sold *: *(.+) *$/i,
+    /^ *sold *: *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ )]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
   ];
@@ -818,6 +819,7 @@ function parseSoldPrice(el) {
     /^ *sold for *:? *(\$ *[0-9,]*) *$/i,
     /^ *sale price *:? *(\$ *[0-9,]+) *$/i,
     /^ *(\$ *[0-9,]+) *sale price *$/i,
+    /^ *(\$ *[0-9,]+) *\(?sold price\)? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
