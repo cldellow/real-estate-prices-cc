@@ -1,4 +1,4 @@
-{"price":265000,"sqft":2874,"beds":3,"baths":3,"address":"208 Second New Hampshire South Francestown","state":"NH","country":"US","year_built":1969,"postal_code":"03043","sold_price":265000}
+{"sold_price":265000,"price":265000,"year_built":1969,"sqft":2874,"beds":3,"baths":3,"address":"208 Second New Hampshire South","city":"Francestown","state":"NH","postal_code":"03043","country":"US"}
 {"price":280000,"beds":4,"baths":3,"address":"91 Reid Road","city":"Francestown","state":"NH","postal_code":"03043","country":"US"}
 {"price":259000,"beds":3,"baths":2,"address":"2 Potash Rd.","city":"Francestown","state":"NH","postal_code":"03043","country":"US"}
 {"price":239900,"beds":3,"baths":2,"address":"195 New Boston Road","city":"Francestown","state":"NH","postal_code":"03043","country":"US"}

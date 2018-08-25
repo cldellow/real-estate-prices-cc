@@ -232,13 +232,17 @@ function _parseStreetAddressCanadaCityStateNoPostal(txt) {
 
 
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
-  if(/[0-9] *car /i.exec(txt))
+  if(/[0-9] *car |bathrooms|bedrooms/i.exec(txt))
     return;
 
 
   const rv = /^ *([1-9][0-9A-Za-z .'#]+), *([A-Z][A-Za-z .']{2,}) *$/.exec(txt);
 
   if(rv) {
+    // "<div><span>3.1</span> Bathrooms</div>" -> "3.1, Bathrooms" -> not an address.
+    if(/^[0-9.]+$|[0-9] full|[0-9] half ba/.exec(rv[1].trim()))
+      return;
+
     return {
       address: rv[1].trim(),
       city: rv[2].trim()
@@ -282,6 +286,10 @@ function parseCityState(el) {
 
     if(_usStateToAbbrev[rv[2].trim()])
       m['country'] = 'US';
+
+    if(_caProvinceToAbbrev[rv[2].trim()])
+      m['country'] = 'CA';
+
     return m;
   }
 }
@@ -382,7 +390,7 @@ function _parseStreetAddressCanadaCityProvince(txt) {
 
 
 function _parseStreetAddressCanadaCityNoProvince(txt) {
-  const rv = /^ *([0-9].+) +([A-Za-z][0-9][A-Za-z] *[0-9][A-Za-z][0-9]).*$/.exec(txt);
+  const rv = /^ *([0-9].+?),? +([A-Za-z][0-9][A-Za-z] *[0-9][A-Za-z][0-9]).*$/.exec(txt);
 
   if(rv) {
     return {
@@ -398,6 +406,7 @@ function validAddress(rv) {
     return;
 
   const address = rv['address'];
+  const city = rv['city'];
 
   if(!address)
     return;
@@ -429,7 +438,7 @@ function validAddress(rv) {
 
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
-  if(address.indexOf(' is a ') >= 0 || address.indexOf('market value') >= 0)
+  if(address.indexOf(' is a ') >= 0 || address.indexOf('market value') >= 0 || (city && city.indexOf('is a ') >= 0))
     return;
 
   if(/under contract|\?/i.exec(address))
@@ -492,13 +501,20 @@ function stripPriceAndParentheticals(txt) {
 
 function _parseStreetAddressFromProse(txt) {
   // "123 Foo Rd is a $279,000, 3 bedroom, 2.0 bath home on a 0.25 acre lot located in Easton, MD."
-  const rv = /^\s*([1-9].+) is a\s*, [0-9] bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/.exec(txt);
-  if(rv) {
-    return {
-      address: rv[1],
-      city: rv[2],
-      state: rv[3],
-      country: _usStateToAbbrev[rv[3]] ? 'US' : 'CA'
+  const re = [
+    /^\s*([1-9][^,]+) is a\s*, [0-9] bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
+    /^\s*([1-9][^,]+) is a\s*home located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
+  ];
+
+  for(var i = 0; i < re.length; i++) {
+    const rv = re[i].exec(txt);
+    if(rv) {
+      return {
+        address: rv[1],
+        city: rv[2],
+        state: rv[3],
+        country: _usStateToAbbrev[rv[3]] ? 'US' : 'CA'
+      }
     }
   }
 }
@@ -511,7 +527,7 @@ function parseStreetAddress(el) {
   const plainText = stripPriceAndParentheticals(innerText(el).replace(priceRe, ''));
   const commaForBR = stripPriceAndParentheticals(innerText(el, {'BR': ', '}, 'br').replace(priceRe, ''));
   // This should maybe just be for all block elements? Meh.
-  const commaForBRAndHeaders = stripPriceAndParentheticals(innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ',', 'DIV': ',', 'P': ','}, 'br+headers').replace(priceRe, ''));
+  const commaForBRAndHeaders = stripPriceAndParentheticals(innerText(el, {'BR': ', ', 'H1': ', ', 'H2': ', ', 'H3': ', ', 'H4': ', ', 'H5': ', ', 'H6': ', ', 'TR': ',', 'SPAN': ',', 'DIV': ',', 'P': ','}, 'br+headers').replace(priceRe, ''));
 
   const fs = [];
   if(el.possibleZip) {
@@ -577,8 +593,8 @@ function parseBeds(el) {
     /^ *([0-9]{1,2}) * bedrooms? *$/i,
     /^ *([0-9]{1,2}) *br *\/ * [0-9]{1,2} *ba /i,
     /^ *([0-9]{1,2}) Bed, [0-9.]+ Bath \([0-9] Full Bath\), [0-9]{1,2},[0-9]{3} sqft */i,
-    /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
-    /^ *([0-9]{1,2})\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *([0-9]{1,2})\s*bed *s?\s*[ ,|]\s*[0-9]\s*bath *s?\s*[ ,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *([0-9]{1,2})\s*bed *s?\s*[ ,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[ ,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bed ([0-9]{1,2})\s*$/i,
     /^ *([0-9]{1,2})\s* br *, [0-9]+\s*full ba$/i,
     /^ *\$ *[0-9,]{3,10} *([0-9]{1,2})\s* beds, *[0-9]{1,2}\s*full ba/i,
@@ -630,8 +646,8 @@ function parseBaths(el) {
     /^ *baths *([0-9]{1,2}) *full *$/i,
     /^ *[0-9]{1,2} *br *\/ *([0-9]{1,2}) *ba /i,
     /^ *([0-9]{1,2}) * bathrooms? *$/i,
-    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
-    /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*([0-9])\.[0-9]\s*bath *s?\s*[,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[ ,|]\s*([0-9])\s*bath *s?\s*[ ,|]\s*[0-9,]+\s*sq\s*ft/i,
+    /^ *[0-9]{1,2}\s*bed *s?\s*[ ,|]\s*([0-9])\.[0-9]\s*bath *s?\s*[ ,|]\s*[0-9,]+\s*sq\s*ft/i,
     /^ *bathrooms *([0-9])\/[0-9]+ *$/i,
     /^ *([0-9]{1,2}) *full *baths? *$/i,
     /^ *[0-9]{1,2}\s* br *, ([0-9]+)\s*full ba$/i,

@@ -1,7 +1,8 @@
-{"sold_price":162500,"price":162500,"address":"1502 2nd Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2018-4-2"}
-{"sold_price":228295,"price":228295,"address":"1409 1st Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2018-2-24"}
-{"sold_price":229000,"price":229000,"address":"1534 1st Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2018-2-21"}
-{"sold_price":370000,"price":370000,"address":"907 14th St Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2018-1-17"}
-{"sold_price":261500,"price":261500,"address":"1301 9th Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2017-12-15"}
-{"sold_price":115000,"price":115000,"address":"1201 3rd Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2017-11-20"}
-{"sold_price":195000,"price":195000,"address":"1309 1st Ave Rapids City","state":"IL","postal_code":"61278","country":"US","sold_date":"2017-11-1"}
+{"sold_date":"2018-4-6","sold_price":149000,"price":149000,"address":"1706 1st Ave # A","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2018-4-2","sold_price":162500,"price":162500,"address":"1502 2nd Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2018-2-24","sold_price":228295,"price":228295,"address":"1409 1st Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2018-2-21","sold_price":229000,"price":229000,"address":"1534 1st Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2018-1-17","sold_price":370000,"price":370000,"address":"907 14th St","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2017-12-15","sold_price":261500,"price":261500,"address":"1301 9th Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2017-11-20","sold_price":115000,"price":115000,"address":"1201 3rd Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}
+{"sold_date":"2017-11-1","sold_price":195000,"price":195000,"address":"1309 1st Ave","city":"Rapids City","state":"IL","postal_code":"61278","country":"US"}

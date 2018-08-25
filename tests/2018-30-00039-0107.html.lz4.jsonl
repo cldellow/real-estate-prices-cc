@@ -3,5 +3,5 @@
 {"price":650000,"address":"1256 Stockton Street","city":"Bakersfield","state":"CA","country":"US"}
 {"price":600000,"address":"8301 Kroll Way","city":"Bakersfield","state":"CA","country":"US"}
 {"price":599000,"beds":2,"baths":1,"address":"13100 Franceschi Road","city":"Caliente","state":"CA","country":"US"}
-{"price":399999,"sqft":2572,"beds":4,"address":"10902 Iron Creek Avenue","city":"Bakersfield","state":"CA","country":"US"}
+{"price":399999,"sqft":2572,"beds":4,"baths":2,"half_baths":1,"address":"10902 Iron Creek Avenue","city":"Bakersfield","state":"CA","country":"US"}
 {"price":129000,"sqft":2248,"address":"3930 Lake Isabella Boulevard","city":"Bodfish","state":"CA","country":"US"}

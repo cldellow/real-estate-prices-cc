@@ -20,6 +20,9 @@ export function innerText(el, subs, cacheKey) {
 
     ret = ret.replace(/\u00A0/g, ' ');
     ret = ret.replace(/,[ ,]+,/g, ',');
+    ret = ret.replace(/^[ ,]+/g, '');
+    ret = ret.replace(/[ ,]+$/g, '');
+    ret = ret.replace(/ ,/g, ',');
     el.hasInnerText[cacheKey] = ret;
     return ret;
   } else if (el.nodeType == 3) {

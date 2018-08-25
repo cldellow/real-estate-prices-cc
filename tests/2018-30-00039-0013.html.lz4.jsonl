@@ -1,8 +1,10 @@
-{"price":675000,"address":"452 Mcentire Lane Decatur","state":"AL","postal_code":"35603","country":"US"}
-{"price":87000,"address":"3726 Timberlake Court Decatur","state":"AL","postal_code":"35603","country":"US"}
-{"price":158599,"address":"820 McGlathery Lane Decatur","state":"AL","postal_code":"35601","country":"US","lot_size":1.31}
-{"price":139900,"address":"4849 Indian Hills Road Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":5}
-{"price":69900,"address":"415 Austinville Flint Road Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.7}
-{"price":69900,"address":"411 Austinville Flint Road Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.7}
-{"price":69900,"address":"419 Austinville Flint Road Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.6}
-{"price":69900,"address":"501 Austinville Flint Road Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.6}
+{"price":130000,"address":"5 Bennich Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":5}
+{"price":125000,"address":"7 Bennich Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":5}
+{"price":675000,"address":"452 Mcentire Lane","city":"Decatur","state":"AL","postal_code":"35603","country":"US"}
+{"price":87000,"address":"3726 Timberlake Court","city":"Decatur","state":"AL","postal_code":"35603","country":"US"}
+{"price":158599,"address":"820 McGlathery Lane","city":"Decatur","state":"AL","postal_code":"35601","country":"US","lot_size":1.31}
+{"price":139900,"address":"4849 Indian Hills Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":5}
+{"price":69900,"address":"415 Austinville Flint Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.7}
+{"price":69900,"address":"411 Austinville Flint Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.7}
+{"price":69900,"address":"419 Austinville Flint Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.6}
+{"price":69900,"address":"501 Austinville Flint Road","city":"Decatur","state":"AL","postal_code":"35603","country":"US","lot_size":1.6}
