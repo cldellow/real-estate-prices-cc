@@ -1,4 +1,4 @@
-{"sold_price":136000,"sqft":1292,"beds":3,"address":"2912 Sorrell Court","city":"Winchester","state":"VA","postal_code":"22601","country":"US","lot_size":0.09,"year_built":1995,"external_id":"WI8704756","sold_date":"2016-3-18","price":136000}
+{"sold_price":136000,"year_built":1995,"sqft":1292,"beds":3,"baths":2,"external_id":"WI8704756","address":"2912 Sorrell Court","city":"Winchester","state":"VA","postal_code":"22601","country":"US","lot_size":0.09,"sold_date":"2016-3-18","price":136000}
 {"price":128000,"sqft":1007,"beds":3,"baths":1,"address":"563 York Avenue","city":"Winchester","state":"VA","postal_code":"22601","country":"US","sold_date":"2018-6-8"}
 {"price":239900,"sqft":2296,"beds":4,"baths":2,"address":"408 Beechcroft Road","city":"Winchester","state":"VA","postal_code":"22601","country":"US","sold_date":"2018-4-27"}
 {"price":255750,"sqft":3210,"beds":6,"baths":4,"address":"109 Russelcroft Road","city":"Winchester","state":"VA","postal_code":"22601","country":"US","sold_date":"2018-4-30"}

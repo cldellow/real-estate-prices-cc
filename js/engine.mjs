@@ -147,6 +147,11 @@ export function rewrite(el) {
     console.log('ESTIMATED VALUE - removing all!');
     remove(el.childNodes);
   }
+
+  if(el.querySelectorAll('h1.q-address-not-available-by-request').length) {
+    console.log('H1 Address Not Available - removing all!');
+    remove(el.childNodes);
+  }
 }
 
 const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');

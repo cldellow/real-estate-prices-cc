@@ -481,7 +481,10 @@ function parseLocationBlock(el) {
 }
 
 function stripPriceAndParentheticals(txt) {
-  return txt.replace(/^\s*\$[0-9][0-9,]+[\s,]*/, '').replace(/\(AKA [^)]+\)/g, '');
+  return txt
+    .replace(/^\s*\$[0-9][0-9,]+[\s,]*/, '')
+    .replace(/\(AKA [^)]+\)/g, '')
+    .replace(/\& Tax Key.*/g, '')
 }
 
 function _parseStreetAddressFromProse(txt) {
@@ -649,6 +652,7 @@ function parseBaths(el) {
     /^\s*Bathrooms\s*([0-9]{1,2}) Full,\s*[0-9]\s*Half\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, ([0-9]{1,2})[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *Baths\s*([0-9]{1,2})\s*-0\s*$/i,
+    /^ *([0-9]{1,2})\s*full bathrooms\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -781,6 +785,7 @@ function parseSoldDate(el) {
   const res = [
     /^ *date sold *: *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ )]*$/i,
+    /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
