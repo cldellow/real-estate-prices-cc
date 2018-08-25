@@ -796,6 +796,7 @@ function parseSoldDate(el) {
   const res = [
     /^ *date sold *: *(.+) *$/i,
     /^ *sold *: *(.+) *$/i,
+    /^ *sold *- *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ )]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
     /^ *sold for *:? *\$ *[0-9,]* *on ([0-9/ -]+?) *$/i,
