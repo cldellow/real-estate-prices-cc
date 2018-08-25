@@ -213,7 +213,7 @@ function _parseStreetAddressUSCityStateNoPostal(txt) {
 }
 
 const _parseStreetAddressCanadaCityStateNoPostalRE = new RegExp(
-  '^ *([0-9][^,]+), *([^,]+), *(' + _caProvinceAlternation + ')'
+  '^ *([0-9][^,]+), *([^,]+), *(' + _caProvinceAlternation + ')\\b'
 );
 
 
@@ -348,7 +348,7 @@ function _parseStreetAddressUSNoCityNoState(txt) {
 }
 
 function _parseStreetAddressCanadaCityProvince(txt) {
-  const rv = /^ *([0-9].+)[, ]+(.+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
+  const rv = /^ *([0-9].+)[, ]+(.+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
 
   if(rv) {
     var state = rv[3];
