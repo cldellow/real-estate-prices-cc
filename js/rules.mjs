@@ -232,7 +232,7 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     return;
 
 
-  const rv = /^ *([1-9][0-9A-Za-z .'#]+), *([A-Z][A-Za-z .']*) *$/.exec(txt);
+  const rv = /^ *([1-9][0-9A-Za-z .'#]+), *([A-Z][A-Za-z .']{2,}) *$/.exec(txt);
 
   if(rv) {
     return {
@@ -241,6 +241,27 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     }
   }
 }
+
+const _parseStreetAddressStateNoPostalMaybeCityRe = new RegExp(
+  '^ *([1-9][0-9A-Za-z .\'#]+), *(' + _usStateAlternation + ') *$'
+);
+
+function _parseStreetAddressStateNoPostalMaybeCity(txt) {
+  if(/[0-9] *car /i.exec(txt))
+    return;
+
+
+  const rv = _parseStreetAddressStateNoPostalMaybeCityRe.exec(txt);
+
+  if(rv) {
+    return {
+      address: rv[1].trim(),
+      state: _usStateToAbbrev[rv[2].trim()],
+      country: 'US'
+    }
+  }
+}
+
 
 function parseCityState(el) {
   const txt = innerText(el);
@@ -483,6 +504,7 @@ function parseStreetAddress(el) {
   fs.push(_parseStreetAddressUSCityStateNoPostal);
   fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
   fs.push(_parseStreetAddressCanadaCityStateNoPostal);
+  fs.push(_parseStreetAddressStateNoPostalMaybeCity);
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
