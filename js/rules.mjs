@@ -570,6 +570,7 @@ function parseBeds(el) {
     /([0-9]{1,2})\s+bedrooms and\s+[0-9]{1,2}\s+Full Baths/i,
     /^ *([0-9]{1,2})\s+beds?\s*\|\s*[0-9]{1,2}\.[0-9]+\s+Baths?\s*$/i,
     /^ *Bed\s*:\s*([0-9]{1,2})\s*$/i,
+    /^\s*([0-9]{1,2}) BR, [0-9]{1,2}(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -628,6 +629,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2}\s+beds?\s*\|\s*([0-9]{1,2})\.[0-9]+\s+Baths?\s*$/i,
     /^ *Baths\s*([0-9]{1,2})\s*\(full\)\s*$/i,
     /^ *Bath\(Full\)\s*:\s*([0-9]{1,2})\s*$/i,
+    /^\s*[0-9]{1,2} BR, ([0-9]{1,2})(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -686,6 +688,7 @@ function parseMLS(el) {
   const res = [
     /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/,
     /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
+    /\| *MLS *#?:? *([A-Z0-9]{5,15}) *\|/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -716,6 +719,7 @@ function parseSqft(el) {
     /^ *[0-9]{1,2} beds - [0-9]{1,2}[.0-9]{0,2} baths - ([0-9]{3,4}) * sqft *$/i,
     /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9. ]+\s*acr?e?s?\s*$/i,
     /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9,]+\s*sq *ft\s*$/i,
+    /^\s*[0-9]{1,2} BR, [0-9]{1,2}\.?[0-9]* BA, ([0-9]{3,5}) sq ?ft\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
