@@ -83,8 +83,8 @@ const _usStateAlternation = (function() {
 })();
 
 
-const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,)]+), *(\s*[a-zA-Z][^,]+?),? *(' + _usStateAlternation + ') *,? *([0-9]{5})\\b');
-const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *#? *[0-9-]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([^,]+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
+const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,)]+), *(\s*[a-zA-Z][A-Za-z .\']+?),? *(' + _usStateAlternation + ') *,? *([0-9]{5})\\b');
+const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *#? *[0-9-]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([A-Z][A-Za-z .']+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
 
 function _parseStreetAddressUSFull(txt) {
   const debug = !false;
@@ -510,8 +510,8 @@ function parseStreetAddress(el) {
   const fs = [];
   if(el.possibleZip) {
     fs.push(_parseStreetAddressUSFull);
-    fs.push(_parseStreetAddressUSNoCityNoState);
     fs.push(_parseStreetAddressStateZip);
+    fs.push(_parseStreetAddressUSNoCityNoState);
   }
 
   if(el.possiblePostalCode) {
@@ -648,6 +648,7 @@ function parseBaths(el) {
     /^\s*[0-9]{1,2} BR, ([0-9]{1,2})(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
     /^\s*Bathrooms\s*([0-9]{1,2}) Full,\s*[0-9]\s*Half\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, ([0-9]{1,2})[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
+    /^ *Baths\s*([0-9]{1,2})\s*-0\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {

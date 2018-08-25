@@ -120,7 +120,8 @@ function dorewrite(el) {
        /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/.exec(txt) ||
       /[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9].{0,20}\(? *[0-9]{3} *\)? ?-?[0-9]{3} ?-?[0-9]{4}/.exec(txt) ||
       /^\s*Bed\s*[0-9]\s*[0-9]+x[0-9]+\s*$/.exec(txt) ||
-      /^\s*Bed\s*[0-9]\s*$/.exec(txt)
+      /^\s*Bed\s*[0-9]\s*$/.exec(txt) ||
+      /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/.exec(txt) // eg: Bedroom 1    13x13   2 (last arg is level)
       || /\b[1-9][0-9]+ .{1,40}, [A-Z][A-Z],?\s*[0-9]{5}\s*\(?[0-9]{3}\)-? ?[0-9]{3}-?[0-9]{4}/.exec(txt)
     ) {
       console.log("looks like contact: ");
