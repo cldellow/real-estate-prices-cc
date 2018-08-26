@@ -214,7 +214,7 @@ function _parseStreetAddressUSCityStateNoPostal(txt) {
 }
 
 const _parseStreetAddressCanadaCityStateNoPostalRE = new RegExp(
-  '^ *([0-9][^,]+), *([^,]+), *(' + _caProvinceAlternation + ')\\b'
+  '^ *([0-9][^,]+), *([^,]+),? *\\b(' + _caProvinceAlternation + ')\\b'
 );
 
 
