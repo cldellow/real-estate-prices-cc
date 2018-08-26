@@ -307,7 +307,7 @@ export function isSubset(needle, haystack) {
     if(k[0] == '_')
       continue;
 
-    if(haystack[k] == v)
+    if(valueEquals(haystack[k], v))
       continue;
 
     if(k == 'address' && v && haystack[k] && haystack[k].toLowerCase().startsWith(v.toLowerCase()))
@@ -317,6 +317,13 @@ export function isSubset(needle, haystack) {
   }
 
   return true;
+}
+
+function valueEquals(a, b) {
+  if(a && b && a.toLowerCase && b.toLowerCase)
+    return a.toLowerCase() == b.toLowerCase();
+
+  return a == b;
 }
 
 export function isEqual(a, b) {
@@ -336,7 +343,7 @@ export function isEqual(a, b) {
     if(keysa[i] != keysb[i])
       return false;
 
-    if(a[keysa[i]] != b[keysa[i]])
+    if(!valueEquals(a[keysa[i]], b[keysa[i]]))
       return false;
   }
 

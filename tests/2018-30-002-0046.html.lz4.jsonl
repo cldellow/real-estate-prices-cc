@@ -23,3 +23,9 @@
 {"price":99900,"sqft":1280,"beds":3,"baths":2,"external_id":"31342413","address":"3740 Stilson Road","city":"Croswell","state":"MI","country":"US","lot_size":2.82}
 {"price":249000,"sqft":1792,"beds":3,"baths":2,"external_id":"31340460","address":"4800 Black River","city":"Croswell","state":"MI","country":"US","lot_size":20}
 {"price":89700,"sqft":1356,"beds":2,"baths":1,"external_id":"31339168","address":"375 N Howard","city":"Croswell","state":"MI","country":"US","lot_size":0.23999081725707253}
+{"price":169900,"address":"50 Lamoria Dr.","city":"sandusky","state":"MI","country":"US","postal_code":"48471"}
+{"price":74900,"address":"2941 Snover Rd.","city":"carsonville","state":"MI","country":"US","postal_code":"48419"}
+{"price":175900,"address":"1380 S Sandusky Rd.","city":"sandusky","state":"MI","country":"US","postal_code":"48471"}
+{"price":149900,"address":"4201 E Custer Rd.","city":"carsonville","state":"MI","country":"US","postal_code":"48419"}
+{"price":439900,"address":"3250 N Sandusky Rd.","city":"sandusky","state":"MI","country":"US","postal_code":"48471"}
+{"price":119900,"address":"4031 E Chandler","city":"carsonville","state":"MI","country":"US","postal_code":"48419"}
