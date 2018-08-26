@@ -181,6 +181,7 @@ function isDangerous(el) {
     /\([0-9]{3}\)-? ?[0-9]{3}-? ?[0-9]{4}.{1,90}[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]/,
     /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
     /^\s*(Median household income|Per capita income|Average household income|Median disposable income|Average total household expenditure|Average home sale price)\s*[$0-9,. N/A]+$/,
+    /^\s*NT\s*\$\s*[0-9][0-9,]+\s*$/ // NT = Taiwan New Dollar, not Nunavut, ban "NT$750,000"
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -290,6 +291,13 @@ function tryListing(candidate, el) {
       //
       // Drop the state from the city listing.
       rv[k] = v.find(x => x != candidate['state'][0]);
+      ok = true;
+    } else if(k == 'baths' && v.length == 2 && candidate['half_baths'] && candidate['half_baths'].length == 1 &&
+      (v[0] + candidate['half_baths'][0] == v[1] || v[1] + candidate['half_baths'][0] == v[0])) {
+      // this is not too uncommmon - basically something like:
+      // Baths: 4 Full Baths: 3 Half Baths: 1
+      v.sort();
+      rv[k] = v[0];
       ok = true;
     } else
       return;
