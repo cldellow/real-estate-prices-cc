@@ -188,6 +188,7 @@ function isDangerous(el) {
     /^\s*(Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
     /^\s*Total area\s*[0-9][0-9,]+\s*sqft\s*$/i,
     /^\s*\$[0-9][0-9,]+\s*Average sales? price\s*$/i,
+    /^\s*Commercial.{0,50}Mobile\s*home.{0,50}Single\s*family\s*$/i, // dropdown to pick type
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -664,8 +665,8 @@ export function extract(el) {
   var newRv = rv;
   for(var i = 0; i < fs.length; i++) {
     newRv = fs[i][1](newRv);
-//    console.log('after ' + fs[i][0]);
-//    console.log(newRv);
+    console.log('after ' + fs[i][0]);
+    console.log(newRv);
   }
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
