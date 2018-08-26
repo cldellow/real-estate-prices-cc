@@ -630,6 +630,7 @@ function parseBeds(el) {
     /^\s*[1-9].+ is a \$[0-9,]+, ([0-9]) bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *([0-9])\s*Beds,?\s*[0-9]\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*([0-9])\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
+    /\s*([0-9]) bedrooms, [0-9] baths, [0-9,]{3,6} sq\.ft/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -700,6 +701,7 @@ function parseBaths(el) {
     /^ *([0-9]{1,2})\s*full bathrooms\s*$/i,
     /^ *[0-9]\s*Beds,?\s*([0-9])\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*[0-9]\s*Bath:\s*([0-9]+)\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
+    /\s*[0-9] bedrooms, ([0-9]) baths, [0-9,]{3,6} sq\.ft/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -798,6 +800,7 @@ function parseSqft(el) {
     /^ *[0-9]\s*Beds,?\s*[0-9]\s*Bath Areas\s*([0-9,]{3,6})\s*SqFt\s*$/i,
     /\s*Bed:\s*[0-9]\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*([0-9,]{3,6})\s*/i,
     /^\s*[1-9][^,]+ is a \$[0-9,]+, ([0-9,]{3,6}) square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
+    /\s*[0-9] bedrooms, [0-9] baths, ([0-9,]{3,6}) sq\.ft/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
