@@ -635,6 +635,7 @@ function parseBeds(el) {
     /^ *([0-9])\s*Beds,?\s*[0-9]\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*([0-9])\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
     /\s*([0-9]) bedrooms, [0-9] baths, [0-9,]{3,6} sq\.ft/i,
+    /\s*([0-9]) bedroom [^,.:]{5,15} with [0-9] full baths/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -706,6 +707,7 @@ function parseBaths(el) {
     /^ *[0-9]\s*Beds,?\s*([0-9])\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*[0-9]\s*Bath:\s*([0-9]+)\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
     /\s*[0-9] bedrooms, ([0-9]) baths, [0-9,]{3,6} sq\.ft/i,
+    /\s*[0-9] bedroom [^,.:]{5,15} with ([0-9]) full baths/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1640,7 +1642,7 @@ export const rules = [
     ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
-    ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractDigit('baths'), true],
+    ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div, .yoarticon-bathtub + span', extractDigit('baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractBaths, true],
     ['.q-half-bathrooms + td, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bath + td, .q-baths + td', extractIntegerFromFloat('baths')],
