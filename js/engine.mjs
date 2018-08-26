@@ -177,6 +177,7 @@ function isDangerous(el) {
     /^\s*Bed\s*[0-9]\s*$/,
     /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/, // eg: Bedroom 1    13x13   2 (last arg is level)
     /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*L:\s*[0-9]\s*$/, // eg: Bedroom 1    13x13   L: 2
+    /^\s*(Upper|Lower|Entry|Main)\s*Bedroom\s*[0-9]\s*$/, // eg: Lower    Bedroom 2
     /^\s*Bedroom\s*[0-9]\s*[0-9]+\.[0-9]+\s*[Xx]\s*[0-9]+\.[0-9]+\s*$/,
     /\b[1-9][0-9]+ .{1,40}, [A-Z][A-Z],?\s*[0-9]{5}\s*\(?[0-9]{3}\)-? ?[0-9]{3}-?[0-9]{4}/,
     /from\s*\$[0-9,]{3,10}/i,
@@ -186,6 +187,7 @@ function isDangerous(el) {
     /^\s*NT\s*\$\s*[0-9][0-9,]+\s*$/, // NT = Taiwan New Dollar, not Nunavut, ban "NT$750,000"
     /^\s*(Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
     /^\s*Total area\s*[0-9][0-9,]+\s*sqft\s*$/i,
+    /^\s*\$[0-9][0-9,]+\s*Average sales? price\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -304,7 +306,7 @@ function tryListing(candidate, el) {
       rv[k] = v[0];
       ok = true;
     } else
-      return;
+      break;
   }
 
   if(ok)
@@ -647,7 +649,24 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  const newRv = removeMobileHome(removeIncomplete(removeConflictingElements(peekholeFixes(removeSubsets(removeTooBroad(rv))))));
+  console.log('rv: ');
+  console.log(rv);
+
+  const fs = [
+    ["removeTooBroad", removeTooBroad],
+    ["removeSubsets", removeSubsets],
+    ["peekholeFixes", peekholeFixes],
+    ["removeIncomplete", removeIncomplete],
+    ["removeMobileHome", removeMobileHome],
+    ["removeConflictingElements", removeConflictingElements],
+  ];
+
+  var newRv = rv;
+  for(var i = 0; i < fs.length; i++) {
+    newRv = fs[i][1](newRv);
+//    console.log('after ' + fs[i][0]);
+//    console.log(newRv);
+  }
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];
     if(el['_el']) {

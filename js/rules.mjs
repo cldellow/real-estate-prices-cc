@@ -286,6 +286,9 @@ function parseCityState(el) {
   const rv = /^ *([A-Z][A-Za-z .']*), *([A-Z][A-Z]) *$/.exec(txt);
 
   if(rv) {
+    if(rv[1].trim().split(/ /).length >= 5) // cities generally don't have more than 5 words
+      return;
+
     const m = {
       city: rv[1].trim(),
       state: rv[2].trim()
@@ -1204,6 +1207,38 @@ function expandLinkToPostalCode(el, listing) {
   }
 }
 
+function expandLinkToPostalCodeAndProvince(el, listing) {
+  const { address, city, state, postal_code } = listing;
+  if(!address || !city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const addressSlug = address.toLowerCase().replace(city.toLowerCase(), '').trim().replace(/[^a-z0-9]/g, '-');
+  const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+
+  const res = [
+    new RegExp(addressSlug + '-' + citySlug + '-(' + _caProvinceAlternation + ')-([a-z][0-9][a-z]-?[0-9][a-z][0-9])/?$', 'i'),
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        state: _caProvinceToAbbrev[rv[1].toUpperCase()],
+        postal_code: rv[2].toUpperCase().replace(/-/g, ''),
+        country: 'CA',
+      }
+    }
+  }
+}
+
 function expandLinkToProvince(el, listing) {
   const { address, city, state, postal_code } = listing;
   if(!address || !city || state || postal_code)
@@ -1641,6 +1676,7 @@ export const rules = [
     ['a', expandLinkToAddressCityStatePostalCodeUnderscore],
     ['a', expandLinkToAddressCityState],
     ['a', expandLinkToPostalCode],
+    ['a', expandLinkToPostalCodeAndProvince],
     ['a', expandLinkToPostalCodeWhenAddress],
     ['a', expandLinkToEntireListing],
     ['a', expandLinkToFullAddress],
