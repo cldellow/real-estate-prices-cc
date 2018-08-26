@@ -113,24 +113,6 @@ function dorewrite(el) {
       }
     }
 
-    // Ban elements that look like contact info -- a phone # followed by an address, or vice versa.
-    // Apply this ban as low as possible.
-    txt = innerText(el);
-    if(/[0-9]{3}-[0-9]{3}-[0-9]{4}\s*[0-9]+[^,]+,[^,]+,\s+[A-Z]{2} /.exec(txt) ||
-       /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/.exec(txt) ||
-      /[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9].{0,20}\(? *[0-9]{3} *\)? ?-?[0-9]{3} ?-?[0-9]{4}/.exec(txt) ||
-      /^\s*Bed\s*[0-9]\s*[0-9]+x[0-9]+\s*$/.exec(txt) ||
-      /^\s*Bed\s*[0-9]\s*$/.exec(txt) ||
-      /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/.exec(txt) // eg: Bedroom 1    13x13   2 (last arg is level)
-      || /\b[1-9][0-9]+ .{1,40}, [A-Z][A-Z],?\s*[0-9]{5}\s*\(?[0-9]{3}\)-? ?[0-9]{3}-?[0-9]{4}/.exec(txt)
-      || /from\s*\$[0-9,]{3,10}/i.exec(txt)
-      || /\(?[0-9]{3}\)?-? ?[0-9]{3}-? ?[0-9]{4}.{1,90}[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]/.exec(txt)
-      || /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/.exec(txt)
-    ) {
-      console.log("looks like contact: ");
-      console.log(txt);
-      el.remove();
-    }
   }
 }
 
@@ -155,6 +137,56 @@ export function rewrite(el) {
     console.log('H1 Address Not Available - removing all!');
     remove(el.childNodes);
   }
+
+  removeDangerousElements(el);
+}
+
+function removeDangerousElements(el) {
+  const candidates = [];
+  const els = el.querySelectorAll('*');
+  for(var i = 0; i < els.length; i++) {
+    if(isDangerous(els[i]))
+      candidates.push(els[i]);
+  }
+
+  candidates.sort(function (a, b) { return innerText(a).length - innerText(b).length; });
+
+  if(candidates.length) {
+    console.log('removing thing that looks like contact: ' + innerText(candidates[0]));
+    candidates[0].remove();
+
+    const nukes = el.querySelectorAll('*');
+    for(var i = 0; i < nukes.length; i++)
+      nukes[i].hasInnerText = null;
+    removeDangerousElements(el);
+  }
+}
+
+function isDangerous(el) {
+  // Ban elements that look like contact info -- a phone # followed by an address, or vice versa.
+  // Apply this ban as low as possible.
+  const txt = innerText(el);
+
+  const res = [
+    /[0-9]{3}-[0-9]{3}-[0-9]{4}\s*[0-9]+[^,]+,[^,]+,\s+[A-Z]{2} /,
+    /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/,
+    /[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9].{0,20}\(? *[0-9]{3} *\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
+    /^\s*Bed\s*[0-9]\s*[0-9]+x[0-9]+\s*$/,
+    /^\s*Bed\s*[0-9]\s*$/,
+    /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/, // eg: Bedroom 1    13x13   2 (last arg is level)
+    /\b[1-9][0-9]+ .{1,40}, [A-Z][A-Z],?\s*[0-9]{5}\s*\(?[0-9]{3}\)-? ?[0-9]{3}-?[0-9]{4}/,
+    /from\s*\$[0-9,]{3,10}/i,
+    /\([0-9]{3}\)-? ?[0-9]{3}-? ?[0-9]{4}.{1,90}[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]/,
+    /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    if(res[i].exec(txt)) {
+      //console.log(res[i]);
+      return true;
+    }
+  }
+  return false;
 }
 
 const normalize = x => x.toLowerCase().replace(/[^a-z0-9]/g, '');

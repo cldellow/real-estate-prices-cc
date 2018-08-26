@@ -1167,6 +1167,37 @@ function expandLinkToPostalCode(el, listing) {
   }
 }
 
+function expandLinkToProvince(el, listing) {
+  const { address, city, state, postal_code } = listing;
+  if(!address || !city || state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+
+  const res = [
+    new RegExp('/(' + _caProvinceAlternation + ')/' + citySlug + '/', 'i'),
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        state: _caProvinceToAbbrev[rv[1].toUpperCase()],
+        country: 'CA'
+      }
+    }
+  }
+}
+
+
 function expandLinkToPostalCodeWhenAddress(el, listing) {
   const { price, address, city, state, postal_code } = listing;
   if(!price || !address || city || state || postal_code)
@@ -1569,7 +1600,8 @@ export const rules = [
     ['a', expandLinkToPostalCode],
     ['a', expandLinkToPostalCodeWhenAddress],
     ['a', expandLinkToEntireListing],
-    ['a', expandLinkToFullAddress]
+    ['a', expandLinkToFullAddress],
+    ['a', expandLinkToProvince],
   ]]
 ];
 
