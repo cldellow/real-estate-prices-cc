@@ -180,6 +180,7 @@ function isDangerous(el) {
     /from\s*\$[0-9,]{3,10}/i,
     /\([0-9]{3}\)-? ?[0-9]{3}-? ?[0-9]{4}.{1,90}[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]/,
     /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
+    /^\s*(Median household income|Per capita income|Average household income|Median disposable income|Average total household expenditure|Average home sale price)\s*[$0-9,. N/A]+$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
