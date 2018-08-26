@@ -316,6 +316,7 @@ function parseAcres(el) {
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, [0-9][0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *([0-9.]+) acre\(s\) *$/i,
     /^\s*[1-9][^,]+ is a \$[0-9,]+, [0-9,]{3,6} square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
+    /^ *lot:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {

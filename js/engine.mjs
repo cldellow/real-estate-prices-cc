@@ -189,6 +189,7 @@ function isDangerous(el) {
     /^\s*Total area\s*[0-9][0-9,]+\s*sqft\s*$/i,
     /^\s*\$[0-9][0-9,]+\s*Average sales? price\s*$/i,
     /^\s*Commercial.{0,50}Mobile\s*home.{0,50}Single\s*family\s*$/i, // dropdown to pick type
+    /^\s*Home value estimate\s*\$[1-9][0-9,]+\s*Low\s*\$[1-9][0-9,]+\s*Sweet spot\s*\$[1-9][0-9,]+\s*High\s*$/i, // dropdown to pick type
   ];
 
   for(var i = 0; i < res.length; i++) {
