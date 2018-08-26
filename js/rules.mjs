@@ -306,6 +306,7 @@ function parseAcres(el) {
     /^ *([0-9.]+) ac *lot *size *$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, [0-9][0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *([0-9.]+) acre\(s\) *$/i,
+    /^\s*[1-9][^,]+ is a \$[0-9,]+, [0-9,]{3,6} square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -349,42 +350,49 @@ function _parseStreetAddressUSNoCityNoState(txt) {
 }
 
 function _parseStreetAddressCanadaCityProvince(txt) {
-  const rv = /^ *([0-9].+)[, ]+(.+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/.exec(txt);
+  const res = [
+    /^ *(#?[0-9].+), *([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/,
+    /^ *(#?[0-9].+)[, ]+?([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/,
+  ];
 
-  if(rv) {
-    var state = rv[3];
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(txt);
 
-    if(state.startsWith('Newfoundland'))
-      state = 'NL';
-    else if(state.startsWith('British'))
-      state = 'BC'
-    else if(state.startsWith('P'))
-      state = 'PE';
-    else if(state.startsWith('Nova'))
-      state = 'NS';
-    else if(state.startsWith('Q'))
-      state = 'QC';
-    else if(state.startsWith('On'))
-      state = 'ON';
-    else if(state.startsWith('Man'))
-      state = 'MB';
-    else if(state.startsWith('Sask'))
-      state = 'SK';
-    else if(state.startsWith('Al'))
-      state = 'AB';
-    else if(state.startsWith('Y'))
-      state = 'YT';
-    else if(state.startsWith('Northwest'))
-      state = 'NT';
-    else if(state.startsWith('Nu'))
-      state = 'NU';
+    if(rv) {
+      var state = rv[3];
 
-    return {
-      address: rv[1].trim(),
-      city: rv[2].trim(),
-      state: state.trim(),
-      postal_code: rv[4].trim(),
-      country: 'CA'
+      if(state.startsWith('Newfoundland'))
+        state = 'NL';
+      else if(state.startsWith('British'))
+        state = 'BC'
+      else if(state.startsWith('P'))
+        state = 'PE';
+      else if(state.startsWith('Nova'))
+        state = 'NS';
+      else if(state.startsWith('Q'))
+        state = 'QC';
+      else if(state.startsWith('On'))
+        state = 'ON';
+      else if(state.startsWith('Man'))
+        state = 'MB';
+      else if(state.startsWith('Sask'))
+        state = 'SK';
+      else if(state.startsWith('Al'))
+        state = 'AB';
+      else if(state.startsWith('Y'))
+        state = 'YT';
+      else if(state.startsWith('Northwest'))
+        state = 'NT';
+      else if(state.startsWith('Nu'))
+        state = 'NU';
+
+      return {
+        address: rv[1].trim(),
+        city: rv[2].trim(),
+        state: state.trim(),
+        postal_code: rv[4].trim().replace(/ /g, ''),
+        country: 'CA'
+      }
     }
   }
 }
@@ -503,7 +511,8 @@ function stripPriceAndParentheticals(txt) {
 function _parseStreetAddressFromProse(txt) {
   // "123 Foo Rd is a $279,000, 3 bedroom, 2.0 bath home on a 0.25 acre lot located in Easton, MD."
   const re = [
-    /^\s*([1-9][^,]+) is a\s*, [0-9] bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
+    /^\s*([1-9][^,]+) is a\s*, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
+    /^\s*([1-9][^,]+) is a \$[0-9,]+, [0-9,]{3,6} square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
     /^\s*([1-9][^,]+) is a\s*home located in ([A-Z][^,]+), ([A-Z][A-Z])\.\s*$/,
   ];
 
@@ -778,6 +787,7 @@ function parseSqft(el) {
     /^\s*[0-9]{1,2} BR, [0-9]{1,2}\.?[0-9]* BA, ([0-9]{3,5}) sq ?ft\s*$/i,
     /^ *[0-9]\s*Beds,?\s*[0-9]\s*Bath Areas\s*([0-9,]{3,6})\s*SqFt\s*$/i,
     /\s*Bed:\s*[0-9]\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*([0-9,]{3,6})\s*/i,
+    /^\s*[1-9][^,]+ is a \$[0-9,]+, ([0-9,]{3,6}) square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1035,6 +1045,14 @@ function extractDigit(field) {
       return {[field]: parseInt(rv[1], 10)}
   }
 }
+
+function extractBaths(el) {
+  const txt = innerText(el);
+  const rv = /^[ :]*([0-9]) *full\s*$/.exec(txt);
+  if(rv)
+    return {baths: parseInt(rv[1], 10)}
+}
+
 
 function extractIntegerFromFloat(field) {
   return function(el) {
@@ -1570,7 +1588,8 @@ export const rules = [
     ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
-    ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractDigit('baths'), true],
+    ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractDigit('baths'), true],
+    ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractBaths, true],
     ['.q-half-bathrooms + td, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bath + td, .q-baths + td', extractIntegerFromFloat('baths')],
     ['*', parseBaths],
