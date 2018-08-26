@@ -126,6 +126,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-bedroom-3-x'));
   remove(el.querySelectorAll('.q-bedroom-4-x'));
   remove(el.querySelectorAll('.q-bedroom-5-x'));
+  remove(el.querySelectorAll('footer'));
 
   // Don't trust any page that talks about estimated values.
   if(el.querySelectorAll('.q-estimated-value').length) {
@@ -477,7 +478,7 @@ export function removeTooBroad(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls >= 0.8)
+      if(ourEls / docEls >= 0.85)
         domOk = false;
     }
 

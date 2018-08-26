@@ -410,7 +410,7 @@ function _parseStreetAddressCanadaCityNoProvince(txt) {
   if(rv) {
     return {
       address: rv[1].trim(),
-      postal_code: rv[2].trim(),
+      postal_code: rv[2].trim().replace(/ /g, ''),
       country: 'CA'
     }
   }
