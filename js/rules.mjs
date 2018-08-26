@@ -244,6 +244,12 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     if(/^[0-9.]+$|[0-9] full|[0-9] half ba/.exec(rv[1].trim()))
       return;
 
+    if(!/ /.exec(rv[1].trim())) // addresses generally aren't 1 word
+      return;
+
+    if(rv[2].trim().split(/ /).length >= 5) // cities generally don't have 5 or more words
+      return;
+
     return {
       address: rv[1].trim(),
       city: rv[2].trim()
@@ -752,6 +758,7 @@ function parseMLS(el) {
   const txt = innerText(el);
   const res = [
     /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/,
+    /^ *MLS *Number *([A-Z0-9]{5,15}) *$/,
     /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
     /\| *MLS *#?:? *([A-Z0-9]{5,15}) *\|/,
   ];
