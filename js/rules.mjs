@@ -766,6 +766,7 @@ function parseMLS(el) {
     /^ *MLS *Number *([A-Z0-9]{5,15}) *$/,
     /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
     /\| *MLS *#?:? *([A-Z0-9]{5,15}) *\|/,
+    /^ *#:? *([A-Z0-9]{5,15}) *$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -979,6 +980,7 @@ function parseLotSize(el) {
   const txt = innerText(el);
   const res = [
     /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
+    /\blot *: *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1590,7 +1592,7 @@ export const rules = [
     ['.q-association-fee + td', extractPrice('_association_fee'), true],
     ['.q-tax-amount + *', extractPrice('_tax_amount'), true],
     ['.q-total-mortgage + td', extractPrice('_mortgage'), true],
-    ['.q-bc-assessment-2017 + span', extractPrice('_assessment'), true],
+    ['.q-bc-assessment-2017 + span, .q-assessed-value + dd', extractPrice('_assessment'), true],
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
     ['*', parseSoldDate],
