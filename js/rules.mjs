@@ -1099,7 +1099,7 @@ function parseYearBuilt(el) {
   const res = [
     /^ *([0-9]{4}) *year built *$/i,
     /^ *([0-9]{4}) *built *$/i,
-    /^ *built in:? *([0-9]{4}) *$/i,
+    /^ *.{0,3}built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
   ];
 
