@@ -1186,13 +1186,14 @@ function expandLinkToPostalCode(el, listing) {
 
   const res = [
     new RegExp(addressSlug + '-' + citySlug + '-' + state + '-([0-9]{5})\.html', 'i'),
+    new RegExp(addressSlug + '-' + citySlug + '-' + state + '-([a-z][0-9][a-z]-?[0-9][a-z][0-9])$', 'i'),
   ];
 
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(href);
     if(rv) {
       return {
-        postal_code: rv[1].toUpperCase()
+        postal_code: rv[1].toUpperCase().replace(/-/g, '')
       }
     }
   }
