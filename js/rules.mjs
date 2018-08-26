@@ -451,6 +451,9 @@ function validAddress(rv) {
   if(/Mobile Home/i.exec(address))
     return;
 
+  if(/[0-9]+\s*photo/i.exec(address))
+    return;
+
   // If we have what looks a lot like a bland promotional statement, we probably
   // parsed badly.
   if(address.indexOf(' is a ') >= 0 || address.indexOf('market value') >= 0 || (city && city.indexOf('is a ') >= 0))
