@@ -108,8 +108,8 @@ function _parseStreetAddressUSFull(txt) {
   }
 }
 
-const _parseStreetAddressStateZipRe1 = new RegExp('^ *([1-9][0-9A-Za-z .\']+),? *(' + _usStateAlternation + ') *,* *([0-9]{5})\\b *');
-const _parseStreetAddressStateZipRe2 = new RegExp('^ *([1-9][0-9A-Za-z .\']+), *(' + _usStateAlternation + ') *,* *([0-9]{5}) *- *[0-9]{4} *$');
+const _parseStreetAddressStateZipRe1 = new RegExp('^ *([1-9][0-9A-Za-z .\'#]+),? *(' + _usStateAlternation + ') *,* *([0-9]{5})\\b *');
+const _parseStreetAddressStateZipRe2 = new RegExp('^ *([1-9][0-9A-Za-z .\'#]+), *(' + _usStateAlternation + ') *,* *([0-9]{5}) *- *[0-9]{4} *$');
 
 function _parseStreetAddressStateZip(txt) {
   const rv = _parseStreetAddressStateZipRe1.exec(txt);
@@ -755,7 +755,7 @@ function parseHalfBaths(el) {
     /^\s*Bathrooms\s*[0-9]{1,2} Full,\s*([0-9])\s*Half\s*$/i,
     dangerous,
     /^\s*[0-9]{1,2}\.([1-4]) baths?\s*$/i,
-    /^\s*([0-9]{1,2})\s*partial baths\s*$/i,
+    /^\s*([0-9]{1,2})\s*partial baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -791,7 +791,7 @@ function parseMLSAndMLSId(el) {
 function parseMLS(el) {
   const txt = innerText(el);
   const res = [
-    /^ *MLS *#?:? *([A-Z0-9]{5,15}) *$/,
+    /^[ -]*MLS *#?:? *([A-Z0-9]{5,15}) *$/,
     /^ *MLS *Number *([A-Z0-9]{5,15}) *$/,
     /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
     /\| *MLS *#?:? *([A-Z0-9]{5,15}) *\|/,

@@ -131,6 +131,12 @@ export function rewrite(el) {
   remove(el.querySelectorAll('#search-filters'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
 
+  if(el.querySelectorAll('.q-finished-sqft').length) {
+    remove(el.querySelectorAll('.q-total-sqft + span'));
+    remove(el.querySelectorAll('.q-total-sqft'));
+  }
+  
+
   // Don't trust any page that talks about estimated values.
   if(el.querySelectorAll('.q-estimated-value').length) {
     console.log('ESTIMATED VALUE - removing all!');
