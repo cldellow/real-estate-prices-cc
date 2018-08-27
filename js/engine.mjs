@@ -129,6 +129,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('footer'));
   remove(el.querySelectorAll('#schools'));
   remove(el.querySelectorAll('#search-filters'));
+  remove(el.querySelectorAll('.si-listing__photo-count'));
 
   // Don't trust any page that talks about estimated values.
   if(el.querySelectorAll('.q-estimated-value').length) {

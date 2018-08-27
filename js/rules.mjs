@@ -361,8 +361,8 @@ function _parseStreetAddressUSNoCityNoState(txt) {
 
 function _parseStreetAddressCanadaCityProvince(txt) {
   const res = [
-    /^ *(#?[0-9].+), *([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/,
-    /^ *(#?[0-9].+)[, ]+?([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/,
+    /^ *(#?[0-9].+), *([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Za-z][0-9][A-Za-z] *[0-9][A-Za-z][0-9]).*$/,
+    /^ *(#?[0-9].+)[, ]+?([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Za-z][0-9][A-Za-z] *[0-9][A-Za-z][0-9]).*$/,
   ];
 
   if(/T3P/i.exec(txt)) {
