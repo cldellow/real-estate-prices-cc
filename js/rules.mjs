@@ -449,6 +449,10 @@ function validAddress(rv) {
   if(/^[0-9 ,#-]+$/.exec(address))
     return;
 
+  // does it look like a state + zip?
+  if(/\b[A-Z][A-Z] [0-9]{5}\b/.exec(address))
+    return;
+
   // is it just numbers?
   if(/^[0-9]+$/.exec(address))
     return;
@@ -667,10 +671,15 @@ function parseBaths(el) {
 
   const dangerous = /([0-9]{1,2})\/[1-35-9] Bath/i; // avoid capturing "3/4" baths, which usually means something else
 
+  const maybeHalf1 = /\bbathrooms: *([0-9]{1,2})\b/i;
+  const maybeHalf2 = /\bbaths: *([0-9]{1,2})\b/i;
+
   const res = [
     /^ *([0-9]{1,2}) *baths? *$/i,
-    /\bbathrooms: *([0-9]{1,2})\b/i,
-    /\bbaths: *([0-9]{1,2})\b/i,
+    maybeHalf1,
+    maybeHalf2,
+    /^\s*Baths\s*:? ([0-9]{1,2})\s*full/i,
+    /^\s*([0-9]{1,2})\s*full\s*&\s*[0-9]{1,2}\s*half bath\(?s?\)?\s*$/i,
     /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *$/i,
     /^ *[0-9]{1,2} *beds? *. *([0-9]{1,2}) *baths? *,/i,
     /^ *[0-9]{1,2} *bedrooms? *. *([0-9]{1,2}) *bathrooms? */i,
@@ -728,6 +737,9 @@ function parseBaths(el) {
     const rv = re.exec(txt);
     if(rv) {
       if(re == dangerous && /1\/2\s*bath/.exec(txt))
+        continue;
+
+      if((re == maybeHalf1 || re == maybeHalf2) && /half bath/i.exec(txt))
         continue;
       //console.log(re);
       //console.log('baths: ' + rv[1]);

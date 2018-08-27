@@ -133,6 +133,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('#search-filters'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
   remove(el.querySelectorAll('#publicRecordList'));
+  remove(el.querySelectorAll('.q-property-history + div'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));
