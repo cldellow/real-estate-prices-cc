@@ -127,7 +127,9 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-bedroom-4-x'));
   remove(el.querySelectorAll('.q-bedroom-5-x'));
   remove(el.querySelectorAll('footer'));
+  remove(el.querySelectorAll('#site-footer'));
   remove(el.querySelectorAll('#schools'));
+  remove(el.querySelectorAll('#company-info'));
   remove(el.querySelectorAll('#search-filters'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
   remove(el.querySelectorAll('#publicRecordList'));
@@ -179,7 +181,8 @@ function isDangerous(el) {
   const txt = innerText(el);
 
   const res = [
-    /[0-9]{3}[-.][0-9]{3}[-.][0-9]{4}\s*[0-9]+[^,]+,?[^,]+,?\s+[A-Z]{2} /,
+    /[0-9]{3}[-.][0-9]{3}[-.][0-9]{4}\s*[0-9]+[^,]{1,30},?[^,]{1,30},?\s+[A-Z]{2} /,
+//    /[0-9]{3}[-.][0-9]{3}[-.][0-9]{4}.{0,30}[0-9]+[^,]{1,30},?[^,]{1,30},?\s+[A-Z]{2} /,
     /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/,
     /[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9].{0,20}\(? *[0-9]{3} *\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
     /[1-9][0-9]+.{1,40},\s*[A-Z][A-Z],?\s*[0-9]{5}\b\s*.{1,10}\s*[0-9]{3}\.[0-9]{3}\.[0-9]{4}\b/,
