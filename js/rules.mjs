@@ -365,6 +365,9 @@ function _parseStreetAddressCanadaCityProvince(txt) {
     /^ *(#?[0-9].+)[, ]+?([^,]+)[, ]+(NL|PE|NS|NB|QC|ON|MB|SK|AB|BC|YT|NT|NU|Newfoundland|Newfoundland and Labrador|PEI|Prince Edward Island|Nova Scotia|Quebec|Ontario|Manitoba|Saskatchewan|Alberta|British Columbia|Yukon|Northwest Territories|Nunavut|Que|Ont|Man|Alta|Alb|Sask)\b[, ]+([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]).*$/,
   ];
 
+  if(/T3P/i.exec(txt)) {
+    console.log('!!! ' + txt);
+  }
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(txt);
 
@@ -543,6 +546,7 @@ function _parseStreetAddressFromProse(txt) {
 }
 
 function parseStreetAddress(el) {
+//  console.log('parseStreetAddress: ' + innerText(el));
   if(el.parsedStreetAddress !== undefined)
     return el.parsedStreetAddress;
 
@@ -568,7 +572,7 @@ function parseStreetAddress(el) {
   fs.push(_parseStreetAddressNoStateNoCountryNoPostal);
   fs.push(_parseStreetAddressCanadaCityStateNoPostal);
   fs.push(_parseStreetAddressStateNoPostalMaybeCity);
-  fs.push(_parseStreetAddressFromProse);
+//  fs.push(_parseStreetAddressFromProse);
 
   for(var i = 0; i < fs.length; i++) {
     const rv = fs[i](commaForBRAndHeaders);
@@ -655,6 +659,8 @@ function parseBaths(el) {
     return;
   }
 
+  const dangerous = /([0-9]{1,2})\/[1-35-9] Bath/i; // avoid capturing "3/4" baths, which usually means something else
+
   const res = [
     /^ *([0-9]{1,2}) *baths? *$/i,
     /\bbathrooms: *([0-9]{1,2})\b/i,
@@ -691,7 +697,6 @@ function parseBaths(el) {
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full *,? *[0-9]{1,2} *half baths? *$/i,
     /^ *[0-9]{1,2} beds? *,? *([0-9]{1,2}) full baths? *$/i,
     /^ *([0-9]{1,2}) full *,? *[0-9]{1,2} *half bat?h?s? *$/i,
-    /([0-9]{1,2})\/[1-35-9] Bath/i, // avoid capturing "3/4" baths, which usually means something else
     /[0-9]{1,2}\s+Beds,\s+([0-9]{1,2})\s+Baths/i,
     /[0-9]{1,2}\s+Beds,\s+([0-9]{1,2})\s+Full Baths/i,
     /[0-9]{1,2}\s+Beds,?\s+([0-9]{1,2})\.[0-9]+\s+Baths/i,
@@ -708,12 +713,19 @@ function parseBaths(el) {
     /\s*Bed:\s*[0-9]\s*Bath:\s*([0-9]+)\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
     /\s*[0-9] bedrooms, ([0-9]) baths, [0-9,]{3,6} sq\.ft/i,
     /\s*[0-9] bedroom [^,.:]{5,15} with ([0-9]) full baths/i,
+    /^\s*([0-9]{1,2})\.[0-9] baths?\s*$/i,
+    dangerous,
   ];
 
   for(var i = 0; i < res.length; i++) {
     const re = res[i];
     const rv = re.exec(txt);
     if(rv) {
+      if(re == dangerous && /1\/2\s*bath/.exec(txt))
+        continue;
+      //console.log(re);
+      //console.log('baths: ' + rv[1]);
+      //console.log(txt);
       return {
         baths: parseInt(rv[1], 10)
       }
@@ -723,6 +735,8 @@ function parseBaths(el) {
 
 function parseHalfBaths(el) {
   const txt = innerText(el);
+
+  const dangerous = /[0-9]{1,2}\/([1-35-9]) Bath/i; // avoid 3/4
   const res = [
     / *1\/2 Bathrooms?:?\s*([0-9]{1,2}) */i,
     /^ *([0-9]{1,2}) *half bath\(?s?\)? *$/i,
@@ -737,15 +751,23 @@ function parseHalfBaths(el) {
     /^ *[0-9]{1,2} *full *, *([0-9]{1,2}) *partial baths *$/i,
     /^ *[0-9]{1,2} beds? *,? *[0-9]{1,2} full *,? *([0-9]{1,2}) *half baths? *$/i,
     /^ *[0-9]{1,2} full *,? *([0-9]{1,2}) *half bat?h?s? *$/i,
-    /[0-9]{1,2}\/([1-35-9]) Bath/i, // avoid 3/4
     /^ *Bath\(Half\)\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*Bathrooms\s*[0-9]{1,2} Full,\s*([0-9])\s*Half\s*$/i,
+    dangerous,
+    /^\s*[0-9]{1,2}\.([1-4]) baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
     const re = res[i];
     const rv = re.exec(txt);
     if(rv) {
+      if(re == dangerous && /1\/2\s*bath/.exec(txt))
+        continue;
+
+      //console.log(re);
+      //console.log('half baths: ' + rv[1]);
+      //console.log(txt);
+
       return {
         half_baths: parseInt(rv[1], 10)
       }
@@ -1644,7 +1666,7 @@ export const rules = [
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div, .yoarticon-bathtub + span', extractDigit('baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractBaths, true],
-    ['.q-half-bathrooms + td, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
+    ['.q-half-bathrooms + td, .q-half-bath + span, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bath + td, .q-baths + td', extractIntegerFromFloat('baths')],
     ['*', parseBaths],
     ['*', parseHalfBaths],

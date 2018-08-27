@@ -128,6 +128,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-bedroom-5-x'));
   remove(el.querySelectorAll('footer'));
   remove(el.querySelectorAll('#schools'));
+  remove(el.querySelectorAll('#search-filters'));
 
   // Don't trust any page that talks about estimated values.
   if(el.querySelectorAll('.q-estimated-value').length) {
@@ -173,6 +174,7 @@ function isDangerous(el) {
     /[0-9]{3}[-.][0-9]{3}[-.][0-9]{4}\s*[0-9]+[^,]+,?[^,]+,?\s+[A-Z]{2} /,
     /[A-Z][^,]+,\s+[A-Z][A-Z]\s+[0-9]{5}\s*[0-9]{3}-[0-9]{3}-[0-9]{4}/,
     /[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9].{0,20}\(? *[0-9]{3} *\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
+    /[1-9][0-9]+.{1,40},\s*[A-Z][A-Z],?\s*[0-9]{5}\b\s*.{1,10}\s*[0-9]{3}\.[0-9]{3}\.[0-9]{4}\b/,
     /^\s*Bed\s*[0-9]\s*[0-9]+x[0-9]+\s*$/,
     /^\s*Bed\s*[0-9]\s*$/,
     /^\s*Bedroom\s*[0-9]\s*[0-9]+\s*x\s*[0-9]+\s*[0-9]\s*$/, // eg: Bedroom 1    13x13   2 (last arg is level)
@@ -185,11 +187,16 @@ function isDangerous(el) {
     /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
     /^\s*(Median household income|Per capita income|Average household income|Median disposable income|Average total household expenditure|Average home sale price)\s*[$0-9,. N/A]+$/,
     /^\s*NT\s*\$\s*[0-9][0-9,]+\s*$/, // NT = Taiwan New Dollar, not Nunavut, ban "NT$750,000"
-    /^\s*(Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
+    /^\s*(total assessments?|improvement assessments?|land assessments?|Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
     /^\s*Total area\s*[0-9][0-9,]+\s*sqft\s*$/i,
     /^\s*\$[0-9][0-9,]+\s*Average sales? price\s*$/i,
     /^\s*Commercial.{0,50}Mobile\s*home.{0,50}Single\s*family\s*$/i, // dropdown to pick type
     /^\s*Home value estimate\s*\$[1-9][0-9,]+\s*Low\s*\$[1-9][0-9,]+\s*Sweet spot\s*\$[1-9][0-9,]+\s*High\s*$/i, // dropdown to pick type
+    /^\s*any (max|min) price[$0-9,.M ]+$/i, // price controls
+    /^\s*single.level.*double.wide.mobile.home.*single.wide.mobile.home.*$/i,
+    /^\s*agri-business.*double.wide.*single.wide\s*$/i,
+    /^\s*single.family.home.*condo.*mobile.home.*$/i,
+    /^\s*over\s*\$[0-9][0-9,]+\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -496,8 +503,10 @@ export function removeTooBroad(xs) {
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
       //console.log('DOM %: ' + (ourEls / docEls));
-      if(ourEls / docEls >= 0.95)
+      /*
+      if(ourEls / docEls >= 0.97)
         domOk = false;
+        */
     }
 
     return domOk;
