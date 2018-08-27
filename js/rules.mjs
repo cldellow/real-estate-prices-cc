@@ -1657,6 +1657,7 @@ export const rules = [
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
     ['*', parseSoldDate],
     ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sold-price + dd, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
+    ['[title="Closing price"]', extractPrice('sold_price')],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
