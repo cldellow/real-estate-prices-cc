@@ -755,6 +755,7 @@ function parseHalfBaths(el) {
     /^\s*Bathrooms\s*[0-9]{1,2} Full,\s*([0-9])\s*Half\s*$/i,
     dangerous,
     /^\s*[0-9]{1,2}\.([1-4]) baths?\s*$/i,
+    /^\s*([0-9]{1,2})\s*partial baths\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
