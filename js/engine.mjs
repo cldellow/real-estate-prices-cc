@@ -130,6 +130,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('#schools'));
   remove(el.querySelectorAll('#search-filters'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
+  remove(el.querySelectorAll('#publicRecordList'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));
@@ -194,7 +195,7 @@ function isDangerous(el) {
     /[1-9].{1,30}[0-9]{5}.{0,10}\(?[0-9]{3}\)? ?-?[0-9]{3} ?-?[0-9]{4}/,
     /^\s*(Median household income|Per capita income|Average household income|Median disposable income|Average total household expenditure|Average home sale price)\s*[$0-9,. N/A]+$/,
     /^\s*NT\s*\$\s*[0-9][0-9,]+\s*$/, // NT = Taiwan New Dollar, not Nunavut, ban "NT$750,000"
-    /^\s*(total assessments?|improvement assessments?|land assessments?|Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
+    /^\s*(average sale price|total assessments?|improvement assessments?|land assessments?|Assessed Value|Assessment Value|Assessed Land Value|Assessed Improvement Value|Total Assessed Value|Street median sales price|Neighbou?rhood average sales price|Neighbou?rhood median sales price)\s*:?\s*\*?\s*\$[0-9][0-9,.]+\s*k?\s*$/i,
     /^\s*Total area\s*[0-9][0-9,]+\s*sqft\s*$/i,
     /^\s*\$[0-9][0-9,]+\s*Average sales? price\s*$/i,
     /^\s*Commercial.{0,50}Mobile\s*home.{0,50}Single\s*family\s*$/i, // dropdown to pick type

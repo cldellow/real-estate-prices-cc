@@ -250,6 +250,9 @@ function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
     if(rv[2].trim().split(/ /).length >= 5) // cities generally don't have 5 or more words
       return;
 
+    if(/^Explore /.exec(rv[2].trim()))
+      return;
+
     return {
       address: rv[1].trim(),
       city: rv[2].trim()
@@ -287,6 +290,9 @@ function parseCityState(el) {
 
   if(rv) {
     if(rv[1].trim().split(/ /).length >= 5) // cities generally don't have more than 5 words
+      return;
+
+    if(/^Explore /.exec(rv[1].trim()))
       return;
 
     const m = {
@@ -888,7 +894,7 @@ function parseSoldDate(el) {
   const txt = innerText(el);
   const res = [
     /^ *date sold *: *(.+) *$/i,
-    /^ *sold *: *(.+) *$/i,
+    /^ *sold *:? *(.+) *$/i,
     /^ *sold *- *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ )]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
