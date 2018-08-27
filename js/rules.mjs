@@ -233,7 +233,7 @@ function _parseStreetAddressCanadaCityStateNoPostal(txt) {
 
 
 function _parseStreetAddressNoStateNoCountryNoPostal(txt) {
-  if(/[0-9] *car |bathrooms|bedrooms/i.exec(txt))
+  if(/[0-9] *car\b|bathrooms|bedrooms/i.exec(txt))
     return;
 
 
