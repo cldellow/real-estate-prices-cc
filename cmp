@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
+lz4c -9 "$1"
+rm "$1"
+vim "$1".lz4.jsonl

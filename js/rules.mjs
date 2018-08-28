@@ -644,7 +644,7 @@ function parseBeds(el) {
     /([0-9]{1,2})\s+bedrooms and\s+[0-9]{1,2}\s+Full Baths/i,
     /^ *([0-9]{1,2})\s+beds?\s*\|\s*[0-9]{1,2}\.[0-9]+\s+Baths?\s*$/i,
     /^ *Bed\s*:\s*([0-9]{1,2})\s*$/i,
-    /^\s*([0-9]{1,2}) BR, [0-9]{1,2}(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
+    /^\s*([0-9]{1,2})\s*BR\s*[,•]\s*[0-9]{1,2}(\.[0-9])*\s*BA\s*[,•]\s*[0-9]{3,5}\s*sq\.? ?ft\.?\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, ([0-9]) bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *([0-9])\s*Beds,?\s*[0-9]\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*([0-9])\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
@@ -719,7 +719,7 @@ function parseBaths(el) {
     /^ *[0-9]{1,2}\s+beds?\s*\|\s*([0-9]{1,2})\.[0-9]+\s+Baths?\s*$/i,
     /^ *Baths\s*([0-9]{1,2})\s*\(full\)\s*$/i,
     /^ *Bath\(Full\)\s*:\s*([0-9]{1,2})\s*$/i,
-    /^\s*[0-9]{1,2} BR, ([0-9]{1,2})(\.[0-9])* BA, [0-9]{3,5} sq ?ft\s*$/i,
+    /^\s*[0-9]{1,2}\s*BR\s*[,•]\s*([0-9]{1,2})(\.[0-9])*\s*BA\s*[,•]\s*[0-9]{3,5}\s*sq\.? ?ft\.?\s*$/i,
     /^\s*Bathrooms\s*([0-9]{1,2}) Full,\s*[0-9]\s*Half\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, [0-9] bedroom, ([0-9]{1,2})[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *Baths\s*([0-9]{1,2})\s*-0\s*$/i,
@@ -1113,6 +1113,18 @@ function extractCity(el) {
     return {
       city: rv[1]
     }
+}
+
+function extractBedsBathsHalfBaths(el) {
+  const txt = innerText(el);
+  const rv = /^\s*(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(txt);
+  if(rv) {
+    return {
+      beds: parseInt(rv[1], 10),
+      baths: parseInt(rv[2], 10),
+      half_baths: parseInt(rv[3], 10)
+      }
+  }
 }
 
 function extractDigit(field) {
@@ -1724,9 +1736,10 @@ export const rules = [
     ['*', parseListingDate],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
-    ['.q-year-built + div, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
+    ['.q-year-built + div, .q-yr-built + td, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-sq-feet + td, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-approx-sq-ft + div, .q-apx-sqft + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td, .q-bedrooms + div', extractDigit('beds')],
+    ['.q-bed-ba-ba + td', extractBedsBathsHalfBaths],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandAddressCityToStatePostalCode2],

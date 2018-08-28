@@ -131,6 +131,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('#schools'));
   remove(el.querySelectorAll('#company-info'));
   remove(el.querySelectorAll('#search-filters'));
+  remove(el.querySelectorAll('#rwTaxYr'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
   remove(el.querySelectorAll('#publicRecordList'));
   remove(el.querySelectorAll('.q-property-history + div'));
