@@ -163,6 +163,8 @@ export function rewrite(el) {
   }
   orphan(el.querySelectorAll('.similar_prop'));
   orphan(el.querySelectorAll('#similar-properties'));
+  orphan(el.querySelectorAll('#nearby_listings'));
+  orphan(el.querySelectorAll('[name=nearby_listings]'));
 
   removeDangerousElements(el);
 }
