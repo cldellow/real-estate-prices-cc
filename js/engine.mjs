@@ -153,6 +153,17 @@ export function rewrite(el) {
     remove(el.childNodes);
   }
 
+  // "orphan" elements that are liable to confuse us
+  function orphan(xs) {
+    for(var i = 0; xs && i < xs.length; i++) {
+      const e = xs[i];
+      e.remove();
+      el.appendChild(e);
+    }
+  }
+  orphan(el.querySelectorAll('.similar_prop'));
+  orphan(el.querySelectorAll('#similar-properties'));
+
   removeDangerousElements(el);
 }
 
