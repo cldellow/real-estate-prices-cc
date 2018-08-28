@@ -1062,7 +1062,7 @@ function extractLotSizeFromSquareFeet(el) {
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
-    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *sq\.?u?a?r?e? *f?e?e?t *$/,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *sq\.?u?a?r?e? *f?e?e?t *$/i,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *builder *$/i,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *appraisal district *$/i,
   ];
