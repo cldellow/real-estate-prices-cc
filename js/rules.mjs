@@ -877,7 +877,23 @@ function extractPrice(field) {
   return function(el) {
     const txt = innerText(el);
     const rv = extractPriceFromString(txt);
-    if(rv) {
+
+    function likelyPrice() {
+      const res = [
+        /This property[^.]+priced at \$/,
+        /home was sold for \$/,
+        /currently listed at \$/,
+      ];
+
+      for(var i = 0; i < res.length; i++) {
+        if(res[i].exec(txt))
+          return true;
+      }
+      return false;
+    }
+
+    // Be conservative in our willingness to extract a price from a chunk of prose.
+    if(rv && (txt.length < 80 || likelyPrice())) {
       return {
         [field]: rv
       }
