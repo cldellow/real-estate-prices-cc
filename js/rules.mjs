@@ -645,12 +645,14 @@ function parseBeds(el) {
     /^ *([0-9]{1,2})\s+beds?\s*\|\s*[0-9]{1,2}\.[0-9]+\s+Baths?\s*$/i,
     /^ *Bed\s*:\s*([0-9]{1,2})\s*$/i,
     /^\s*([0-9]{1,2})\s*BR\s*[,•]\s*[0-9]{1,2}(\.[0-9])*\s*BA\s*[,•]\s*[0-9]{3,5}\s*sq\.? ?ft\.?\s*$/i,
-    /^\s*([0-9]{1,2})\s*BR\s*[,•]\s*[0-9]{1,2}(\.[0-9])*\s*BA\s*$/i,
+    /^\s*([0-9]{1,2})\s*BR\s*[,•]*\s*[0-9]{1,2}(\.[0-9])*\s*BA\s*$/i,
     /^\s*[1-9].+ is a \$[0-9,]+, ([0-9]) bedroom, [0-9][0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *([0-9])\s*Beds,?\s*[0-9]\s*Bath Areas\s*[0-9,]{3,6}\s*SqFt\s*$/i,
     /\s*Bed:\s*([0-9])\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*[0-9,]{3,6}\s*/i,
     /\s*([0-9]) bedrooms, [0-9] baths, [0-9,]{3,6} sq\.ft/i,
     /\s*([0-9]) bedroom [^,.:]{5,15} with [0-9] full baths/i,
+    /\s*([0-9]) bedrooms?\s*,\s*\$[1-9][0-9,]+\b/i,
+    // 4 bed, 4 full bath, 1 half bath
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -815,7 +817,7 @@ function parseMLS(el) {
   const txt = innerText(el);
   const res = [
     /^[ -]*MLS *#?:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
-    /^ *MLS *Number *([A-Z]{0,2}[0-9]{5,13}) *$/,
+    /^ *MLS *Number:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
     /^\s*MLS\s*®\s*Number *:? *([A-Z]{0,2}[0-9]{5,13})\s*$/i,
     /^ *ID *# *:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
     /\| *MLS *#?:? *([A-Z]{0,2}[0-9]{5,13}) *\|/,
@@ -1691,6 +1693,43 @@ function expandAddressCityToStatePostalCode(el, listing) {
   }
 }
 
+function expandCityStateToAddress(el, listing) {
+  const { address, postal_code, city, state} = listing;
+  if(address || postal_code || !city || !state)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const txt = innerText(el).trim();
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const citySlug = city.toLowerCase().replace(/[^0-9a-z]/g, '[_-]*');
+  const addressSlug = txt.toLowerCase().replace(/[^0-9a-z]/g, '[-_]*');
+  const re = RegExp('/(' + _usStateAlternation.replace(/ /g, '[-_]') + '|' + _caProvinceAlternation.replace(/ /g, '[-_]') + ')/' + citySlug + '/' + addressSlug, 'i');
+
+  const rv = re.exec(href);
+  if(rv) {
+    const maybeState = rv[1].toUpperCase().replace(/[-_]/g, ' ');
+    if(_usStateToAbbrev[maybeState]) {
+      return {
+        address: txt,
+        state: _usStateToAbbrev[maybeState],
+        country: 'US'
+      }
+    } else {
+      return {
+        address: txt,
+        state: _caProvinceToAbbrev[maybeState],
+        country: 'CA'
+      }
+    }
+  }
+}
+
 function expandCityStateToAddressPostalCode(el, listing) {
   const { address, postal_code, city, state} = listing;
   if(address || postal_code || !city || !state)
@@ -1821,6 +1860,7 @@ export const rules = [
     ['a', expandAddressCityToStatePostalCode],
     ['a', expandAddressCityToStatePostalCode2],
     ['a', expandCityStateToAddressPostalCode],
+    ['a', expandCityStateToAddress],
     ['a', expandMLSAndMLSIdToAddressStatePostalCode],
     ['a', expandExternalIdCityToAddressStatePostalCode],
     ['a', expandLinkToAddressCityStatePostalCode],
