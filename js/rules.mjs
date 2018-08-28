@@ -731,6 +731,8 @@ function parseBaths(el) {
     /\s*[0-9] bedrooms, ([0-9]) baths, [0-9,]{3,6} sq\.ft/i,
     /\s*[0-9] bedroom [^,.:]{5,15} with ([0-9]) full baths/i,
     /^\s*([0-9]{1,2})\.[0-9] baths?\s*$/i,
+    /^\s*bath full\s*([0-9]{1,2})\s*$/i,
+    /^\s*([0-9]{1,2})\s*full baths?\s*,\s*[0-9]{1,2}\s*half\s*baths?\s*$/i,
     dangerous,
   ];
 
@@ -776,6 +778,7 @@ function parseHalfBaths(el) {
     dangerous,
     /^\s*[0-9]{1,2}\.([1-4]) baths?\s*$/i,
     /^\s*([0-9]{1,2})\s*partial baths?\s*$/i,
+    /^\s*[0-9]{1,2}\s*full baths?\s*,\s*([0-9]{1,2})\s*half\s*baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -811,11 +814,13 @@ function parseMLSAndMLSId(el) {
 function parseMLS(el) {
   const txt = innerText(el);
   const res = [
-    /^[ -]*MLS *#?:? *([A-Z0-9]{5,15}) *$/,
-    /^ *MLS *Number *([A-Z0-9]{5,15}) *$/,
-    /^ *ID *# *:? *([A-Z0-9]{5,15}) *$/,
-    /\| *MLS *#?:? *([A-Z0-9]{5,15}) *\|/,
-    /^ *#:? *([A-Z0-9]{5,15}) *$/,
+    /^[ -]*MLS *#?:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
+    /^ *MLS *Number *([A-Z]{0,2}[0-9]{5,13}) *$/,
+    /^\s*MLS\s*®\s*Number *:? *([A-Z]{0,2}[0-9]{5,13})\s*$/i,
+    /^ *ID *# *:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
+    /\| *MLS *#?:? *([A-Z]{0,2}[0-9]{5,13}) *\|/,
+    /^ *#:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
+    /^\s*MLS\s*®\s*([A-Z]{0,2}[0-9]{5,13})\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -839,7 +844,7 @@ function parseSqft(el) {
     /^ *[0-9]{1,2} Bed, [0-9.]+ Bath \([0-9] Full Bath\), ([0-9]{1,2},[0-9]{3}) sqft */i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
-    /^ *sq\.? *ft\.? ([0-9,]{3,4})\s*$/i,
+    /^ *sq\.? *ft\.?:? ([0-9,]{3,5})\s*$/i,
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
     /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
     /^ *([0-9,]{3,6}) sq ft; lot: [0-9.]+ acres *$/i,
@@ -1343,6 +1348,46 @@ function expandLinkToProvince(el, listing) {
   }
 }
 
+function expandLinkToState(el, listing) {
+  const { address, city, state } = listing;
+  if(!address || !city || state)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const addressSlug = address.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+  const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+
+  const res = [
+    new RegExp('/' + addressSlug + '-' + citySlug + '-(' + _caProvinceAlternation.replace(/ /g, '-') + '|' + _usStateAlternation.replace(/ /g, '-') + ')/?$', 'i'),
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      console.log('!!!');
+      console.log(rv);
+      if(_caProvinceToAbbrev[rv[1].toUpperCase()]) {
+        return {
+          state: _caProvinceToAbbrev[rv[1].toUpperCase()],
+          country: 'CA'
+        }
+      } else {
+        return {
+          state: _usStateToAbbrev[rv[1].toUpperCase()],
+          country: 'US'
+        }
+      }
+    }
+  }
+}
+
 
 function expandLinkToPostalCodeWhenAddress(el, listing) {
   const { price, address, city, state, postal_code } = listing;
@@ -1446,6 +1491,36 @@ function expandLinkToFullAddress(el, listing) {
       state: state,
       postal_code: zip,
       country: 'US'
+    };
+}
+
+function expandLinkToFullAddress2(el, listing) {
+  const { external_id, address, state, postal_code } = listing;
+  if(!external_id || address || state || postal_code)
+    return;
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  // /listing/C4192917-7812-churchill-dr-sw-calgary-alberta-t2v-2r9
+  const re = new RegExp('/' + external_id.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-([1-9][a-z0-9-]+)-(' + _caProvinceAlternation + ')-([a-z][0-9][a-z]-?[0-9][a-z][0-9])/?$', 'i');
+  const maybeAddressStateZip = re.exec(href);
+
+  if(!maybeAddressStateZip)
+    return;
+
+  const [_, _address, _state, zip] = maybeAddressStateZip;
+
+  if(maybeAddressStateZip)
+    return {
+      address: _address.replace(/-+/g, ' '),
+      state: _caProvinceToAbbrev[_state.toUpperCase()],
+      postal_code: zip.replace(/-/g, '').toUpperCase(),
+      country: 'CA'
     };
 }
 
@@ -1756,7 +1831,9 @@ export const rules = [
     ['a', expandLinkToPostalCodeWhenAddress],
     ['a', expandLinkToEntireListing],
     ['a', expandLinkToFullAddress],
+    ['a', expandLinkToFullAddress2],
     ['a', expandLinkToProvince],
+    ['a', expandLinkToState],
   ]]
 ];
 
