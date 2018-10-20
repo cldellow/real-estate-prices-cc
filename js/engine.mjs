@@ -173,21 +173,35 @@ export function rewrite(el) {
 function removeDangerousElements(el) {
   const candidates = [];
   const els = el.querySelectorAll('*');
+
+  const toInspect = [];
   for(var i = 0; i < els.length; i++) {
-    if(isDangerous(els[i]))
-      candidates.push(els[i]);
+    toInspect.push(els[i]);
   }
 
-  candidates.sort(function (a, b) { return innerText(a).length - innerText(b).length; });
+  // we want to inspect leaf nodes first, then almost-leaf, then up to the root,
+  // so that we delete the smallest possible portion of the site first
 
-  if(candidates.length) {
-    console.log('removing thing that looks like contact: ' + innerText(candidates[0]));
-    candidates[0].remove();
+  function distance(x) {
+    var rv = 0;
+    while(x != null) {
+      x = x.parentNode;
+      rv++;
+    }
+    return rv;
+  }
 
-    const nukes = el.querySelectorAll('*');
-    for(var i = 0; i < nukes.length; i++)
-      nukes[i].hasInnerText = null;
-    removeDangerousElements(el);
+  toInspect.sort(function (a, b) { return distance(b) - distance(a) });
+  for(var i = 0; i < toInspect.length; i++) {
+    if(isDangerous(toInspect[i])) {
+      let p = toInspect[i];
+      console.log('removing thing that looks like contact: ' + innerText(p));
+      while(p) {
+        p.hasInnerText = null;
+        p = p.parentNode;
+      }
+      toInspect[i].remove();
+    }
   }
 }
 
