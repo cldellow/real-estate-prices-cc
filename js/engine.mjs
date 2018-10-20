@@ -165,6 +165,7 @@ export function rewrite(el) {
   orphan(el.querySelectorAll('#similar-properties'));
   orphan(el.querySelectorAll('#nearby_listings'));
   orphan(el.querySelectorAll('[name=nearby_listings]'));
+  orphan(el.querySelectorAll('.propertySliderContainer'));
 
   removeDangerousElements(el);
 }
@@ -224,6 +225,7 @@ function isDangerous(el) {
     /^\s*agri-business.*double.wide.*single.wide\s*$/i,
     /^\s*single.family.home.*condo.*mobile.home.*$/i,
     /^\s*over\s*\$[0-9][0-9,]+\s*$/i,
+    /\bhomes for sale near \$[0-9]{3}\s*k\b/i,
   ];
 
   for(var i = 0; i < res.length; i++) {

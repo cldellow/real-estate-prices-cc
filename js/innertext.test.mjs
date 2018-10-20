@@ -21,7 +21,7 @@ describe('innerText', () => {
     const dom = new JSDOM('<body><h1>Some<br/>Content</h1></body>');
 
     const body = dom.window.document.body;
-    expect(innerText(body, {'BR': ','})).toBe('Some , Content');
+    expect(innerText(body, {'BR': ','})).toBe('Some, Content');
   });
 
   it('should handle nbsp', () => {

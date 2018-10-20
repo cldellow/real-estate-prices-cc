@@ -652,6 +652,8 @@ function parseBeds(el) {
     /\s*([0-9]) bedrooms, [0-9] baths, [0-9,]{3,6} sq\.ft/i,
     /\s*([0-9]) bedroom [^,.:]{5,15} with [0-9] full baths/i,
     /\s*([0-9]) bedrooms?\s*,\s*\$[1-9][0-9,]+\b/i,
+    /^\s*([0-9]) bed,\s*[0-9]+[0-9.]* full bath\./i,
+    /^\s*([0-9]) bed,\s*[0-9]+[0-9.]* full bath, [0-9]+ half bath/i,
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -735,6 +737,9 @@ function parseBaths(el) {
     /^\s*([0-9]{1,2})\.[0-9] baths?\s*$/i,
     /^\s*bath full\s*([0-9]{1,2})\s*$/i,
     /^\s*([0-9]{1,2})\s*full baths?\s*,\s*[0-9]{1,2}\s*half\s*baths?\s*$/i,
+    /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath\./i,
+    /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath, [0-9]+ half bath/i,
+
     dangerous,
   ];
 
@@ -781,6 +786,7 @@ function parseHalfBaths(el) {
     /^\s*[0-9]{1,2}\.([1-4]) baths?\s*$/i,
     /^\s*([0-9]{1,2})\s*partial baths?\s*$/i,
     /^\s*[0-9]{1,2}\s*full baths?\s*,\s*([0-9]{1,2})\s*half\s*baths?\s*$/i,
+    /^\s*[0-9] bed,\s*[0-9]+[0-9.]* full bath, ([0-9]+) half bath/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1853,7 +1859,7 @@ export const rules = [
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-yr-built + td, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
-    ['.q-sq-feet + span, .q-sq-feet + td, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-approx-sq-ft + div, .q-apx-sqft + td', extractSquareFeet],
+    ['.q-sq-feet + span, .q-square-ft + span, .q-sq-feet + td, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-approx-sq-ft + div, .q-apx-sqft + td', extractSquareFeet],
     ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td, .q-bedrooms + div, .featuredListingBedroom', extractDigit('beds')],
     ['.q-bed-ba-ba + td', extractBedsBathsHalfBaths],
     [COLLATE, COLLATE],
