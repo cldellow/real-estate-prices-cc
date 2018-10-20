@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # From https://gist.github.com/enjalot/2904124
 import SimpleHTTPServer
+import SocketServer
+import BaseHTTPServer
+
+class ThreadingSimpleServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
+    # use SocketServer.ForkinMixIn for fork based worker pool
+    pass
+
 class CORSHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def send_head(self):
         """Common code for GET and HEAD commands.
@@ -57,11 +64,13 @@ if __name__ == "__main__":
     import SocketServer
 
     PORT = 8000
+    SocketServer.TCPServer.allow_reuse_address = True
 
     Handler = CORSHTTPRequestHandler
     #Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
 
-    httpd = SocketServer.TCPServer(("", PORT), Handler)
+    #httpd = SocketServer.TCPServer(("", PORT), Handler)
+    httpd = ThreadingSimpleServer(("", PORT), Handler)
 
     print("serving at port", PORT)
     httpd.serve_forever()
