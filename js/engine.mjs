@@ -240,6 +240,7 @@ function isDangerous(el) {
     /^\s*single.family.home.*condo.*mobile.home.*$/i,
     /^\s*over\s*\$[0-9][0-9,]+\s*$/i,
     /\bhomes for sale near \$[0-9]{3}\s*k\b/i,
+    /^\s*Total Loss:\s*\$[0-9,]{4,}\s*$/
   ];
 
   for(var i = 0; i < res.length; i++) {

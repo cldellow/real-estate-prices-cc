@@ -864,6 +864,7 @@ function parseSqft(el) {
     /\s*Bed:\s*[0-9]\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*([0-9,]{3,6})\s*/i,
     /^\s*[1-9][^,]+ is a \$[0-9,]+, ([0-9,]{3,6}) square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /\s*[0-9] bedrooms, [0-9] baths, ([0-9,]{3,6}) sq\.ft/i,
+    /\s*Bedrooms:\s*[0-9]+\s*Baths:\s*[0-9]+\s*sq\.?\s*fe*t:\s*([0-9,]{3,6})\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -961,6 +962,7 @@ function parseSoldPrice(el) {
     /^ *SOLD: *(\$ *[0-9,]*) *$/,
     /^ *sold for *:? *(\$ *[0-9,]*) *$/i,
     /^ *sold for *:? *(\$ *[0-9,]*) *on [0-9/ -]+$/i,
+    /^ *sold on [0-9/ -]* for *(\$ *[0-9,]*) *$/i,
     /^ *sale price *:? *(\$ *[0-9,]+) *$/i,
     /^ *(\$ *[0-9,]+) *sale price *$/i,
     /^ *(\$ *[0-9,]+) *\(?sold price\)? *$/i,
