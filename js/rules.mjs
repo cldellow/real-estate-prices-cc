@@ -913,7 +913,8 @@ function parseSqft(el) {
     /^\s*[1-9][^,]+ is a \$[0-9,]+, ([0-9,]{3,6}) square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /\s*[0-9] bedrooms, [0-9] baths, ([0-9,]{3,6}) sq\.ft/i,
     /\s*Bedrooms:\s*[0-9]+\s*Baths:\s*[0-9]+\s*sq\.?\s*fe*t:\s*([0-9,]{3,6})\s*$/i,
-    /^\s*([0-9,]{3,7}) sqft, [0-9,]{3,7} sqft lot, built in [0-9]{4}\s*$/i
+    /^\s*([0-9,]{3,7}) sqft, [0-9,]{3,7} sqft lot, built in [0-9]{4}\s*$/i,
+    /^\s*[0-9]+ beds?,\s*([0-9,]{3,7})\s*sqft,\s*\$[0-9,]{3,}\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
