@@ -1988,7 +1988,7 @@ export const rules = [
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseYearBuilt],
-    ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span', extractLotSizeFromSquareFeet, true],
+    ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span, .q-lot + span', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div, .yoarticon-bathtub + span, .featuredListingBathroom, .q-bath-s + dd', extractDigit('baths'), true],

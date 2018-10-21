@@ -136,6 +136,8 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.si-listing__photo-count'));
   remove(el.querySelectorAll('#publicRecordList'));
   remove(el.querySelectorAll('.q-property-history + div'));
+  remove(el.querySelectorAll('.prop-value-zestimate, .prop-zestimate'));
+  remove(el.querySelectorAll('.q-last-sold + span'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));
@@ -167,6 +169,7 @@ export function rewrite(el) {
   orphan(el.querySelectorAll('#nearby_listings'));
   orphan(el.querySelectorAll('[name=nearby_listings]'));
   orphan(el.querySelectorAll('.propertySliderContainer'));
+  orphan(el.querySelectorAll('.prop-hood'));
 
   removeDangerousElements(el);
 }
