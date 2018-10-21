@@ -1,6 +1,6 @@
 import * as ruleExports from './rules.mjs';
 import { innerText } from './innertext.mjs';
-import * as logger from './logger';
+import * as logger from './logger.mjs';
 
 /*
  * Overview of process:

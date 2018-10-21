@@ -70,6 +70,9 @@ function compare(expected, actual) {
 function runTests(outputDir, oracles) {
   const now = new Date().getTime();
   oracles.forEach(oracle => {
+    if(!oracle.endsWith('.jsonl')) {
+      console.error('You probably want to pass the .jsonl file, not the HTML file: ' + oracle);
+    }
     const file = oracle.replace(/\.jsonl$/, '');
     const expected = parseOracle(oracle);
 

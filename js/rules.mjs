@@ -1,5 +1,5 @@
 import { innerText } from './innertext.mjs';
-import * as logger from './logger';
+import * as logger from './logger.mjs';
 
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
