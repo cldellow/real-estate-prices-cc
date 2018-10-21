@@ -920,7 +920,7 @@ function parsePostalCode(el) {
 
 function extractPrice(field) {
   return function(el) {
-    if(!hasNumber(el))
+    if(!hasNumber(el) || innerText(el).indexOf('$') < 0)
       return;
 
     const txt = innerText(el);
@@ -995,7 +995,7 @@ function parseSoldDate(el) {
 }
 
 function parseSoldPrice(el) {
-  if(!hasNumber(el))
+  if(!hasNumber(el) || innerText(el).indexOf('$') < 0)
     return;
 
   const txt = innerText(el);
@@ -1453,8 +1453,10 @@ function expandLinkToState(el, listing) {
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(href);
     if(rv) {
-      logger.log('!!!');
-      logger.log(rv);
+      if(logger.enabled()) {
+        logger.log('!!!');
+        logger.log(rv);
+      }
       if(_caProvinceToAbbrev[rv[1].toUpperCase()]) {
         return {
           state: _caProvinceToAbbrev[rv[1].toUpperCase()],

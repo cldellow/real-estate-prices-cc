@@ -2,6 +2,8 @@ import * as ruleExports from './rules.mjs';
 import { innerText } from './innertext.mjs';
 import * as logger from './logger.mjs';
 
+logger.disableLog();
+
 /*
  * Overview of process:
  *
@@ -196,7 +198,9 @@ function removeDangerousElements(el) {
   for(var i = 0; i < toInspect.length; i++) {
     if(isDangerous(toInspect[i])) {
       let p = toInspect[i];
-      logger.log('removing thing that looks like contact: ' + innerText(p));
+      if(logger.enabled()) {
+        logger.log('removing thing that looks like contact: ' + innerText(p));
+      }
       while(p) {
         p.hasInnerText = null;
         p = p.parentNode;
@@ -300,11 +304,13 @@ function tryListing(candidate, el) {
   if(entries.length == 0)
     return;
 
-  const ourEls = el.querySelectorAll('*').length;
-  const docEls = el.ownerDocument.querySelectorAll('*').length;
-  const domPct = ourEls / docEls;
+  if(logger.enabled()) {
+    const ourEls = el.querySelectorAll('*').length;
+    const docEls = el.ownerDocument.querySelectorAll('*').length;
+    const domPct = ourEls / docEls;
 
-  logger.log(candidate, el, domPct);
+    logger.log(candidate, el, domPct);
+  }
   const rv = {};
 
   var ok = false;
@@ -706,8 +712,10 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  logger.log('rv: ');
-  logger.log(rv);
+  if(logger.enabled()) {
+    logger.log('rv: ');
+    logger.log(rv);
+  }
 
   const fs = [
     ["removeTooBroad", removeTooBroad],
@@ -721,8 +729,10 @@ export function extract(el) {
   var newRv = rv;
   for(var i = 0; i < fs.length; i++) {
     newRv = fs[i][1](newRv);
-    logger.log('after ' + fs[i][0]);
-    logger.log(newRv);
+    if(logger.enabled()) {
+      logger.log('after ' + fs[i][0]);
+      logger.log(newRv);
+    }
   }
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];

@@ -12,7 +12,7 @@ OUTPUT=$(mktemp -d --tmpdir real-estate.XXXXXX)
 CORES=${CORES:-$(nproc)}
 
 if [ "$#" == "0" ]; then
-  FILES=$(echo  "$TESTS"/*.jsonl)
+  FILES=$(echo  "$TESTS"/*.jsonl | tr ' ' '\n' | shuf | tr '\n' ' ')
 else
   FILES="$@"
 fi
