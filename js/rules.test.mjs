@@ -35,6 +35,9 @@ describe('extractPrice', () => {
     expect(extractPriceFromString('$ 40K')).toBe(undefined);
   });
 
+  it('should not thing a rental price is a price', () => {
+    expect(extractPriceFromString('$689 3705 foo st')).toBe(undefined);
+  });
 
 
 
