@@ -682,6 +682,7 @@ function parseBeds(el) {
     /\s*([0-9]) bedrooms?\s*,\s*\$[1-9][0-9,]+\b/i,
     /^\s*([0-9]) bed,\s*[0-9]+[0-9.]* full bath\./i,
     /^\s*([0-9]) bed,\s*[0-9]+[0-9.]* full bath, [0-9]+ half bath/i,
+    /\|\s*([0-9]+) beds?\s*\|\s*[0-9]+\.?[0-9]? baths?/i,
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -778,6 +779,7 @@ function parseBaths(el) {
     /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath\./i,
     /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath, [0-9]+ half bath/i,
     /^\s*Bathrooms\s*([0-9])\s*Full\s*$/i,
+    /\|\s*[0-9]+ beds?\s*\|\s*([0-9]+)\.?[0-9]? baths?/i,
     dangerous,
   ];
 
