@@ -684,6 +684,7 @@ function parseBeds(el) {
     /^\s*([0-9]) bed,\s*[0-9]+[0-9.]* full bath, [0-9]+ half bath/i,
     /\|\s*([0-9]+) beds?\s*\|\s*[0-9]+\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total bedrooms?.?s?.?\s*$/i,
+    /^\s*([0-9]+)\s*bedrooms?\s*and\s*[0-9]+\s*full bath\s*$/i,
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -782,6 +783,7 @@ function parseBaths(el) {
     /^\s*Bathrooms\s*([0-9])\s*Full\s*$/i,
     /\|\s*[0-9]+ beds?\s*\|\s*([0-9]+)\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total full baths?.?s?.?\s*$/i,
+    /^\s*[0-9]+\s*bedrooms?\s*and\s*([0-9]+)\s*full bath\s*$/i,
     dangerous,
   ];
 
@@ -1991,7 +1993,7 @@ export const rules = [
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div, .yoarticon-bathtub + span, .featuredListingBathroom, .q-bath-s + dd', extractDigit('baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div', extractBaths, true],
-    ['.q-half-bathrooms + td, .q-half-bath + span, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td', extractDigit('half_baths'), true],
+    ['.q-half-bathrooms + td, .q-half-bath + span, .q-3-4-baths + span, .q-half-baths + span, .q-half-bath + td, .q-partial-baths + span', extractDigit('half_baths'), true],
     ['.q-bathrooms + span, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bath + td, .q-baths + td', extractIntegerFromFloat('baths')],
     ['*', parseBaths],
     ['*', parseHalfBaths],
