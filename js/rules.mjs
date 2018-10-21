@@ -619,6 +619,9 @@ function parseStreetAddress(el) {
 }
 
 function parseBeds(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *([0-9]{1,2}) *bed\(?s?\)? *$/i,
@@ -672,7 +675,17 @@ function parseBeds(el) {
   }
 }
 
+function hasNumber(el) {
+  if(el.hasNumber === true || el.hasNumber === false)
+    return el.hasNumber;
+
+  el.hasNumber = !!(/[0-9]/.exec(innerText(el)));
+  return el.hasNumber;
+}
+
 function parseBaths(el) {
+  if(!hasNumber(el))
+    return;
   const txt = innerText(el);
 
   if(/1\/2 Bathrooms:/.exec(txt)) {
@@ -768,6 +781,8 @@ function parseBaths(el) {
 }
 
 function parseHalfBaths(el) {
+  if(!hasNumber(el))
+    return;
   const txt = innerText(el);
 
   const dangerous = /[0-9]{1,2}\/([1-35-9]) Bath/i; // avoid 3/4
@@ -825,6 +840,9 @@ function parseMLSAndMLSId(el) {
 }
 
 function parseMLS(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^[ -]*MLS *#?:? *([A-Z]{0,2}[0-9]{5,13}) *$/,
@@ -846,6 +864,9 @@ function parseMLS(el) {
 }
 
 function parseSqft(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *([0-9]{1,2},? *[0-9]{3}) *squ?a?r?e?\.? ?fe?e?o?o?t[. ]*$/i,
@@ -883,6 +904,9 @@ function parseSqft(el) {
 }
 
 function parsePostalCode(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^[ :]*([A-Z][0-9][A-Z] *[0-9][A-Z][0-9]) *$/.exec(txt);
 
@@ -896,6 +920,9 @@ function parsePostalCode(el) {
 
 function extractPrice(field) {
   return function(el) {
+    if(!hasNumber(el))
+      return;
+
     const txt = innerText(el);
     const rv = extractPriceFromString(txt);
 
@@ -923,6 +950,9 @@ function extractPrice(field) {
 }
 
 function parseListingDate(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *listed *: *(.+) *$/i,
@@ -940,6 +970,9 @@ function parseListingDate(el) {
 }
 
 function parseSoldDate(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *date sold *: *(.+) *$/i,
@@ -962,6 +995,9 @@ function parseSoldDate(el) {
 }
 
 function parseSoldPrice(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *SOLD: *(\$ *[0-9,]*) *$/,
@@ -1036,6 +1072,9 @@ function extractTextNoComma(field) {
 }
 
 function extractZip(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^[ :]*([0-9]{5}) *$/.exec(txt);
 
@@ -1047,6 +1086,9 @@ function extractZip(el) {
 }
 
 function extractZipAfterCounty(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^\s*[A-za-z ]+,\s*([0-9]{5}) *$/.exec(txt);
 
@@ -1062,6 +1104,9 @@ function sqft2acres(sqft) {
 }
 
 function parseLotSize(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
@@ -1079,6 +1124,9 @@ function parseLotSize(el) {
 }
 
 function extractLotSizeFromSquareFeet(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
@@ -1098,6 +1146,9 @@ function extractLotSizeFromSquareFeet(el) {
 }
 
 function extractSquareFeet(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{3}) *$/,
@@ -1118,6 +1169,9 @@ function extractSquareFeet(el) {
 
 
 function extractMLS(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^[ :]*#? *([A-Z]{0,2}[0-9]{5,}) *$/.exec(txt);
 
@@ -1138,6 +1192,9 @@ function extractCity(el) {
 }
 
 function extractBedsBathsHalfBaths(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^\s*(\d+)\s*\/\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(txt);
   if(rv) {
@@ -1159,6 +1216,9 @@ function extractDigit(field) {
 }
 
 function extractBaths(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
   const rv = /^[ :]*([0-9]) *full\s*$/.exec(txt);
   if(rv)
@@ -1227,6 +1287,9 @@ function extractDate(field) {
 }
 
 function parseYearBuilt(el) {
+  if(!hasNumber(el))
+    return;
+
   const txt = innerText(el);
 
   const res = [
@@ -1250,6 +1313,9 @@ function parseYearBuilt(el) {
 
 function extractYear(field) {
   return function(el) {
+    if(!hasNumber(el))
+      return;
+
     const txt = innerText(el);
     const res = [
       /^[ :]*([0-9]{4}) *$/,
