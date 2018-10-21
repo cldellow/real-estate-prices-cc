@@ -2,8 +2,6 @@ import * as ruleExports from './rules.mjs';
 import { innerText } from './innertext.mjs';
 import * as logger from './logger.mjs';
 
-logger.disableLog();
-
 /*
  * Overview of process:
  *
@@ -186,11 +184,16 @@ function removeDangerousElements(el) {
   // so that we delete the smallest possible portion of the site first
 
   function distance(x) {
+    const orig = x;
+    if(x.distance)
+      return x.distance;
+
     var rv = 0;
     while(x != null) {
       x = x.parentNode;
       rv++;
     }
+    orig.distance = rv;
     return rv;
   }
 
