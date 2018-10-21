@@ -618,6 +618,10 @@ function applyRule(el, selector, rules) {
     counter++;
     const listings = [];
     const el = els[i];
+    const txt = innerText(el);
+
+    if(txt.length < 20 || txt.indexOf('$') < 0)
+      continue;
 
     // Apply the rules to extract values from the page
     for(var j = 0; j < rules.length; j++) {
