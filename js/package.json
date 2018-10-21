@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test-e2e": "node --experimental-modules --max_old_space_size=4096 e2e-tests.mjs"
+    "test-e2e": "./e2e"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

@@ -5,9 +5,6 @@ import path from 'path';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import * as engine from './engine';
-//import { LZ4 } from 'lz4';
-//const LZ4 = require('lz4');
-
 
 function parseOracle(file) {
   const bytes = fs.readFileSync(file);
@@ -67,22 +64,13 @@ function compare(expected, actual) {
   return rv;
 }
 
-function runTests(dir) {
-  const results = {};
-  var files = 0;
-  var ok = 0;
-
-  fs.readdirSync(dir).forEach(oracle => {
-    const onlyRun = null; //'0070';
-    if(!oracle.endsWith('.jsonl') || (onlyRun && oracle.indexOf(onlyRun) < 0))
-      return;
-
-    const expected = parseOracle(dir + '/' + oracle);
-
+function runTests(outputDir, oracles) {
+  oracles.forEach(oracle => {
     const file = oracle.replace(/\.jsonl$/, '');
+    const expected = parseOracle(oracle);
 
     console.log(file);
-    var bytes = fs.readFileSync(dir + '/' + file);
+    var bytes = fs.readFileSync(file);
     if(file.endsWith('.lz4')) {
       bytes = LZ4.decode(bytes);
     }
@@ -93,23 +81,23 @@ function runTests(dir) {
 
     const actual = engine.extract(dom.window.document);
     const compared = compare(expected, actual);
-    results[file] = compared;
-    files++;
-    if(compared['missing'].length == 0 && compared['extra'].length == 0)
-      ok++;
-  })
-
-  const rv = Object.entries(results);
-  for(var i = 0; i < rv.length; i++) {
-    const [k, v] = rv[i];
-    if(v.missing.length > 0 || v.extra.length > 0) {
-      console.log(k + ' has errors:');
-      console.log(JSON.stringify(v, null, 2));
+    if(compared['missing'].length > 0 || compared['extra'].length > 0) {
+      // Write a sentinel file
+      fs.writeFileSync(outputDir + '/' + oracle.replace(/^.*\//, ''), JSON.stringify(compared, null, 2));
     }
-  }
-  console.log(ok + '/' + files + ' files OK.');
+  });
 }
 
-// TODO: how to get __filename when in mjs?
-//runTests(path.dirname(__filename) + '/../tests');
-runTests('/home/cldellow/src/real-estate-prices-cc/tests');
+function usage() {
+  console.error('usage: node e2e-tests.mjs run outputdir/ file1 [file2 ... fileN]');
+  process.exit(1);
+}
+
+if (process.argv.length >= 5 && process.argv[2] == 'run') {
+  const files = process.argv.slice(4);
+  console.log(files);
+  const rv = runTests(process.argv[3], files);
+  process.exit(rv);
+}
+
+usage();

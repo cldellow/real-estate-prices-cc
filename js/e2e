@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -euo pipefail
+
+HERE=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
+cd "$HERE"
+
+TESTS=../tests
+
+OUTPUT=$(mktemp -d --tmpdir real-estate.XXXXXX)
+
+CORES=${CORES:-$(nproc)}
+
+if [ "$#" == "0" ]; then
+  FILES=$(echo  "$TESTS"/*.jsonl)
+else
+  FILES="$@"
+fi
+
+N_FILES=$(echo "$FILES" | tr ' ' '\n' | wc -l)
+
+# Choose N such that we only do one round of invocations
+N=$((N_FILES / CORES + 1))
+
+# Parallelize the computation
+echo "$FILES" | xargs -n $N --max-procs $CORES node --experimental-modules --max_old_space_size=4096 e2e-tests.mjs run "$OUTPUT"
+
+
+FAILURES=0
+
+if [ $(ls "$OUTPUT" | wc -l) != "0" ]; then
+  RETRIES=""
+  for f in "$OUTPUT"/*; do
+    RETRIES="$RETRIES ../tests/$(basename $f)"
+    echo "yarn test-e2e ../tests/$(basename $f)"
+    cat "$f"
+    echo
+    FAILURES=$((FAILURES+1))
+  done
+  echo
+  echo "Retry failures: "
+  echo "yarn test-e2e $RETRIES"
+  echo
+fi
+
+echo "$((N_FILES-FAILURES))/$N_FILES ok."
+
+rm -rf "$OUTPUT"
+
+if [ "$FAILURES" != "0" ]; then
+  exit 1
+fi
