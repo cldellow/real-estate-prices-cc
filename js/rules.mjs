@@ -1621,22 +1621,40 @@ function expandLinkWithAddressToCityStateZip(el, listing) {
   const streetAddressDashed = streetAddress.replace(/ /g, '-').replace(/[^0-9a-zA-Z-]/g, '');
 
   // /homedetails/103-Cherrywood-Dr-Greenville-NC-27858/51430007_zpid/
-  const re = new RegExp('^.*\/' + streetAddressDashed + '-([^/]+)-([a-z][a-z])-([0-9]{5})\/.*$', 'i');
-  const maybeAddressCityStateZip = re.exec(href);
+  const re1 = new RegExp('^.*\/' + streetAddressDashed + '-([^/]+)-([a-z][a-z])-([0-9]{5})\/.*$', 'i');
+  var maybeAddressCityStateZip = re1.exec(href);
 
-  if(!maybeAddressCityStateZip)
-    return;
+  var _, city, state, zip;
+  if(maybeAddressCityStateZip) {
+    [_, city, state, zip] = maybeAddressCityStateZip;
+  } else {
+    const re2 = new RegExp('^.*\/([a-z][a-z])/([^/]+)/' + streetAddressDashed + '-[0-9a-z]+$', 'i');
+    maybeAddressCityStateZip = re2.exec(href);
+    if(!maybeAddressCityStateZip)
+      return;
 
-  const [_, city, state, zip] = maybeAddressCityStateZip;
+    [_, state, city] = maybeAddressCityStateZip;
+  }
 
-  if(_usStateToAbbrev[state.toUpperCase()])
+
+  if(_usStateToAbbrev[state.toUpperCase()]) {
+    if(zip)
+      return {
+        address: streetAddress,
+        city: city.replace(/-+/g, ' '),
+        state: state.toUpperCase(),
+        postal_code: zip,
+        country: 'US'
+      };
+
     return {
       address: streetAddress,
       city: city.replace(/-+/g, ' '),
       state: state.toUpperCase(),
-      postal_code: zip,
       country: 'US'
     };
+
+  }
 }
 
 function expandLinkToFullAddress2(el, listing) {
