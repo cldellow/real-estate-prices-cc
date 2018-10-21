@@ -912,7 +912,8 @@ function parseSqft(el) {
     /\s*Bed:\s*[0-9]\s*Bath:\s*[0-9]+\/[0-9]\s*Sqft:\s*([0-9,]{3,6})\s*/i,
     /^\s*[1-9][^,]+ is a \$[0-9,]+, ([0-9,]{3,6}) square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a [0-9.]{1,4} acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /\s*[0-9] bedrooms, [0-9] baths, ([0-9,]{3,6}) sq\.ft/i,
-    /\s*Bedrooms:\s*[0-9]+\s*Baths:\s*[0-9]+\s*sq\.?\s*fe*t:\s*([0-9,]{3,6})\s*$/i
+    /\s*Bedrooms:\s*[0-9]+\s*Baths:\s*[0-9]+\s*sq\.?\s*fe*t:\s*([0-9,]{3,6})\s*$/i,
+    /^\s*([0-9,]{3,7}) sqft, [0-9,]{3,7} sqft lot, built in [0-9]{4}\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1000,7 +1001,7 @@ function parseSoldDate(el) {
     /^ *date sold *: *(.+) *$/i,
     /^ *sold *:? *(.+) *$/i,
     /^ *sold *- *(.+) *$/i,
-    /^[( ]*sold on *(.+?)[ )]*$/i,
+    /^[( ]*sold on *(.+?)[ ):]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
     /^ *sold for *:? *\$ *[0-9,]* *on ([0-9/ -]+?) *$/i,
   ];
@@ -1133,6 +1134,7 @@ function parseLotSize(el) {
   const res = [
     /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
     /\blot *: *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
+    /^\s*[0-9,]{3,7} sqft, ([0-9,]{3,7}) sqft lot, built in [0-9]{4}\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1320,6 +1322,7 @@ function parseYearBuilt(el) {
     /^ *([0-9]{4}) *built *$/i,
     /^ *.{0,3}built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
+    /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1595,6 +1598,37 @@ function expandLinkToFullAddress(el, listing) {
       address: address.replace(/-+/g, ' '),
       city: city.replace(/-+/g, ' '),
       state: state,
+      postal_code: zip,
+      country: 'US'
+    };
+}
+
+function expandLinkWithAddressToCityStateZip(el, listing) {
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const streetAddress = innerText(el);
+  const streetAddressDashed = streetAddress.replace(/ /g, '-').replace(/[^0-9a-zA-Z-]/g, '');
+
+  // /homedetails/103-Cherrywood-Dr-Greenville-NC-27858/51430007_zpid/
+  const re = new RegExp('^.*\/' + streetAddressDashed + '-([^/]+)-([a-z][a-z])-([0-9]{5})\/.*$', 'i');
+  const maybeAddressCityStateZip = re.exec(href);
+
+  if(!maybeAddressCityStateZip)
+    return;
+
+  const [_, city, state, zip] = maybeAddressCityStateZip;
+
+  if(_usStateToAbbrev[state.toUpperCase()])
+    return {
+      address: streetAddress,
+      city: city.replace(/-+/g, ' '),
+      state: state.toUpperCase(),
       postal_code: zip,
       country: 'US'
     };
@@ -1978,6 +2012,7 @@ export const rules = [
     ['a', expandLinkToFullAddress2],
     ['a', expandLinkToProvince],
     ['a', expandLinkToState],
+    ['a', expandLinkWithAddressToCityStateZip],
   ]]
 ];
 
