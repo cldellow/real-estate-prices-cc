@@ -752,6 +752,19 @@ export function extract(el) {
 
 // Shim to export rewrite/extract to browser clients
 if(typeof window != 'undefined' && typeof _ready != 'undefined') {
+  function navigateTo(offset) {
+    var id = String(Number(window.location.pathname.replace(/[^0-9]/g, '')) + offset);
+    while(id.length < 4)
+      id = '0' + id;
+
+    window.location.href = '/stripped/' + id + '.html';
+  }
+  window.addEventListener('keyup', function (e) {
+    if(e.code == "ArrowRight")
+      navigateTo(1);
+    else if(e.code == "ArrowLeft")
+      navigateTo(-1);
+  })
   window['rewrite'] = rewrite;
   window['extract'] = extract;
   _ready();
