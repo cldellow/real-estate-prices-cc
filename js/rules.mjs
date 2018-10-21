@@ -83,7 +83,7 @@ const _usStateAlternation = (function() {
 })();
 
 
-const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,)]+), *(\s*[a-zA-Z][A-Za-z .\']+?),? *(' + _usStateAlternation + ') *,? *([0-9]{5})\\b');
+const _parseStreetAddressUSFullRe = new RegExp('([0-9][^,)]+)[-,] *(\s*[a-zA-Z][A-Za-z .\']+?),? *(' + _usStateAlternation + ') *,? *([0-9]{5})\\b');
 const _parseStreetAddressUSFullAptRe = /([0-9][^,]+, *# ?[0-9]+ *|[0-9][^,]+, *Unit *#? *[0-9-]+-?[A-Z]? *?|[0-9][^,]+, *[0-9]{1,4}[A-Za-z]?),? +([A-Z][A-Za-z .']+),? +([A-Z][A-Z]),? +([0-9]{5})\b/;
 
 function _parseStreetAddressUSFull(txt) {
@@ -199,9 +199,13 @@ const _parseStreetAddressUSCityStateNoPostalRE = new RegExp(
   '^ *([0-9][^,]+), *([^,]+), *(' + _usStateAlternation + ')\\b'
 );
 
+const _parseStreetAddressUSCityStateNoPostalRE2 = new RegExp(
+  '^ *([0-9][^,]+), +([^,]+) +(' + _usStateAlternation + ')\s*$'
+);
+
 
 function _parseStreetAddressUSCityStateNoPostal(txt) {
-  const rv = _parseStreetAddressUSCityStateNoPostalRE.exec(txt);
+  const rv = _parseStreetAddressUSCityStateNoPostalRE2.exec(txt) || _parseStreetAddressUSCityStateNoPostalRE.exec(txt);
 
   if(rv) {
     return {
@@ -739,7 +743,7 @@ function parseBaths(el) {
     /^\s*([0-9]{1,2})\s*full baths?\s*,\s*[0-9]{1,2}\s*half\s*baths?\s*$/i,
     /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath\./i,
     /^\s*[0-9] bed,\s*([0-9]+)[0-9.]* full bath, [0-9]+ half bath/i,
-
+    /^\s*Bathrooms\s*([0-9])\s*Full\s*$/i,
     dangerous,
   ];
 
@@ -1226,6 +1230,7 @@ function parseYearBuilt(el) {
 
   const res = [
     /^ *([0-9]{4}) *year built *$/i,
+    /^ *year built *([0-9]{4}) *$/i,
     /^ *([0-9]{4}) *built *$/i,
     /^ *.{0,3}built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
