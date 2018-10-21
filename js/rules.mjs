@@ -643,6 +643,7 @@ function parseBeds(el) {
     return;
 
   const txt = innerText(el);
+
   const res = [
     /^ *([0-9]{1,2}) *bed\(?s?\)? *$/i,
     /^ *([0-9]{1,2}) *bed\s*beds *$/i,
@@ -685,7 +686,7 @@ function parseBeds(el) {
     /\|\s*([0-9]+) beds?\s*\|\s*[0-9]+\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total bedrooms?.?s?.?\s*$/i,
     /^\s*([0-9]+)\s*bedrooms?\s*and\s*[0-9]+\s*full bath\s*$/i,
-    /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{2}\s*baths?\s*,?/i
+    /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{0,2}\s*baths?\s*,?/i
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -785,7 +786,7 @@ function parseBaths(el) {
     /\|\s*[0-9]+ beds?\s*\|\s*([0-9]+)\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total full baths?.?s?.?\s*$/i,
     /^\s*[0-9]+\s*bedrooms?\s*and\s*([0-9]+)\s*full bath\s*$/i,
-    /^\s*[0-9]{1,2}\s*beds?\s*,?\s*([0-9]+)[.0-9]{2}\s*baths?\s*,?/i,
+    /^\s*[0-9]{1,2}\s*beds?\s*,?\s*([0-9]+)[.0-9]{0,2}\s*baths?\s*,?/i,
     dangerous,
   ];
 
@@ -919,16 +920,18 @@ function parseSqft(el) {
     /^\s*([0-9,]{3,7}) sqft, [0-9,]{3,7} sqft lot, built in [0-9]{4}\s*$/i,
     /^\s*[0-9]+ beds?,\s*([0-9,]{3,7})\s*sqft,\s*\$[0-9,]{3,}\s*$/i,
     // 6 beds   |   5 baths   |   3 half baths   |   7,285 sq ft
-    /^\s*[0-9]+ beds?\s*\|\s*[0-9]+\s*baths?\s*\|\s*[0-9]+ half baths?\s*\|\s*([0-9,]{3,6})\s*sq\s*ft\s*$/i
+    /^\s*[0-9]+ beds?\s*\|\s*[0-9]+\s*baths?\s*\|\s*[0-9]+ half baths?\s*\|\s*([0-9,]{3,6})\s*sq\s*ft\s*$/i,
+    /([0-9,]{3,6}) sq.? ?ft, Built ([0-9]{4})\s*$/
   ];
 
   for(var i = 0; i < res.length; i++) {
     const re = res[i];
     const rv = re.exec(txt);
-    if(rv)
+    if(rv) {
       return {
         sqft: parseInt(rv[1].replace(/[ ,]+/, ''), 10)
       }
+    }
   }
 }
 
@@ -1160,7 +1163,7 @@ function extractLotSizeFromSquareFeet(el) {
   const txt = innerText(el);
   const res = [
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *$/,
-    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *sq\.?u?a?r?e? *f?e?e?t *$/i,
+    /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *sq\.?u?a?r?e? *f?e?e?t.? *$/i,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *builder *$/i,
     /^[ :]*([0-9]{1,2}[ ,]*[0-9]{3}) *\/ *appraisal district *$/i,
   ];
@@ -1168,10 +1171,11 @@ function extractLotSizeFromSquareFeet(el) {
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(txt);
 
-    if(rv)
+    if(rv) {
       return {
         lot_size: sqft2acres(parseInt(rv[1].replace(/[ ,]+/g, ''), 10))
       }
+    }
   }
 }
 
@@ -1988,7 +1992,7 @@ export const rules = [
     ['*', extractPrice('price')],
     [STOP_IF_NO_PRICE, STOP_IF_NO_PRICE],
     ['*', parseYearBuilt],
-    ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span, .q-lot + span', extractLotSizeFromSquareFeet, true],
+    ['.q-lot-size + td, .q-lot-size + dd, .q-acres + span, .q-lot-size + span, .q-lot-dimensions + span, .q-lot + span, .q-lot-size + dd', extractLotSizeFromSquareFeet, true],
     ['*', parseSqft],
     ['*', parseBeds],
     ['.q-bathrooms + span, .q-bathrooms + div, .q-bathrooms + dd, .q-full-bathrooms-number + td, .q-full-bathrooms + td, .q-full-baths + span, .q-baths + div, .yoarticon-bathtub + span, .featuredListingBathroom, .q-bath-s + dd', extractDigit('baths'), true],
@@ -2011,7 +2015,7 @@ export const rules = [
     ['.q-city + span', extractTextNoComma('city')],
     ['.q-zip + span, .q-zip-code + span, .q-zipcode + td', extractZip],
     ['.q-county-zip + td', extractZipAfterCounty],
-    ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span, .q-mls-no + td, .q-mls-number + dd', extractMLS],
+    ['.q-mls + span, .q-mls-num + dd, .q-mls-id + span, .q-listing-id + span, .q-mls-no + td, .q-mls-number + dd, .q-mls + dd', extractMLS],
     ['*', parseListingDate],
     ['.q-list-date + div, .q-date-listed + span', extractDate('listing_date')],
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],

@@ -603,6 +603,15 @@ function consumeNode(node, counter) {
     p.consumed_run = counter;
     p = p.parentNode;
   }
+
+  // also consume descendants whose text is equal to node, to handle case where:
+  // .q-lot-size + td matches <td><span>...</span></td> <-- want to consume span also
+  // this is hacky, would be better if consumption just went down, but that breaks other things
+  const nodes = node.querySelectorAll('*');
+  for(var i = 0; i < nodes.length; i++) {
+    if(innerText(node) == innerText(nodes[i]))
+      nodes[i].consumed_run = counter;
+  }
 }
 
 function isConsumed(node, counter) {
