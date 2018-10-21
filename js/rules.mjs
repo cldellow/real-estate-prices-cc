@@ -356,6 +356,22 @@ function parseAcres(el) {
 
 }
 
+function _parseStreetAddressUSCityNoState(txt) {
+  const rv = /^ *([0-9][^,]+), ([A-Z][a-zA-Z ]+),? +([0-9]{5}) *$/.exec(txt);
+
+  const cityLooksLikeState = rv && rv[2].trim().length == 2 && rv[2].trim().toUpperCase() == rv[2].trim();
+
+  if(rv && !cityLooksLikeState) {
+    //logger.log(rv);
+    return {
+      address: rv[1].trim(),
+      city: rv[2].trim(),
+      postal_code: rv[3].trim(),
+      country: 'US'
+    }
+  }
+}
+
 
 function _parseStreetAddressUSNoCityNoState(txt) {
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
@@ -576,6 +592,7 @@ function parseStreetAddress(el) {
     fs.push(_parseStreetAddressUSFull);
     fs.push(_parseStreetAddressStateZip);
     fs.push(_parseStreetAddressUSNoCityNoState);
+    fs.push(_parseStreetAddressUSCityNoState);
   }
 
   if(el.possiblePostalCode) {
