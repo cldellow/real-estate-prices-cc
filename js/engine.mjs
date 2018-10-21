@@ -1,5 +1,6 @@
 import * as ruleExports from './rules.mjs';
 import { innerText } from './innertext.mjs';
+import * as logger from './logger';
 
 /*
  * Overview of process:
@@ -144,12 +145,12 @@ export function rewrite(el) {
 
   // Don't trust any page that talks about estimated values.
   if(el.querySelectorAll('.q-estimated-value').length) {
-    console.log('ESTIMATED VALUE - removing all!');
+    logger.log('ESTIMATED VALUE - removing all!');
     remove(el.childNodes);
   }
 
   if(el.querySelectorAll('h1.q-address-not-available-by-request').length) {
-    console.log('H1 Address Not Available - removing all!');
+    logger.log('H1 Address Not Available - removing all!');
     remove(el.childNodes);
   }
 
@@ -195,7 +196,7 @@ function removeDangerousElements(el) {
   for(var i = 0; i < toInspect.length; i++) {
     if(isDangerous(toInspect[i])) {
       let p = toInspect[i];
-      console.log('removing thing that looks like contact: ' + innerText(p));
+      logger.log('removing thing that looks like contact: ' + innerText(p));
       while(p) {
         p.hasInnerText = null;
         p = p.parentNode;
@@ -246,7 +247,7 @@ function isDangerous(el) {
 
   for(var i = 0; i < res.length; i++) {
     if(res[i].exec(txt)) {
-      //console.log(res[i]);
+      //logger.log(res[i]);
       return true;
     }
   }
@@ -303,7 +304,7 @@ function tryListing(candidate, el) {
   const docEls = el.ownerDocument.querySelectorAll('*').length;
   const domPct = ourEls / docEls;
 
-  console.log(candidate, el, domPct);
+  logger.log(candidate, el, domPct);
   const rv = {};
 
   var ok = false;
@@ -547,7 +548,7 @@ export function removeTooBroad(xs) {
       // How many descendants does our element have? How many does the root have?
       const ourEls = el.querySelectorAll('*').length;
       const docEls = el.ownerDocument.querySelectorAll('*').length;
-      //console.log('DOM %: ' + (ourEls / docEls));
+      //logger.log('DOM %: ' + (ourEls / docEls));
       /*
       if(ourEls / docEls >= 0.97)
         domOk = false;
@@ -654,7 +655,7 @@ function applyRule(el, selector, rules) {
             }
             listings.push(nodeRv);
           } else {
-            //console.log('skipping node', nodes[k]);
+            //logger.log('skipping node', nodes[k]);
           }
         }
       }
@@ -705,8 +706,8 @@ export function extract(el) {
       rv.push(tmp[j]);
   }
 
-  console.log('rv: ');
-  console.log(rv);
+  logger.log('rv: ');
+  logger.log(rv);
 
   const fs = [
     ["removeTooBroad", removeTooBroad],
@@ -720,8 +721,8 @@ export function extract(el) {
   var newRv = rv;
   for(var i = 0; i < fs.length; i++) {
     newRv = fs[i][1](newRv);
-    console.log('after ' + fs[i][0]);
-    console.log(newRv);
+    logger.log('after ' + fs[i][0]);
+    logger.log(newRv);
   }
   for(var i = 0; i < newRv.length; i++) {
     const el = newRv[i];

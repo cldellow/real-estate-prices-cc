@@ -1,4 +1,5 @@
 import { innerText } from './innertext.mjs';
+import * as logger from './logger';
 
 export const STOP_IF_NO_PRICE = 'rule:stop-if-no-price';
 export const COLLATE = 'rule:collate';
@@ -90,14 +91,14 @@ function _parseStreetAddressUSFull(txt) {
   const debug = !false;
 
   if(debug && /^ *[0-9].*[0-9]{5}/.exec(txt)) {
-    console.log('_parseStreetAddressUSFull: ' + txt);
+    logger.log('_parseStreetAddressUSFull: ' + txt);
   }
   var rv = _parseStreetAddressUSFullAptRe.exec(txt);
   if(!rv)
     rv = _parseStreetAddressUSFullRe.exec(txt);
 
   if(rv) {
-    //console.log(rv);
+    //logger.log(rv);
     return {
       address: rv[1].trim(),
       city: rv[2].trim(),
@@ -360,7 +361,7 @@ function _parseStreetAddressUSNoCityNoState(txt) {
   const rv = /^ *([0-9][^,]+) +([0-9]{5}) *$/.exec(txt);
 
   if(rv) {
-    //console.log(rv);
+    //logger.log(rv);
     return {
       address: rv[1].trim(),
       postal_code: rv[2].trim(),
@@ -376,7 +377,7 @@ function _parseStreetAddressCanadaCityProvince(txt) {
   ];
 
   if(/T3P/i.exec(txt)) {
-    console.log('!!! ' + txt);
+    logger.log('!!! ' + txt);
   }
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(txt);
@@ -560,7 +561,7 @@ function _parseStreetAddressFromProse(txt) {
 }
 
 function parseStreetAddress(el) {
-//  console.log('parseStreetAddress: ' + innerText(el));
+//  logger.log('parseStreetAddress: ' + innerText(el));
   if(el.parsedStreetAddress !== undefined)
     return el.parsedStreetAddress;
 
@@ -756,9 +757,9 @@ function parseBaths(el) {
 
       if((re == maybeHalf1 || re == maybeHalf2) && /half bath/i.exec(txt))
         continue;
-      //console.log(re);
-      //console.log('baths: ' + rv[1]);
-      //console.log(txt);
+      //logger.log(re);
+      //logger.log('baths: ' + rv[1]);
+      //logger.log(txt);
       return {
         baths: parseInt(rv[1], 10)
       }
@@ -800,9 +801,9 @@ function parseHalfBaths(el) {
       if(re == dangerous && /1\/2\s*bath/.exec(txt))
         continue;
 
-      //console.log(re);
-      //console.log('half baths: ' + rv[1]);
-      //console.log(txt);
+      //logger.log(re);
+      //logger.log('half baths: ' + rv[1]);
+      //logger.log(txt);
 
       return {
         half_baths: parseInt(rv[1], 10)
@@ -1386,8 +1387,8 @@ function expandLinkToState(el, listing) {
   for(var i = 0; i < res.length; i++) {
     const rv = res[i].exec(href);
     if(rv) {
-      console.log('!!!');
-      console.log(rv);
+      logger.log('!!!');
+      logger.log(rv);
       if(_caProvinceToAbbrev[rv[1].toUpperCase()]) {
         return {
           state: _caProvinceToAbbrev[rv[1].toUpperCase()],

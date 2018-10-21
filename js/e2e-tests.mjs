@@ -5,6 +5,9 @@ import path from 'path';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import * as engine from './engine';
+import { disableLog } from './logger';
+
+disableLog();
 
 function parseOracle(file) {
   const bytes = fs.readFileSync(file);
@@ -65,22 +68,35 @@ function compare(expected, actual) {
 }
 
 function runTests(outputDir, oracles) {
+  const now = new Date().getTime();
   oracles.forEach(oracle => {
     const file = oracle.replace(/\.jsonl$/, '');
     const expected = parseOracle(oracle);
 
-    console.log(file);
     var bytes = fs.readFileSync(file);
     if(file.endsWith('.lz4')) {
       bytes = LZ4.decode(bytes);
     }
 
+    const start = new Date().getTime();
     const dom = new JSDOM(bytes);
+    const afterDom = new Date().getTime();
 
     engine.rewrite(dom.window.document.body);
+    const afterRewrite = new Date().getTime();
 
     const actual = engine.extract(dom.window.document);
+    const afterExtract = new Date().getTime();
     const compared = compare(expected, actual);
+    console.log(
+      '[' + process.pid + '] ' +
+      ((new Date().getTime() - now) / 1000) + 's ' +
+      (afterDom - start) + ' ' +
+      (afterRewrite - afterDom) + ' ' +
+      (afterExtract - afterRewrite) + ' ' +
+      (afterExtract - start) + ' ' +
+      file 
+    );
     if(compared['missing'].length > 0 || compared['extra'].length > 0) {
       // Write a sentinel file
       fs.writeFileSync(outputDir + '/' + oracle.replace(/^.*\//, ''), JSON.stringify(compared, null, 2));
@@ -95,8 +111,8 @@ function usage() {
 
 if (process.argv.length >= 5 && process.argv[2] == 'run') {
   const files = process.argv.slice(4);
-  console.log(files);
   const rv = runTests(process.argv[3], files);
+  console.log(process.pid + ': done');
   process.exit(rv);
 }
 
