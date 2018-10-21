@@ -525,12 +525,15 @@ function parseLocationBlock(el) {
   }
 
   const _location = sel('.q-location');
+  if(!_location) return;
   const _address = sel('.q-address + *');
+  if(!_address) return;
   const _city = sel('.q-city + *');
+  if(!_city) return;
   const _province = sel('.q-province-state + *');
+  if(!_province) return;
   const _zip = sel('.q-postal-zip-code + *');
-  if(!(_location && _address && _city && _province && _zip))
-    return;
+  if(!_zip) return;
 
   const address = innerText(_address);
   const city = innerText(_city);
