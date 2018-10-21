@@ -135,8 +135,8 @@ export function rewrite(el) {
   remove(el.querySelectorAll('#rwTaxYr'));
   remove(el.querySelectorAll('.si-listing__photo-count'));
   remove(el.querySelectorAll('#publicRecordList'));
-  remove(el.querySelectorAll('.q-property-history + div'));
-  remove(el.querySelectorAll('.prop-value-zestimate, .prop-zestimate'));
+  remove(el.querySelectorAll('.q-property-history + div, .pricehistory'));
+  remove(el.querySelectorAll('.prop-value-zestimate, .prop-zestimate, .zestimate'));
   remove(el.querySelectorAll('.q-last-sold + span'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {

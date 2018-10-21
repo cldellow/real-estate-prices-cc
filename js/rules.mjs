@@ -685,6 +685,7 @@ function parseBeds(el) {
     /\|\s*([0-9]+) beds?\s*\|\s*[0-9]+\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total bedrooms?.?s?.?\s*$/i,
     /^\s*([0-9]+)\s*bedrooms?\s*and\s*[0-9]+\s*full bath\s*$/i,
+    /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{2}\s*baths?\s*,?/i
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -784,6 +785,7 @@ function parseBaths(el) {
     /\|\s*[0-9]+ beds?\s*\|\s*([0-9]+)\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total full baths?.?s?.?\s*$/i,
     /^\s*[0-9]+\s*bedrooms?\s*and\s*([0-9]+)\s*full bath\s*$/i,
+    /^\s*[0-9]{1,2}\s*beds?\s*,?\s*([0-9]+)[.0-9]{2}\s*baths?\s*,?/i,
     dangerous,
   ];
 
@@ -796,9 +798,6 @@ function parseBaths(el) {
 
       if((re == maybeHalf1 || re == maybeHalf2) && /half bath/i.exec(txt))
         continue;
-      //logger.log(re);
-      //logger.log('baths: ' + rv[1]);
-      //logger.log(txt);
       return {
         baths: parseInt(rv[1], 10)
       }
@@ -1329,7 +1328,8 @@ function parseYearBuilt(el) {
     /^ *([0-9]{4}) *built *$/i,
     /^ *.{0,3}built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
-    /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i
+    /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i,
+    /, Built ([0-9]{4})\s*$/
   ];
 
   for(var i = 0; i < res.length; i++) {
