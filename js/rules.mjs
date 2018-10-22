@@ -1041,6 +1041,7 @@ function parseSoldDate(el) {
     /^ *sold *:? *(.+) *$/i,
     /^ *sold *- *(.+) *$/i,
     /^[( ]*sold on *(.+?)[ ):]*$/i,
+    /^[( ]*last sold on *(.+?)[ ):]*$/i,
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
     /^[( ]*sold on *(.+?)[ ):]* \$[0-9,]+\s*$/i,
     /^ *sold for *:? *\$ *[0-9,]* *on ([0-9/ -]+?) *$/i,
@@ -1369,6 +1370,7 @@ function parseYearBuilt(el) {
     /^ *year built *:? *([0-9]{4}) *$/i,
     /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i,
     /, Built:? ([0-9]{4})\s*$/,
+    /,\s*Built:?\s*([0-9]{4})\s*[, ]/,
     /, Year Built:? ([0-9]{4})\s*$/,
     /[0-9]+ Rm.s., [0-9] Bed Rm.s., [0-9] Full Bath.s., [0-9] Half Bath.s., Built in ([0-9]{4})/,
   ];

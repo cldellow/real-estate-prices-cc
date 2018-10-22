@@ -143,6 +143,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-est-monthly-payment + span'));
   remove(el.querySelectorAll('#monthlyPayment'));
   remove(el.querySelectorAll('#hdp-listings-forrent'));
+  remove(el.querySelectorAll('.q-new'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));
