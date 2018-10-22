@@ -1735,6 +1735,51 @@ function expandLinkToEntireListing(el, listing) {
     };
 }
 
+function expandCityStateToAddress2(el, listing) {
+  // Only accept very minimal listings to avoid contagion.
+  const keys = Object.keys(listing);
+  for(var i = 0; i < keys.length; i++)
+    if(keys[i] != 'price' && keys[i] != 'city' && keys[i] != 'state' && keys[i] != 'country')
+      return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const title = el.getAttribute('title');
+  const href = el.getAttribute('href');
+
+  if(!title)
+    return;
+
+  const {city, state} = listing;
+  const suffix = ', ' + city + ', ' + state;
+
+  if(!title.endsWith(suffix) || !(title[0] >= '0' && title[0] <= '9')) {
+    return;
+  }
+
+  const address = title.replace(suffix, '').trim();
+
+  var zip;
+  if(href) {
+    const maybeZip = new RegExp((address + ' ' + city + ' ' + state).replace(/[^a-z0-9A-Z-]/g, '-') + '-([0-9]{5})\\b', 'i')
+    const rv = maybeZip.exec(href);
+    if(rv)
+      zip = rv[1];
+  }
+
+  if(zip) {
+    return {
+      address: address,
+      postal_code: zip
+    };
+
+  }
+  return {
+    address: address
+  };
+}
+
 function expandLinkToAddressCityStatePostalCode(el, listing) {
   const { address, city, state, postal_code } = listing;
   if(address || city || state || postal_code)
@@ -2041,6 +2086,7 @@ export const rules = [
     ['a', expandLinkToPostalCodeAndProvince],
     ['a', expandLinkToPostalCodeWhenAddress],
     ['a', expandLinkToEntireListing],
+    ['a', expandCityStateToAddress2],
     ['a', expandLinkToFullAddress],
     ['a', expandLinkToFullAddress2],
     ['a', expandLinkToProvince],
