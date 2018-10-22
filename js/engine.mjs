@@ -257,7 +257,8 @@ function isDangerous(el) {
     /^\s*over\s*\$[0-9][0-9,]+\s*$/i,
     /\bhomes for sale near \$[0-9]{3}\s*k\b/i,
     /^\s*Total Loss:\s*\$[0-9,]{4,}\s*$/,
-    /^\s*photo gallery\s*$/i
+    /^\s*photo gallery\s*$/i,
+    /^\s*average list price:?\s*\$[0-9,.]{1,10}\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
