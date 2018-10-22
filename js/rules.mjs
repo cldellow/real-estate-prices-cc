@@ -2035,7 +2035,7 @@ export const rules = [
 
     ['.list-price, .q-list-price + div', extractPrice('price'), true],
     ['*', parseSoldDate],
-    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sold-price + dd, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span', extractPrice('sold_price'), true],
+    ['.close-price, .q-close-price + div, .q-sold-price + td, .q-sold-price + dd, .q-sale-price + span, .q-sale-price + strong, .q-sold-price + span, .q-sold-for + p', extractPrice('sold_price'), true],
     ['[title="Closing price"]', extractPrice('sold_price')],
     ['*', parseSoldPrice, true],
     ['*', extractPrice('price')],
@@ -2070,7 +2070,7 @@ export const rules = [
     ['.q-sold + span, .q-sale-date + span, .q-sold-date + *, .q-closing-date + dd', extractDate('sold_date')],
     ['.q-year-built + div, .q-yr-built + td, .q-year-built + dd, .q-built + span, .q-year-built + td, .q-year + span, .q-year-built + span, .q-built + div', extractYear('year_built')],
     ['.q-sq-feet + span, .q-square-ft + span, .q-sq-feet + td, .q-sq-ft + strong, .q-sq-ft + span, .q-fin-sqft + span, .q-square-feet + td, .q-square-feet + div, .q-living-sqft + dd, .q-bldg-sqft + td, .q-square-footage + td, .q-sq-footage + td, .q-square-feet + span, .q-square-footage + span, .q-building-square-feet + span, .q-approx-sq-ft + div, .q-apx-sqft + td, .q-sq-ft + dd, .q-sq-feet + dd', extractSquareFeet],
-    ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td, .q-bedrooms + div, .featuredListingBedroom, .q-bed-s + dd', extractDigit('beds')],
+    ['.q-bedrooms + span, .q-beds + td, .q-bedrooms + dd, .q-bedrooms-number + td, .q-bedrooms + td, .q-bedrooms + div, .featuredListingBedroom, .q-bed-s + dd, .q-bedrooms + p', extractDigit('beds')],
     ['.q-bed-ba-ba + td', extractBedsBathsHalfBaths],
     [COLLATE, COLLATE],
     ['a', expandAddressCityToStatePostalCode],

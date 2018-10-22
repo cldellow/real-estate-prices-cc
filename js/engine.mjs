@@ -171,6 +171,7 @@ export function rewrite(el) {
   orphan(el.querySelectorAll('[name=nearby_listings]'));
   orphan(el.querySelectorAll('.propertySliderContainer'));
   orphan(el.querySelectorAll('.prop-hood'));
+  orphan(el.querySelectorAll('#nearby-wrapper'));
 
   removeDangerousElements(el);
 }
