@@ -486,6 +486,9 @@ function validAddress(rv) {
   if(/sqft|for sale/i.exec(address))
     return;
 
+  if(/parking space/i.exec(address))
+    return;
+
   if(/Mobile Home/i.exec(address))
     return;
 
