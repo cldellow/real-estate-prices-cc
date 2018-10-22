@@ -139,6 +139,9 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.prop-value-zestimate, .prop-zestimate, .zestimate'));
   remove(el.querySelectorAll('.q-last-sold + span'));
   remove(el.querySelectorAll('#tblcNetPrice, #rwOrigPrice, #lblZestimate'));
+  remove(el.querySelectorAll('.estimatedpayment'));
+  remove(el.querySelectorAll('.q-est-monthly-payment + span'));
+  remove(el.querySelectorAll('#monthlyPayment'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));
