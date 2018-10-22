@@ -929,7 +929,8 @@ function parseSqft(el) {
     /^\s*[0-9]+ beds?,\s*([0-9,]{3,7})\s*sqft,\s*\$[0-9,]{3,}\s*$/i,
     // 6 beds   |   5 baths   |   3 half baths   |   7,285 sq ft
     /^\s*[0-9]+ beds?\s*\|\s*[0-9]+\s*baths?\s*\|\s*[0-9]+ half baths?\s*\|\s*([0-9,]{3,6})\s*sq\s*ft\s*$/i,
-    /([0-9,]{3,6}) sq.? ?ft, Built ([0-9]{4})\s*$/
+    /([0-9,]{3,6}) sq.? ?ft, Built ([0-9]{4})\s*$/,
+    /^\s*([0-9,]{3,6}) sq\/ft\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
