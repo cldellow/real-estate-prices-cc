@@ -696,7 +696,8 @@ function parseBeds(el) {
     /\|\s*([0-9]+) beds?\s*\|\s*[0-9]+\.?[0-9]? baths?/i,
     /^\s*([0-9]+)\s*total bedrooms?.?s?.?\s*$/i,
     /^\s*([0-9]+)\s*bedrooms?\s*and\s*[0-9]+\s*full bath\s*$/i,
-    /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{0,2}\s*baths?\s*,?/i
+    /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{0,2}\s*baths?\s*,?/i,
+    /[0-9]+ Rm.s., ([0-9]) Bed Rm.s., [0-9] Full Bath.s., [0-9] Half Bath.s., Built in [0-9]{4}/,
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -797,6 +798,7 @@ function parseBaths(el) {
     /^\s*([0-9]+)\s*total full baths?.?s?.?\s*$/i,
     /^\s*[0-9]+\s*bedrooms?\s*and\s*([0-9]+)\s*full bath\s*$/i,
     /^\s*[0-9]{1,2}\s*beds?\s*,?\s*([0-9]+)[.0-9]{0,2}\s*baths?\s*,?/i,
+    /[0-9]+ Rm.s., [0-9] Bed Rm.s., ([0-9]) Full Bath.s., [0-9] Half Bath.s., Built in [0-9]{4}/,
     dangerous,
   ];
 
@@ -843,6 +845,7 @@ function parseHalfBaths(el) {
     /^\s*([0-9]{1,2})\s*partial baths?\s*$/i,
     /^\s*[0-9]{1,2}\s*full baths?\s*,\s*([0-9]{1,2})\s*half\s*baths?\s*$/i,
     /^\s*[0-9] bed,\s*[0-9]+[0-9.]* full bath, ([0-9]+) half bath/i,
+    /[0-9]+ Rm.s., [0-9] Bed Rm.s., [0-9] Full Bath.s., ([0-9]) Half Bath.s., Built in [0-9]{4}/,
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -933,7 +936,8 @@ function parseSqft(el) {
     // 6 beds   |   5 baths   |   3 half baths   |   7,285 sq ft
     /^\s*[0-9]+ beds?\s*\|\s*[0-9]+\s*baths?\s*\|\s*[0-9]+ half baths?\s*\|\s*([0-9,]{3,6})\s*sq\s*ft\s*$/i,
     /([0-9,]{3,6}) sq.? ?ft, Built ([0-9]{4})\s*$/,
-    /^\s*([0-9,]{3,6}) sq\/ft\s*$/i
+    /^\s*([0-9,]{3,6}) sq\/ft\s*$/i,
+    /[0-9]+ sqft, ([0-9,]+) sqft living area/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1159,7 +1163,8 @@ function parseLotSize(el) {
   const res = [
     /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
     /\blot *: *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
-    /^\s*[0-9,]{3,7} sqft, ([0-9,]{3,7}) sqft lot, built in [0-9]{4}\s*$/i
+    /^\s*[0-9,]{3,7} sqft, ([0-9,]{3,7}) sqft lot, built in [0-9]{4}\s*$/i,
+    /([0-9,]+) sqft, [0-9,]+ sqft living area/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -1351,6 +1356,7 @@ function parseYearBuilt(el) {
     /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i,
     /, Built:? ([0-9]{4})\s*$/,
     /, Year Built:? ([0-9]{4})\s*$/,
+    /[0-9]+ Rm.s., [0-9] Bed Rm.s., [0-9] Full Bath.s., [0-9] Half Bath.s., Built in ([0-9]{4})/,
   ];
 
   for(var i = 0; i < res.length; i++) {

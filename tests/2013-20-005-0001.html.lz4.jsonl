@@ -1,0 +1,20 @@
+{"price":549900,"address":"44 REED DR","city":"Manchester","state":"CT","country":"US"}
+{"price":649900,"address":"110 FOREST ST","city":"Manchester","state":"CT","country":"US"}
+{"price":630000,"address":"616 BUSH HILL RD","city":"Manchester","state":"CT","country":"US"}
+{"price":559900,"address":"40 PONDVIEW DRIVE","city":"Manchester","state":"CT","country":"US"}
+{"price":549900,"address":"153 WYNEDING HILL RD","city":"Manchester","state":"CT","country":"US"}
+{"price":549900,"address":"139 HARTFORD RD","city":"Manchester","state":"CT","country":"US"}
+{"price":524900,"address":"44 REED DR","city":"Manchester","state":"CT","country":"US"}
+{"price":489900,"address":"139 WYNEDING HILL RD","city":"Manchester","state":"CT","country":"US"}
+{"price":449900,"address":"34 FIR GROVE RD","city":"Manchester","state":"CT","country":"US"}
+{"price":440900,"address":"432 BRIARWOOD DR","city":"Manchester","state":"CT","country":"US"}
+{"price":440900,"address":"460 LONGVIEW DR","city":"Manchester","state":"CT","country":"US"}
+{"price":649900,"year_built":1901,"sqft":7178,"beds":7,"baths":4,"half_baths":2,"external_id":"G632574","address":"110 FOREST ST","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":2.2499999999393228}
+{"price":559900,"year_built":1989,"sqft":5896,"beds":5,"baths":4,"half_baths":1,"external_id":"G642456","address":"40 PONDVIEW DRIVE","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":7.919995408418188}
+{"price":549900,"year_built":1988,"sqft":4458,"beds":5,"baths":2,"half_baths":1,"external_id":"N336358","address":"153 WYNEDING HILL RD","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":1.6599862258505507}
+{"price":549900,"sqft":5900,"beds":8,"baths":6,"half_baths":3,"external_id":"G627394","address":"139 HARTFORD RD","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":1.3999999999622452}
+{"price":524900,"year_built":1988,"sqft":3964,"beds":5,"baths":3,"half_baths":5,"external_id":"G643750","address":"44 REED DR","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":1.08999081723415}
+{"price":489900,"year_built":1984,"sqft":3422,"beds":4,"baths":2,"half_baths":1,"external_id":"G654282","address":"139 WYNEDING HILL RD","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":1.7499999999528064}
+{"price":449900,"year_built":2013,"sqft":3000,"beds":4,"baths":2,"half_baths":1,"external_id":"M9139874","address":"34 FIR GROVE RD","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":0.8399908172408919}
+{"price":440900,"year_built":2013,"sqft":3130,"beds":4,"baths":2,"half_baths":1,"external_id":"G642868","address":"432 BRIARWOOD DR","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":0.4299816345154934}
+{"price":440900,"year_built":2013,"sqft":3130,"beds":4,"baths":2,"half_baths":1,"external_id":"G649762","address":"460 LONGVIEW DR","city":"Manchester :Manchester","state":"CT","country":"US","lot_size":0.2799816345195386}
