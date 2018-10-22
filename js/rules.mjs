@@ -698,6 +698,8 @@ function parseBeds(el) {
     /^\s*([0-9]+)\s*bedrooms?\s*and\s*[0-9]+\s*full bath\s*$/i,
     /^\s*([0-9]{1,2})\s*beds?\s*,?\s*[0-9]+[.0-9]{0,2}\s*baths?\s*,?/i,
     /[0-9]+ Rm.s., ([0-9]) Bed Rm.s., [0-9] Full Bath.s., [0-9] Half Bath.s., Built in [0-9]{4}/,
+    /\|\s*([0-9]) Beds?\s*\|\s*[0-9]+\s*Full Baths*\s*$/i,
+    /\|\s*([0-9]) Beds?\s*\|\s*[0-9]+\s*Full Baths*\s*,\s*[0-9]+ Partial Baths?\s*$/i,
     // 4 bed, 4 full bath, 1 half bath
   ];
 
@@ -799,6 +801,9 @@ function parseBaths(el) {
     /^\s*[0-9]+\s*bedrooms?\s*and\s*([0-9]+)\s*full bath\s*$/i,
     /^\s*[0-9]{1,2}\s*beds?\s*,?\s*([0-9]+)[.0-9]{0,2}\s*baths?\s*,?/i,
     /[0-9]+ Rm.s., [0-9] Bed Rm.s., ([0-9]) Full Bath.s., [0-9] Half Bath.s., Built in [0-9]{4}/,
+    /\|\s*[0-9] Beds?\s*\|\s*([0-9]+)\s*Full Baths*\s*$/i,
+    /\|\s*([0-9]+)\s*Full Baths*\s*$/i,
+    /\|\s*[0-9] Beds?\s*\|\s*([0-9]+)\s*Full Baths*\s*,\s*[0-9]+ Partial Baths?\s*$/i,
     dangerous,
   ];
 
@@ -846,6 +851,7 @@ function parseHalfBaths(el) {
     /^\s*[0-9]{1,2}\s*full baths?\s*,\s*([0-9]{1,2})\s*half\s*baths?\s*$/i,
     /^\s*[0-9] bed,\s*[0-9]+[0-9.]* full bath, ([0-9]+) half bath/i,
     /[0-9]+ Rm.s., [0-9] Bed Rm.s., [0-9] Full Bath.s., ([0-9]) Half Bath.s., Built in [0-9]{4}/,
+    /\|\s*[0-9] Beds?\s*\|\s*[0-9]+\s*Full Baths*\s*,\s*([0-9]+) Partial Baths?\s*$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
