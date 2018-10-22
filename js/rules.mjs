@@ -328,6 +328,7 @@ function parseAcres(el) {
     /^ *([0-9.]+) acre\(s\) *$/i,
     /^\s*[1-9][^,]+ is a \$[0-9,]+, [0-9,]{3,6} square foot, [0-9]{1,2} bedroom, [0-9]{1,2}[0-9.]* bath home on a ([0-9.]{1,4}) acre lot located in [A-Z][^,]+, [A-Z][A-Z]\.\s*$/,
     /^ *lot:? *(\.[0-9]+|[0-9]+\.[0-9]+|[0-9]+) *acres? *$/i,
+    /\| ([0-9]{1,2}\.[0-9]{1,3})\s*acres\s*$/i
   ];
 
   for(var i = 0; i < res.length; i++) {
@@ -912,7 +913,8 @@ function parseSqft(el) {
     /^ *[0-9]{1,2}\s*bed *s?\s*[,|]\s*[0-9]\.[0-9]\s*bath *s?\s*[,|]\s*([0-9,]+)\s*sq\s*ft/i,
     /^ *sq\.? *ft\.?:? ([0-9,]{3,5})\s*$/i,
     /^ *([0-9,]{3,6}) pieds carr.{0,2}s\s*$/i,
-    /^ *home size: ([0-9,]{3,6})\s*sq\s*ft\s*$/i,
+    /^ *home size:? *([0-9,]{3,6})\s*sq\s*ft\s*$/i,
+    /^ *house size:? *([0-9,]{3,6})\s*sq\s*ft\s*$/i,
     /^ *([0-9,]{3,6}) sq ft; lot: [0-9.]+ acres *$/i,
     /^ *[0-9]{1,2} beds - [0-9]{1,2}[.0-9]{0,2} baths - ([0-9]{3,4}) * sqft *$/i,
     /^\s*([0-9,]{3,6})\s*sqft\s*lot\s*[0-9. ]+\s*acr?e?s?\s*$/i,
@@ -1020,6 +1022,7 @@ function parseSoldDate(el) {
     /^[( ]*sold on *(.+?)[ )]*for \$[0-9,]+\s*$/i,
     /^[( ]*sold on *(.+?)[ ):]* \$[0-9,]+\s*$/i,
     /^ *sold for *:? *\$ *[0-9,]* *on ([0-9/ -]+?) *$/i,
+    /^ *sold for *:? *\$ *[0-9,]* *on ([a-zA-Z]{3,12}\s*[0-9/ -,]+?) *$/i,
     /^ *close date*:? *([0-9/ -]+?) *$/i,
   ];
 
@@ -1045,6 +1048,7 @@ function parseSoldPrice(el) {
     /^ *sold for *:? *(\$ *[0-9,]*) *on [0-9/ -]+$/i,
     /^ *sold on [0-9/ -]* for *(\$ *[0-9,]*) *$/i,
     /^ *sale price *:? *(\$ *[0-9,]+) *$/i,
+    /^ *sold for *:? *(\$ *[0-9,]*) *on [a-zA-Z]{3,12}\s*[0-9/ -,]+? *$/i,
     /^ *(\$ *[0-9,]+) *sale price *$/i,
     /^ *(\$ *[0-9,]+) *\(?sold price\)? *$/i,
   ];
