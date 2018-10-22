@@ -1346,7 +1346,8 @@ function parseYearBuilt(el) {
     /^ *.{0,3}built in:? *([0-9]{4}) *$/i,
     /^ *year built *:? *([0-9]{4}) *$/i,
     /^\s*[0-9,]{3,7} sqft, [0-9,]{3,7} sqft lot, built in ([0-9]{4})\s*$/i,
-    /, Built ([0-9]{4})\s*$/
+    /, Built:? ([0-9]{4})\s*$/,
+    /, Year Built:? ([0-9]{4})\s*$/,
   ];
 
   for(var i = 0; i < res.length; i++) {
