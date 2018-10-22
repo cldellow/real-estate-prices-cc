@@ -1576,6 +1576,42 @@ function expandLinkToPostalCodeWhenAddress(el, listing) {
   }
 }
 
+function expandLinkToAddress(el, listing) {
+  const { price, address, city, state, postal_code } = listing;
+  if(!price || address || !city || !state || postal_code)
+    return;
+
+  if(el.nodeType != 1 || el.nodeName.toUpperCase() != 'A')
+    return;
+
+  const href = el.getAttribute('href');
+
+  if(!href)
+    return;
+
+  const txt = innerText(el);
+
+  const addressSlug = txt.toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+  const citySlug = city.toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+  const stateSlug = state.toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+
+  const res = [
+    new RegExp('/' + addressSlug + '-' + citySlug + '-' + stateSlug + '-([0-9]{5})-', 'i'),
+  ];
+
+  for(var i = 0; i < res.length; i++) {
+    const rv = res[i].exec(href);
+    if(rv) {
+      return {
+        address: txt,
+        postal_code: rv[1].toUpperCase(),
+        country: 'US'
+      }
+    }
+  }
+}
+
+
 function expandLinkToAddressCityState(el, listing) {
   const { price, address, city, state, postal_code } = listing;
   if(!price || address || city || state || postal_code)
@@ -2117,6 +2153,7 @@ export const rules = [
     ['a', expandLinkToAddressCityStatePostalCode],
     ['a', expandLinkToAddressCityStatePostalCodeUnderscore],
     ['a', expandLinkToAddressCityState],
+    ['a', expandLinkToAddress],
     ['a', expandLinkToPostalCode],
     ['a', expandLinkToPostalCodeAndProvince],
     ['a', expandLinkToPostalCodeWhenAddress],
