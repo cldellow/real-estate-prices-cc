@@ -487,6 +487,9 @@ function validAddress(rv) {
   if(/sqft|for sale/i.exec(address))
     return;
 
+  if(/weeks? ago|months? ago/i.exec(address))
+    return;
+
   if(/See more photos/i.exec(address))
     return;
 
