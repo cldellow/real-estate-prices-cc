@@ -1182,7 +1182,8 @@ function parseLotSize(el) {
     /^ *lot size *:? *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
     /\blot *: *([0-9]{1,2}[ ,]*[0-9]{3}) *sq *ft$/i,
     /^\s*[0-9,]{3,7} sqft, ([0-9,]{3,7}) sqft lot, built in [0-9]{4}\s*$/i,
-    /([0-9,]+) sqft, [0-9,]+ sqft living area/i
+    /([0-9,]+) sqft, [0-9,]+ sqft living area/i,
+    /^([0-9,]+) sq ?ft lot$/i,
   ];
 
   for(var i = 0; i < res.length; i++) {
