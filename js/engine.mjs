@@ -138,6 +138,7 @@ export function rewrite(el) {
   remove(el.querySelectorAll('.q-property-history + div, .pricehistory'));
   remove(el.querySelectorAll('.prop-value-zestimate, .prop-zestimate, .zestimate'));
   remove(el.querySelectorAll('.q-last-sold + span'));
+  remove(el.querySelectorAll('#tblcNetPrice, #rwOrigPrice, #lblZestimate'));
 
   if(el.querySelectorAll('.q-finished-sqft').length) {
     remove(el.querySelectorAll('.q-total-sqft + span'));

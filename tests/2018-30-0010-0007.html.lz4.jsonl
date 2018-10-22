@@ -1,9 +1,9 @@
-{"price":119999,"beds":3,"city":"Cochecton","state":"NY","country":"US","address":"8241 State Route 97"}
-{"price":175000,"beds":3,"city":"Parksville","state":"NY","country":"US","address":"352 Breezy Hill Rd"}
-{"price":198400,"beds":4,"city":"Narrowsburg","state":"NY","country":"US","address":"6882 State Route 97"}
-{"price":224900,"beds":0,"city":"Cochecton","state":"NY","country":"US","address":"6696 Rt # 52"}
-{"price":125000,"beds":3,"city":"Beach Lake","state":"PA","country":"US","address":"57 Miller Rd"}
-{"price":168900,"beds":2,"city":"Narrowsburg","state":"NY","country":"US","address":"399 Delaware Dr"}
-{"price":125000,"beds":3,"city":"Cochecton","state":"NY","country":"US","address":"106 Buff Rd"}
-{"price":199000,"beds":3,"city":"Bethel","state":"NY","country":"US","address":"527 Mt. Hope Rd"}
-{"price":94900,"beds":3,"city":"Narrowsburg","state":"NY","country":"US","address":"6096 State Route 97"}
+{"price":119999,"beds":3,"baths":1,"city":"Cochecton","state":"NY","country":"US","sqft":1600,"address":"8241 State Route 97"}
+{"price":175000,"beds":3,"baths":2,"city":"Parksville","state":"NY","country":"US","sqft":2400,"address":"352 Breezy Hill Rd"}
+{"price":198400,"beds":4,"baths":2,"city":"Narrowsburg","state":"NY","country":"US","sqft":1800,"address":"6882 State Route 97"}
+{"price":224900,"beds":0,"baths":0,"city":"Cochecton","state":"NY","country":"US","address":"6696 Rt # 52"}
+{"price":125000,"beds":3,"baths":2,"city":"Beach Lake","state":"PA","country":"US","sqft":1602,"address":"57 Miller Rd"}
+{"price":168900,"beds":2,"baths":2,"city":"Narrowsburg","state":"NY","country":"US","sqft":1600,"address":"399 Delaware Dr"}
+{"price":125000,"beds":3,"baths":2,"city":"Cochecton","state":"NY","country":"US","sqft":1708,"address":"106 Buff Rd"}
+{"price":199000,"beds":3,"baths":2,"city":"Bethel","state":"NY","country":"US","sqft":1200,"address":"527 Mt. Hope Rd"}
+{"price":94900,"beds":3,"baths":2,"city":"Narrowsburg","state":"NY","country":"US","sqft":1200,"address":"6096 State Route 97"}
