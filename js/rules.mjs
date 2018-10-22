@@ -487,6 +487,12 @@ function validAddress(rv) {
   if(/sqft|for sale/i.exec(address))
     return;
 
+  if(/See more photos/i.exec(address))
+    return;
+
+  if(/^[0-9][0-9]*\.\s*\.[0-9]+\s*Acres/i.exec(address))
+    return;
+
   if(/parking space/i.exec(address))
     return;
 

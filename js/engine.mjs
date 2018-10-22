@@ -779,7 +779,7 @@ if(typeof window != 'undefined' && typeof _ready != 'undefined') {
     while(id.length < 4)
       id = '0' + id;
 
-    window.location.href = '/stripped/' + id + '.html';
+    window.location.href = 'http://localhost:8000/stripped/' + id + '.html';
   }
   window.addEventListener('keyup', function (e) {
     if(e.code == "ArrowRight")
