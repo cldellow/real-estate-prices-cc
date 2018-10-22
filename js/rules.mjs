@@ -507,6 +507,9 @@ function validAddress(rv) {
   if(/\( *\)/.exec(address))
     return;
 
+  if(/^[0-9] Fireplace\s*$/.exec(address))
+    return;
+
   if(address.indexOf('...') >= 0)
     return;
 
@@ -801,7 +804,7 @@ function parseBaths(el) {
     const re = res[i];
     const rv = re.exec(txt);
     if(rv) {
-      if(re == dangerous && /1\/2\s*bath/.exec(txt))
+      if(re == dangerous && /1\/2\s*bath/i.exec(txt))
         continue;
 
       if((re == maybeHalf1 || re == maybeHalf2) && /half bath/i.exec(txt))
@@ -846,7 +849,7 @@ function parseHalfBaths(el) {
     const re = res[i];
     const rv = re.exec(txt);
     if(rv) {
-      if(re == dangerous && /1\/2\s*bath/.exec(txt))
+      if(re == dangerous && /1\/2\s*bath/i.exec(txt))
         continue;
 
       //logger.log(re);
